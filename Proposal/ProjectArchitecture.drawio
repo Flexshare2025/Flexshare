@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
   <diagram name="Page-1" id="hDD48A4KDWdSw8KQpUDE">
-    <mxGraphModel dx="2058" dy="2062" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2360" dy="2303" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -23,7 +23,7 @@
         <mxCell id="tgtyTVIXUpreaaZbHXpW-7" value="S3&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;(front end static resources)&lt;/div&gt;&lt;div&gt;(pics of user headshot)&lt;/div&gt;&lt;div&gt;(pics of driver&#39;s licen、car、headshot&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=15;labelBackgroundColor=default;" parent="1" vertex="1">
           <mxGeometry x="100" y="-225" width="200" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-8" value="DynamoDB&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;Order information&lt;/div&gt;&lt;div&gt;HistoryGPS data&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=15;" parent="1" vertex="1">
+        <mxCell id="tgtyTVIXUpreaaZbHXpW-8" value="DynamoDB&lt;div&gt;Shared Session&lt;/div&gt;&lt;div&gt;&lt;div&gt;Order information&lt;/div&gt;&lt;div&gt;HistoryGPS data&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=15;" parent="1" vertex="1">
           <mxGeometry x="525" y="255" width="200" height="120" as="geometry" />
         </mxCell>
         <mxCell id="tgtyTVIXUpreaaZbHXpW-10" value="Client&lt;div&gt;H5 App/Broswer&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
