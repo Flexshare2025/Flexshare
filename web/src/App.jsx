@@ -4,6 +4,7 @@ import enUS from 'antd-mobile/es/locales/en-US'
 import Login from "@/pages/Login";
 import Driver from "@/pages/Driver";
 import Customer from "@/pages/Customer";
+import NotFound from "@/pages/NotFound";
 export default function App() {
 
   return (
