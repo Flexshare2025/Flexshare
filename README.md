@@ -29,6 +29,52 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 ## **API**
 
+```mermaid
+sequenceDiagram
+    participant Passenger
+    participant Backend
+    participant Driver
+
+    %% Registration & Login
+    Passenger->>Backend: Request email verification code
+    Backend-->>Passenger: Send verification code
+    Passenger->>Backend: Register (email, password, code)
+    Backend-->>Passenger: Registration success
+    Passenger->>Backend: Login (email, password)
+    Backend-->>Passenger: Login success + token
+    Driver->>Backend: Register & upload license, car photos, plate
+    Backend-->>Driver: Registration success
+    Driver->>Backend: Login
+    Backend-->>Driver: Login success + token
+
+    %% Route Publish & Search
+    Driver->>Backend: Publish route (time, start, end, stops)
+    Backend-->>Driver: Route published
+    Passenger->>Backend: Search routes (origin, destination, time)
+    Backend-->>Passenger: Matching routes
+
+    %% Order Placement & Acceptance
+    Passenger->>Backend: Place order (route ID, pickup, drop-off)
+    Backend-->>Passenger: Order placed
+    Backend->>Driver: Notify new order
+    Driver->>Backend: Accept order
+    Backend-->>Passenger: Order accepted
+    Passenger->>Backend: Cancel order (optional)
+    Driver->>Backend: Cancel order (optional)
+
+    %% Real-time Location Sharing
+    Passenger->>Backend: Share current location
+    Backend-->>Driver: Update passenger location
+    Driver->>Backend: Broadcast location
+    Backend-->>Passenger: Update driver location
+
+    %% Trip Start & End
+    Driver->>Backend: Start trip
+    Backend-->>Passenger: Trip started notification
+    Driver->>Backend: End trip
+    Backend-->>Passenger: Trip completed notification
+```
+
 ### **1. Authentication Module**
 
 #### 1.1 Get Email Verification Code
