@@ -209,7 +209,8 @@ vehicle_model: string
 
 #### 2.3 Accept an Order
 
-**POST** `/api/driver/orders/{order_id}/accept`
+**POST** `/api/driver/orders/{order_id}/accept`  
+
 **Response**:
 
 ```json
