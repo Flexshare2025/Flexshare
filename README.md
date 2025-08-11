@@ -33,7 +33,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 1.1 Get Email Verification Code
 
-**POST** `/api/auth/send-verification-code`
+**POST** `/api/auth/send-verification-code`  
+
 **Request Body**:
 
 ```json
@@ -55,7 +56,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 1.2 User Registration
 
-**POST** `/api/auth/register`
+**POST** `/api/auth/register`  
+
 **Request Body**:
 
 ```json
@@ -81,7 +83,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 1.3 Email Verification (Link)
 
-**GET** `/api/auth/verify-email?token=xxxx`
+**GET** `/api/auth/verify-email?token=xxxx`  
+
 **Query Parameters**:
 
 * `token` – verification token from email link
@@ -99,7 +102,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 1.4 User Login
 
-**POST** `/api/auth/login`
+**POST** `/api/auth/login`  
+
 **Request Body**:
 
 ```json
@@ -128,7 +132,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 1.5 Get Current User Info
 
-**GET** `/api/auth/me`
+**GET** `/api/auth/me`  
+
 **Headers**:
 
 * `Authorization: Bearer jwt_token`
@@ -150,7 +155,8 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 
 #### 2.1 Upload License & Vehicle Info
 
-**POST** `/api/driver/upload-docs`
+**POST** `/api/driver/upload-docs`  
+
 **Form Data**:
 
 ```
@@ -173,7 +179,8 @@ vehicle_model: string
 
 #### 2.2 Publish a Route
 
-**POST** `/api/driver/routes`
+**POST** `/api/driver/routes`  
+
 **Request Body**:
 
 ```json
@@ -216,7 +223,8 @@ vehicle_model: string
 
 #### 2.4 Cancel an Order
 
-**POST** `/api/driver/orders/{order_id}/cancel`
+**POST** `/api/driver/orders/{order_id}/cancel`  
+
 **Request Body**:
 
 ```json
@@ -238,7 +246,8 @@ vehicle_model: string
 
 #### 2.5 Broadcast Driver Location (Real-Time Tracking)
 
-**POST** `/api/driver/location`
+**POST** `/api/driver/location`  
+
 **Headers**:
 
 * `Authorization: Bearer jwt_token` (driver)
@@ -265,7 +274,8 @@ vehicle_model: string
 
 #### 2.6 Start a Trip
 
-**POST** `/api/driver/trips/{trip_id}/start`
+**POST** `/api/driver/trips/{trip_id}/start`  
+
 **Response**:
 
 ```json
@@ -279,7 +289,8 @@ vehicle_model: string
 
 #### 2.7 End a Trip
 
-**POST** `/api/driver/trips/{trip_id}/end`
+**POST** `/api/driver/trips/{trip_id}/end`  
+
 **Response**:
 
 ```json
@@ -295,7 +306,8 @@ vehicle_model: string
 
 #### 3.1 Search for Routes
 
-**GET** `/api/passenger/routes/search`
+**GET** `/api/passenger/routes/search`  
+
 **Query Parameters**:
 
 * `start_lat`
@@ -325,7 +337,8 @@ vehicle_model: string
 
 #### 3.2 Place an Order
 
-**POST** `/api/passenger/orders`
+**POST** `/api/passenger/orders`  
+
 **Request Body**:
 
 ```json
@@ -350,7 +363,8 @@ vehicle_model: string
 
 #### 3.3 Cancel an Order
 
-**POST** `/api/passenger/orders/{order_id}/cancel`
+**POST** `/api/passenger/orders/{order_id}/cancel`  
+
 **Request Body**:
 
 ```json
@@ -372,7 +386,8 @@ vehicle_model: string
 
 #### 3.4 Update Passenger Location (Real-Time)
 
-**POST** `/api/passenger/location`
+**POST** `/api/passenger/location`  
+
 **Headers**:
 
 * `Authorization: Bearer jwt_token` (passenger)
@@ -401,7 +416,8 @@ vehicle_model: string
 
 #### 4.1 Get Order Details
 
-**GET** `/api/orders/{order_id}`
+**GET** `/api/orders/{order_id}`  
+
 **Response**:
 
 ```json
@@ -422,7 +438,8 @@ vehicle_model: string
 
 #### 4.2 Get Orders List
 
-**GET** `/api/orders`
+**GET** `/api/orders`  
+
 **Query Parameters**:
 
 * `role=passenger|driver`
