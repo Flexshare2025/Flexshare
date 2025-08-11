@@ -13,10 +13,14 @@
       - [2.2 Publish a Route](#22-publish-a-route)
       - [2.3 Accept an Order](#23-accept-an-order)
       - [2.4 Cancel an Order](#24-cancel-an-order)
+      - [2.5 Broadcast Driver Location (Real-Time Tracking)](#25-broadcast-driver-location-real-time-tracking)
+      - [2.6 Start a Trip](#26-start-a-trip)
+      - [2.7 End a Trip](#27-end-a-trip)
     - [**3. Passenger Module**](#3-passenger-module)
       - [3.1 Search for Routes](#31-search-for-routes)
       - [3.2 Place an Order](#32-place-an-order)
       - [3.3 Cancel an Order](#33-cancel-an-order)
+      - [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
     - [**4. Orders Module (Shared)**](#4-orders-module-shared)
       - [4.1 Get Order Details](#41-get-order-details)
       - [4.2 Get Orders List](#42-get-orders-list)
@@ -80,7 +84,7 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 **GET** `/api/auth/verify-email?token=xxxx`
 **Query Parameters**:
 
-- `token` – verification token from email link
+* `token` – verification token from email link
 
 **Response**:
 
@@ -127,7 +131,7 @@ PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_
 **GET** `/api/auth/me`
 **Headers**:
 
-- `Authorization: Bearer jwt_token`
+* `Authorization: Bearer jwt_token`
 
 **Response**:
 
@@ -175,8 +179,10 @@ vehicle_model: string
 ```json
 {
   "start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
-  "end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
-  "stops": [{ "lat": 123.5, "lng": 67.9, "address": "string" }],
+  "end_point": { "lat": 124.00, "lng": 68.00, "address": "string" },
+  "stops": [
+    { "lat": 123.50, "lng": 67.90, "address": "string" }
+  ],
   "departure_time": "2025-08-12T09:00:00Z",
   "available_seats": 4,
   "price_per_km": 2.5
@@ -230,6 +236,61 @@ vehicle_model: string
 
 ---
 
+#### 2.5 Broadcast Driver Location (Real-Time Tracking)
+
+**POST** `/api/driver/location`
+**Headers**:
+
+* `Authorization: Bearer jwt_token` (driver)
+
+**Request Body**:
+
+```json
+{
+  "lat": 123.45,
+  "lng": 67.89,
+}
+```
+
+**Response**:
+
+```json
+{
+  "status": "success",
+  "message": "Location updated"
+}
+```
+
+---
+
+#### 2.6 Start a Trip
+
+**POST** `/api/driver/trips/{trip_id}/start`
+**Response**:
+
+```json
+{
+  "status": "success",
+  "message": "Trip started"
+}
+```
+
+---
+
+#### 2.7 End a Trip
+
+**POST** `/api/driver/trips/{trip_id}/end`
+**Response**:
+
+```json
+{
+  "status": "success",
+  "message": "Trip completed"
+}
+```
+
+---
+
 ### **3. Passenger Module**
 
 #### 3.1 Search for Routes
@@ -237,11 +298,11 @@ vehicle_model: string
 **GET** `/api/passenger/routes/search`
 **Query Parameters**:
 
-- `start_lat`
-- `start_lng`
-- `end_lat`
-- `end_lng`
-- `departure_date`
+* `start_lat`
+* `start_lng`
+* `end_lat`
+* `end_lng`
+* `departure_date`
 
 **Response**:
 
@@ -251,7 +312,7 @@ vehicle_model: string
     "route_id": "string",
     "driver": { "id": "string", "name": "string", "rating": 4.8 },
     "start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
-    "end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
+    "end_point": { "lat": 124.00, "lng": 68.00, "address": "string" },
     "stops": [],
     "departure_time": "2025-08-12T09:00:00Z",
     "available_seats": 3,
@@ -309,6 +370,33 @@ vehicle_model: string
 
 ---
 
+#### 3.4 Update Passenger Location (Real-Time)
+
+**POST** `/api/passenger/location`
+**Headers**:
+
+* `Authorization: Bearer jwt_token` (passenger)
+
+**Request Body**:
+
+```json
+{
+  "lat": 123.50,
+  "lng": 67.95
+}
+```
+
+**Response**:
+
+```json
+{
+  "status": "success",
+  "message": "Passenger location updated"
+}
+```
+
+---
+
 ### **4. Orders Module (Shared)**
 
 #### 4.1 Get Order Details
@@ -337,8 +425,8 @@ vehicle_model: string
 **GET** `/api/orders`
 **Query Parameters**:
 
-- `role=passenger|driver`
-- `status=pending|accepted|completed|cancelled`
+* `role=passenger|driver`
+* `status=pending|accepted|completed|cancelled`
 
 **Response**:
 
