@@ -21,9 +21,9 @@
       - [3.2 Place an Schedule](#32-place-an-schedule)
       - [3.3 Cancel an Schedule](#33-cancel-an-schedule)
       - [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
-    - [**4. Schedules Module (Shared)**](#4-schedules-module-shared)
+    - [**4. Schedule Module (Shared)**](#4-schedule-module-shared)
       - [4.1 Get Schedule Details](#41-get-schedule-details)
-      - [4.2 Get Schedules List](#42-get-schedules-list)
+      - [4.2 Get Schedule List](#42-get-schedule-list)
 
 PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_mode=read_only&screen=rbpUrC76wnj9YxW30)
 
@@ -255,7 +255,7 @@ vehicle_model: string
 
 #### 2.3 Accept an Schedule
 
-**POST** `/api/driver/schedules/{schedule_id}/accept`  
+**POST** `/api/driver/schedule/{schedule_id}/accept`  
 
 **Response**:
 
@@ -270,7 +270,7 @@ vehicle_model: string
 
 #### 2.4 Cancel an Schedule
 
-**POST** `/api/driver/schedules/{schedule_id}/cancel`  
+**POST** `/api/driver/schedule/{schedule_id}/cancel`  
 
 **Request Body**:
 
@@ -384,7 +384,7 @@ vehicle_model: string
 
 #### 3.2 Place an Schedule
 
-**POST** `/api/passenger/schedules`  
+**POST** `/api/passenger/schedule`  
 
 **Request Body**:
 
@@ -410,7 +410,7 @@ vehicle_model: string
 
 #### 3.3 Cancel an Schedule
 
-**POST** `/api/passenger/schedules/{schedule_id}/cancel`  
+**POST** `/api/passenger/schedule/{schedule_id}/cancel`  
 
 **Request Body**:
 
@@ -459,11 +459,11 @@ vehicle_model: string
 
 ---
 
-### **4. Schedules Module (Shared)**
+### **4. Schedule Module (Shared)**
 
 #### 4.1 Get Schedule Details
 
-**GET** `/api/schedules/{schedule_id}`  
+**GET** `/api/schedule/{schedule_id}`  
 
 **Response**:
 
@@ -483,9 +483,9 @@ vehicle_model: string
 
 ---
 
-#### 4.2 Get Schedules List
+#### 4.2 Get Schedule List
 
-**GET** `/api/schedules`  
+**GET** `/api/schedule`  
 
 **Query Parameters**:
 
