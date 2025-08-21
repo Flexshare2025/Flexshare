@@ -11,19 +11,19 @@
     - [**2. Driver Module**](#2-driver-module)
       - [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
       - [2.2 Publish a Route](#22-publish-a-route)
-      - [2.3 Accept an Order](#23-accept-an-order)
-      - [2.4 Cancel an Order](#24-cancel-an-order)
+      - [2.3 Accept an Schedule](#23-accept-an-schedule)
+      - [2.4 Cancel an Schedule](#24-cancel-an-schedule)
       - [2.5 Broadcast Driver Location (Real-Time Tracking)](#25-broadcast-driver-location-real-time-tracking)
       - [2.6 Start a Trip](#26-start-a-trip)
       - [2.7 End a Trip](#27-end-a-trip)
     - [**3. Passenger Module**](#3-passenger-module)
       - [3.1 Search for Routes](#31-search-for-routes)
-      - [3.2 Place an Order](#32-place-an-order)
-      - [3.3 Cancel an Order](#33-cancel-an-order)
+      - [3.2 Place an Schedule](#32-place-an-schedule)
+      - [3.3 Cancel an Schedule](#33-cancel-an-schedule)
       - [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
-    - [**4. Orders Module (Shared)**](#4-orders-module-shared)
-      - [4.1 Get Order Details](#41-get-order-details)
-      - [4.2 Get Orders List](#42-get-orders-list)
+    - [**4. Schedules Module (Shared)**](#4-schedules-module-shared)
+      - [4.1 Get Schedule Details](#41-get-schedule-details)
+      - [4.2 Get Schedules List](#42-get-schedules-list)
 
 PRD: [FlexShare App](https://modao.cc/proto/yJ6LW3nWszjbp418O0lLPs/sharing?view_mode=read_only&screen=rbpUrC76wnj9YxW30)
 
@@ -53,14 +53,14 @@ sequenceDiagram
     Passenger->>Backend: Search routes (origin, destination, time)
     Backend-->>Passenger: Matching routes
 
-    %% Order Placement & Acceptance
-    Passenger->>Backend: Place order (route ID, pickup, drop-off)
-    Backend-->>Passenger: Order placed
-    Backend->>Driver: Notify new order
-    Driver->>Backend: Accept order
-    Backend-->>Passenger: Order accepted
-    Passenger->>Backend: Cancel order (optional)
-    Driver->>Backend: Cancel order (optional)
+    %% Schedule Placement & Acceptance
+    Passenger->>Backend: Place schedule (route ID, pickup, drop-off)
+    Backend-->>Passenger: Schedule placed
+    Backend->>Driver: Notify new schedule
+    Driver->>Backend: Accept schedule
+    Backend-->>Passenger: Schedule accepted
+    Passenger->>Backend: Cancel schedule (optional)
+    Driver->>Backend: Cancel schedule (optional)
 
     %% Real-time Location Sharing
     Passenger->>Backend: Share current location
@@ -253,24 +253,24 @@ vehicle_model: string
 
 ---
 
-#### 2.3 Accept an Order
+#### 2.3 Accept an Schedule
 
-**POST** `/api/driver/orders/{order_id}/accept`  
+**POST** `/api/driver/schedules/{schedule_id}/accept`  
 
 **Response**:
 
 ```json
 {
   "status": "success",
-  "message": "Order accepted"
+  "message": "Schedule accepted"
 }
 ```
 
 ---
 
-#### 2.4 Cancel an Order
+#### 2.4 Cancel an Schedule
 
-**POST** `/api/driver/orders/{order_id}/cancel`  
+**POST** `/api/driver/schedules/{schedule_id}/cancel`  
 
 **Request Body**:
 
@@ -285,7 +285,7 @@ vehicle_model: string
 ```json
 {
   "status": "success",
-  "message": "Order cancelled"
+  "message": "Schedule cancelled"
 }
 ```
 
@@ -382,9 +382,9 @@ vehicle_model: string
 
 ---
 
-#### 3.2 Place an Order
+#### 3.2 Place an Schedule
 
-**POST** `/api/passenger/orders`  
+**POST** `/api/passenger/schedules`  
 
 **Request Body**:
 
@@ -402,15 +402,15 @@ vehicle_model: string
 ```json
 {
   "status": "success",
-  "order_id": "string"
+  "schedule_id": "string"
 }
 ```
 
 ---
 
-#### 3.3 Cancel an Order
+#### 3.3 Cancel an Schedule
 
-**POST** `/api/passenger/orders/{order_id}/cancel`  
+**POST** `/api/passenger/schedules/{schedule_id}/cancel`  
 
 **Request Body**:
 
@@ -425,7 +425,7 @@ vehicle_model: string
 ```json
 {
   "status": "success",
-  "message": "Order cancelled"
+  "message": "Schedule cancelled"
 }
 ```
 
@@ -459,17 +459,17 @@ vehicle_model: string
 
 ---
 
-### **4. Orders Module (Shared)**
+### **4. Schedules Module (Shared)**
 
-#### 4.1 Get Order Details
+#### 4.1 Get Schedule Details
 
-**GET** `/api/orders/{order_id}`  
+**GET** `/api/schedules/{schedule_id}`  
 
 **Response**:
 
 ```json
 {
-  "order_id": "string",
+  "schedule_id": "string",
   "route_id": "string",
   "status": "pending" | "accepted" | "cancelled" | "completed",
   "driver": { "id": "string", "name": "string" },
@@ -483,9 +483,9 @@ vehicle_model: string
 
 ---
 
-#### 4.2 Get Orders List
+#### 4.2 Get Schedules List
 
-**GET** `/api/orders`  
+**GET** `/api/schedules`  
 
 **Query Parameters**:
 
@@ -497,7 +497,7 @@ vehicle_model: string
 ```json
 [
   {
-    "order_id": "string",
+    "schedule_id": "string",
     "status": "pending",
     "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
     "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
