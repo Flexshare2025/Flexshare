@@ -13,9 +13,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 @TableName("users")
 public class User {
-    @TableId( type = IdType.ASSIGN_UUID)
-    private long id;
-
+    @TableId( type = IdType.ASSIGN_ID)
+    private Long id;
     @NotBlank(message = "Must not be blank", groups ={SignUpGroup.class, LoginGroup.class})
     @Email(message = "Must be a valid email", groups = {SignUpGroup.class, LoginGroup.class})
     private String email;

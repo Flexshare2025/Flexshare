@@ -1,6 +1,7 @@
 package com.jl.flexshare.member.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jl.flexshare.member.result.ErrorType;
 import com.jl.flexshare.member.result.Result;
 import com.jl.flexshare.member.entity.User;
@@ -25,7 +26,16 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Result> register(@Validated({SignUpGroup.class}) @RequestBody User user) {
-        System.out.println(user);
+
+        QueryWrapper<User> query = new QueryWrapper<>();
+
+        //1.check if user email exist
+//        User qy = userService.getOne(query);
+//        if(qy != null) {
+//            return
+//                    ResponseEntity.ok(Result.error(ResultError.error(ErrorType.User_exist)));
+//        }
+
         boolean res = userService.save(user);
         Result result =res?
                 Result.success()

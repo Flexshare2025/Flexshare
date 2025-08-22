@@ -20,6 +20,8 @@ public class ResultError {
                 return new ResultError("4002","Login failed");
             case Validation_failed:
                 return new ResultError("4003","Validation failed");
+            case User_exist:
+                return new ResultError("4004", "User already exist");
             default:
                 return new ResultError("4000","Unknown error");
         }
