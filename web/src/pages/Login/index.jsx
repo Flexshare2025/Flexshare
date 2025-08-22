@@ -1,15 +1,14 @@
-import AddressSearch from '../../components/search-location';
+import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 
-export default function App() {
-  const handlePlaceSelect = (place) => {
-    console.log('选中的地点信息:', place);
-    // 你可以在这里处理 place，比如显示在地图上
-  };
-
+export default function Login() {
+  const [searchParams] = useSearchParams(); // use useSearchParams Get query parameters
+  const role = searchParams.get('role'); //
   return (
-    <div>
-      <h2>地址检索</h2>
-      <AddressSearch onPlaceSelect={handlePlaceSelect} />
+    <div style={{ padding: 24 }}>
+      <h2 style={{ marginTop: 0, marginBottom: 8 }}>
+        Welcome to FlexShare, {role || 'Guest'}
+      </h2>
     </div>
   );
 }

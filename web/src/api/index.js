@@ -1,86 +1,110 @@
-import { getCookie, setCookie } from "@/utils/storage";
-import { FLEXSHARE_ACCESS_TOKEN } from "@/constant";
+import { getCookie, setCookie } from '@/utils/storage'
+import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 
-export const API_FAILED = "Error";
+export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = "https://api.flexshare";
+export const API_DOMAIN = 'https://api.flexshare'
 
-let token = "";
+let token = ''
 
 export const apiReqs = {
-  // Get Email Verification Code
-  sendVerificationCode: (config) => {
-    config.url = API_DOMAIN + "/api/auth/send-verification-code";
-    config.method = "post";
-    apiFetch(config);
-  },
-  // ...
-  
-};
-
-export function goLogin() {
-  // ?from=${encodeURIComponent(window.location.href)}
-  window.location.href = `${location.origin}${location.pathname}#/login`;
+	// Get Email Verification Code
+	sendVerificationCode: config => {
+		config.url = API_DOMAIN + '/api/auth/send-verification-code'
+		config.method = 'post'
+		apiFetch(config)
+	},
 }
 
+export function goLogin() {
+	// ?from=${encodeURIComponent(window.location.href)}
+	window.location.href = `${location.origin}${location.pathname}#/login`
+}
+// register
+export function register(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + '/api/auth/register',
+		method: 'post',
+	})
+}
+
+// email verification
+export function emailVerification(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + '/api/auth/email-verification',
+		method: 'get',
+	})
+}
+// According to requirements, make further changes.
+// export function emailVerification(config) {
+//   const params = new URLSearchParams(config.data).toString();
+//   apiFetch({
+//     ...config,
+//     url: API_DOMAIN + `/api/auth/email-verification?${params}`,
+//     method: 'get',
+//     data: null // GET
+//   })
+// }
 async function addHeader(h) {
-  if (!h["Authorization"]) {
-    token = getCookie(FLEXSHARE_ACCESS_TOKEN) || "";
+	if (!h['Authorization']) {
+		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
 
-    if (token) {
-      h["Authorization"] = `Bearer ${token}`;
-    } else {
-      goLogin();
-    }
-  }
+		if (token) {
+			h['Authorization'] = `Bearer ${token}`
+		} else {
+			goLogin()
+		}
+	}
 
-  return h;
+	return h
 }
 
 export async function apiFetch(config) {
-  if (config.data === undefined) {
-    config.data = {};
-  }
+	if (config.data === undefined) {
+		config.data = {}
+	}
 
-  config.method = config.method || "post";
-  let headers = config.headers || {};
-  let data = null;
+	config.method = config.method || 'post'
+	let headers = config.headers || {}
+	let data = null
 
-  headers["Content-Type"] = "application/json;charset=UTF-8";
-  data = JSON.stringify(config.data);
+	headers['Content-Type'] = 'application/json;charset=UTF-8'
+	data = JSON.stringify(config.data)
 
-  const newHeaders = await addHeader(headers, config);
+	const newHeaders = await addHeader(headers, config)
 
-  let axiosConfig = {
-    method: config.method,
-    headers: newHeaders,
-    body: null,
-  };
+	let axiosConfig = {
+		method: config.method,
+		headers: newHeaders,
+		body: null,
+	}
 
-  if (config.method !== "get") {
-    axiosConfig.body = data;
-  }
+	if (config.method !== 'get') {
+		axiosConfig.body = data
+	}
 
-  fetch(config.url, { ...axiosConfig })
-    .then((res) => {
-      // status: 401
-      if (res.status === 401 || res.status === 403) {
-        setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: "" });
-        console.log("trigger-login-401");
-        goLogin();
-        return res.json();
-      }
+	fetch(config.url, { ...axiosConfig })
+		.then(res => {
+			// status: 401
+			if (res.status === 401 || res.status === 403) {
+				setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
+				console.log('trigger-login-401')
+				goLogin()
+				return res.json()
+			}
 
-      return res.json();
-    })
-    .then((result) => {
-      config.done && config.done();
-      config.success && config.success(result);
-    })
-    .catch((err) => {
-      console.log("fetch-err", err);
-      config.done && config.done();
-      config.fail && config.fail(API_FAILED);
-    });
+			return res.json()
+		})
+		.then(result => {
+			config.done && config.done()
+			config.success && config.success(result)
+		})
+		.catch(err => {
+			console.log('fetch-err', err)
+			config.done && config.done()
+			config.fail && config.fail(API_FAILED)
+		})
 }

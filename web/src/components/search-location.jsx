@@ -26,7 +26,7 @@ const AddressSearch = ({ onPlaceSelect }) => {
         if (place.geometry) {
           onPlaceSelect(place);
         } else {
-          console.log("未找到该地点");
+          console.log("This location was not found");
         }
       });
 
@@ -45,7 +45,7 @@ const AddressSearch = ({ onPlaceSelect }) => {
       <input
         ref={searchInputRef}
         type="text"
-        placeholder="输入地址"
+        placeholder="input address"
         style={{
           width: '100%',
           maxWidth: 1000,

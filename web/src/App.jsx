@@ -6,17 +6,23 @@ import DriverInfoUpload from "@/pages/Driver/InfoUpload";
 import Driver from "@/pages/Driver";
 import Customer from "@/pages/Customer";
 import NotFound from "@/pages/NotFound";
+import Home from "@/pages/Home";
+import Register from "@/pages/Register";
 
 export default function App() {
   return (
-    <ConfigProvider locale={enUS}>
+    <ConfigProvider
+      locale={enUS}
+    >
       <HashRouter>
         <Routes>
-          <Route path="/" element={<Login />} exit />
+          <Route path="/login" element={<Login />} />
           <Route path="/driver" element={<Driver />} />
           <Route path="/driver/upload" element={<DriverInfoUpload />} />
           <Route path="/customer" element={<Customer />} />
           <Route element={<NotFound />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />} exit />
         </Routes>
       </HashRouter>
     </ConfigProvider>
