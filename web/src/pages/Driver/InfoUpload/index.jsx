@@ -4,7 +4,8 @@ import {
   Input,
   Button,
   ImageUploader,
-} from 'antd-mobile'
+} from 'antd-mobile';
+import NavBar from '@/components/Nav';
 
 function mockUpload(file) {
   return {
@@ -22,6 +23,7 @@ export default function App() {
 
   return (
     <>
+    <NavBar title="Driver Info"/>
       <Form
         onFinish={onFinish}
         footer={
