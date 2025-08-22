@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
                             return map;
                         }
                 ).collect(Collectors.toList());
-        Result<List> result = Result.error(ResultError.error(ErrorType.Validation_failed), exceptionMsg);
+        Result<ExceptionWrapper> result = Result.error(ResultError.error(ErrorType.Validation_failed), new ExceptionWrapper(exceptionMsg));
         return ResponseEntity.badRequest().body(result);
     }
 

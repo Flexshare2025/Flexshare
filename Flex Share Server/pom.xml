@@ -27,8 +27,8 @@
 <!--    public jar using in sub module-->
 
 <!--    1.JDK version-->
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 <!--    2.Test -->
     <junit.version>4.12</junit.version>
 
