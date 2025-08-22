@@ -4,6 +4,17 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: {
+          chrome: "49",
+          ios: "10",
+        },
+      },
+    ],
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
