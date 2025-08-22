@@ -12,11 +12,11 @@ export default function App() {
     <ConfigProvider locale={enUS}>
       <HashRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} exit />
           <Route path="/driver" element={<Driver />} />
           <Route path="/driver/upload" element={<DriverInfoUpload />} />
           <Route path="/customer" element={<Customer />} />
-          <Route path="*" element={<NotFound />} />
+          <Route element={<NotFound />} />
         </Routes>
       </HashRouter>
     </ConfigProvider>
