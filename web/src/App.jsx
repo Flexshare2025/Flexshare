@@ -3,6 +3,7 @@ import { ConfigProvider } from "antd-mobile";
 import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
 import DriverInfoUpload from "@/pages/Driver/InfoUpload";
+import DriverRode from "@/pages/Driver/Rode";
 import Driver from "@/pages/Driver/PublishRoute";
 import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
@@ -38,6 +39,7 @@ export default function App() {
               <DriverInfoUpload />
             </ProtectedRoute>
           } />
+          <Route path="/driver/rode" element={<DriverRode />} />
           <Route path="/passenger" element={
             <ProtectedRoute requiredRole="passenger">
               <Passenger />
