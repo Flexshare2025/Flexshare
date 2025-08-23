@@ -48,7 +48,6 @@ const Register = () => {
     }
 
     setVerificationLoading(true);
-
     emailVerification({
       data: { email },
       success: (result) => {
@@ -119,19 +118,15 @@ const Register = () => {
       }
     });
   };
-
-
   // Handle back navigation
   const handleBack = () => {
     navigate(-1);
   };
-
   return (
     <div className="register-page">
       <div className="register-content">
         <div className="register-header">
           <h2>Create New Account</h2>
-          <p>Please fill in the following information to complete registration</p>
         </div>
 
         <Form

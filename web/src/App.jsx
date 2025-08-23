@@ -27,7 +27,6 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/login/:role" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
           {/* Protected Routes */}
           <Route path="/driver" element={
             <ProtectedRoute requiredRole="driver">
@@ -49,7 +48,6 @@ export default function App() {
               <Passenger />
             </ProtectedRoute>
           } />
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>

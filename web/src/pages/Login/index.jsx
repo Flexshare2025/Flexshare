@@ -5,8 +5,7 @@ import {
   Button,
   Toast,
   Space,
-  Divider,
-  Switch
+  Divider
 } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline, UserOutline } from 'antd-mobile-icons';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
@@ -62,7 +61,6 @@ export default function Login() {
             content: 'Login successful!',
             position: 'center',
           });
-
           // Redirect logic: prioritize 'from' path, then role-based redirect
           if (from) {
             // Redirect to the page user was originally trying to access
@@ -95,20 +93,19 @@ export default function Login() {
       <div className="login-content">
         <div className="login-header">
           <h2>Welcome Back</h2>
-          <p>Sign in to your account to continue</p>
-
           {/* Role Switcher */}
           <div className="role-switcher">
-            <div className={`role-option ${!isDriver ? 'active' : ''}`}>
+            <div
+              className={`role-option ${!isDriver ? 'active' : ''}`}
+              onClick={() => setIsDriver(false)}
+            >
               <UserOutline className="role-icon" />
               <span>Passenger</span>
             </div>
-            <Switch
-              checked={isDriver}
-              onChange={setIsDriver}
-              className="role-toggle"
-            />
-            <div className={`role-option ${isDriver ? 'active' : ''}`}>
+            <div
+              className={`role-option ${isDriver ? 'active' : ''}`}
+              onClick={() => setIsDriver(true)}
+            >
               <UserOutline className="role-icon" />
               <span>Driver</span>
             </div>

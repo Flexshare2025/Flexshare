@@ -106,7 +106,6 @@ export async function apiFetch(config) {
 	if (config.method !== 'get') {
 		fetchConfig.body = data
 	}
-
 	fetch(config.url, fetchConfig)
 		.then(res => {
 			// Check for authentication errors first
@@ -122,7 +121,6 @@ export async function apiFetch(config) {
 					return res.json()
 				}
 			}
-
 			// Check if response is successful (2xx status codes)
 			if (res.ok) {
 				return res.json()
