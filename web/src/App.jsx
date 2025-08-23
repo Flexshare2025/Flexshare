@@ -3,7 +3,7 @@ import { ConfigProvider } from "antd-mobile";
 import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
 import DriverInfoUpload from "@/pages/Driver/InfoUpload";
-import Driver from "@/pages/Driver";
+import Driver from "@/pages/Driver/PublishRoute";
 import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
 import Register from "@/pages/Register";
