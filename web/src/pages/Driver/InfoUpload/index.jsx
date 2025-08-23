@@ -27,7 +27,7 @@ export default function App() {
       <Form
         onFinish={onFinish}
         footer={
-          <Button block type='submit' color='primary' size='large'>
+          <Button block type='submit' color='primary' size='large' className='submit-btn'>
             Submit
           </Button>
         }

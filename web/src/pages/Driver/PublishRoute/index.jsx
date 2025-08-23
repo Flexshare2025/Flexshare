@@ -144,7 +144,7 @@ export default function App() {
           />
         </div>
         {startPoint && endPoint && date && (
-          <Button className='submit-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
+          <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
             Submit
           </Button>
         )
