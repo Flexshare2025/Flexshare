@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 
-const AddressSearch = ({ onPlaceSelect }) => {
+const AddressSearch = ({ onPlaceSelect, placeholder = '' }) => {
   const searchInputRef = useRef(null);
   const [autocomplete, setAutocomplete] = useState(null);
 
@@ -18,6 +18,7 @@ const AddressSearch = ({ onPlaceSelect }) => {
       if (searchInputRef.current) {
         autocompleteInstance = new window.google.maps.places.Autocomplete(searchInputRef.current, {
           types: ['geocode'],
+          componentRestrictions: { country: 'nz' } // Restrict to New Zealand
         });
       }
 
@@ -45,7 +46,7 @@ const AddressSearch = ({ onPlaceSelect }) => {
       <input
         ref={searchInputRef}
         type="text"
-        placeholder="input address"
+        placeholder={placeholder || "input address"}
         style={{
           width: '100%',
           maxWidth: 1000,

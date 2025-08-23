@@ -23,7 +23,7 @@ export default function App() {
 
   return (
     <>
-    <NavBar title="Driver Info"/>
+      <NavBar title="Driver Info" />
       <Form
         onFinish={onFinish}
         footer={
@@ -34,21 +34,21 @@ export default function App() {
       >
         <Form.Item
           name='plate_number'
-          label='Plate Number'
+          label='Plate number'
           rules={[{ required: true, message: 'The plate number cannot be empty' }]}
         >
-          <Input onChange={console.log} placeholder='Please Input Plate Number' />
+          <Input onChange={console.log} placeholder='Please input plate number' />
         </Form.Item>
         <Form.Item
           name='driver_license'
-          label='Driver License'
+          label='Driver license'
           rules={[{ required: true, message: 'The driver license number cannot be empty' }]}
         >
-          <Input onChange={console.log} placeholder='Please Input Driver License Number' />
+          <Input onChange={console.log} placeholder='Please input driver license number' />
         </Form.Item>
         <Form.Item
           name='vehicle_photo'
-          label='Vehicle Photo'
+          label='Vehicle photo'
           rules={[{ required: true, message: 'The vehicle photo cannot be empty' }]}
         >
           <ImageUploader
@@ -60,10 +60,10 @@ export default function App() {
             showUpload={vehicle_photo.length < maxCount}
           />
         </Form.Item>
-          <Form.Item
+        <Form.Item
           name='driver_license_image'
-          label='Driver License Image'
-          rules={[{ required: true, message: 'The vehicle driver license image be empty' }]}
+          label='Driver license image'
+          rules={[{ required: true, message: 'The driver driver license image be empty' }]}
         >
           <ImageUploader
             value={driver_license_image}
