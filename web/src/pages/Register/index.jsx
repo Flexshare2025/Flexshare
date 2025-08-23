@@ -82,28 +82,35 @@ const Register = () => {
 
   // Handle form submission
   const handleSubmit = async (values) => {
-    // value中 role是一个数组,取出来,需要字符串
+    //In value role is an array, and when you take it out, you need a string
     const normalizedValues = {
       ...values,
       role: Array.isArray(values.role) ? (values.role[0] || '') : values.role,
     };
-    console.log("🚀 --- normalizedValues:", normalizedValues)
     setLoading(true);
-
     register({
       data: normalizedValues,
       success: (result) => {
-        Toast.show({
-          content: 'Registration successful!',
-          position: 'center',
-        });
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
+        console.log('Registration success:', result);
+        if (result.code == '4004') {
+          Toast.show({
+            content: result.msg,
+            position: 'center',
+          });
+        } else {
+          Toast.show({
+            content: 'Registration successful!',
+            position: 'center',
+          });
+          setTimeout(() => {
+            navigate(`/login?${normalizedValues.role}`);
+          }, 500);
+        }
       },
       fail: (error) => {
+        console.error('Registration failed:', error);
         Toast.show({
-          content: 'Registration failed, please try again',
+          content: `Registration failed: ${error}`,
           position: 'center',
         });
       },
@@ -112,6 +119,7 @@ const Register = () => {
       }
     });
   };
+
 
   // Handle back navigation
   const handleBack = () => {
@@ -137,9 +145,10 @@ const Register = () => {
               color="primary"
               size="large"
               loading={loading}
+              disabled={loading}
               className="submit-btn"
             >
-              Register Now
+              {loading ? 'Registering...' : 'Register Now'}
             </Button>
           }
         >
@@ -210,7 +219,7 @@ const Register = () => {
             name="verification_code"
             label="Email Verification Code"
             rules={[
-              { required: true, message: 'Please enter verification code' },
+              { required: false, message: 'Please enter verification code' },
               { len: 6, message: 'Verification code should be 6 digits' }
             ]}
             extra={
@@ -219,11 +228,11 @@ const Register = () => {
                 color="primary"
                 fill="outline"
                 loading={verificationLoading}
-                disabled={countdown > 0}
+                disabled={verificationLoading || countdown > 0}
                 onClick={handleSendVerificationCode}
                 className="verification-btn"
               >
-                {countdown > 0 ? `Retry in ${countdown}s` : 'Send Code'}
+                {verificationLoading ? 'Sending...' : (countdown > 0 ? `Retry in ${countdown}s` : 'Send Code')}
               </Button>
             }
           >
@@ -243,7 +252,7 @@ const Register = () => {
               fill="none"
               color="primary"
               size="small"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/login')}
             >
               Login Now
             </Button>

@@ -4,9 +4,8 @@ import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
 import DriverInfoUpload from "@/pages/Driver/InfoUpload";
 import PublishRoute from "@/pages/Driver/PublishRoute";
-import Customer from "@/pages/Customer";
+import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
-import Home from "@/pages/Home";
 import Register from "@/pages/Register";
 
 export default function App() {
@@ -19,10 +18,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/driver/upload" element={<DriverInfoUpload />} />
           <Route path="/driver/publish" element={<PublishRoute />} />
-          <Route path="/customer" element={<Customer />} />
+          <Route path="/passenger" element={<Passenger />} />
           <Route element={<NotFound />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Home />} exit />
         </Routes>
       </HashRouter>
     </ConfigProvider>

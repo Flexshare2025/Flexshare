@@ -4,7 +4,7 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'https://api.flexshare'
+export const API_DOMAIN = 'http://34.229.93.154:10001/'
 
 let token = ''
 
@@ -25,11 +25,18 @@ export function goLogin() {
 export function register(config) {
 	apiFetch({
 		...config,
-		url: API_DOMAIN + '/api/auth/register',
+		url: API_DOMAIN + 'users/register',
 		method: 'post',
 	})
 }
-
+// login
+export function login(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'users/login',
+		method: 'post',
+	})
+}
 // email verification
 export function emailVerification(config) {
 	apiFetch({
@@ -48,7 +55,16 @@ export function emailVerification(config) {
 //     data: null // GET
 //   })
 // }
-async function addHeader(h) {
+async function addHeader(h, config) {
+	// Skip token check for authentication endpoints
+	if (
+		config.url &&
+		(config.url.includes('/users/register') ||
+			config.url.includes('/users/login'))
+	) {
+		return h
+	}
+
 	if (!h['Authorization']) {
 		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
 
@@ -76,35 +92,45 @@ export async function apiFetch(config) {
 
 	const newHeaders = await addHeader(headers, config)
 
-	let axiosConfig = {
+	let fetchConfig = {
 		method: config.method,
 		headers: newHeaders,
-		body: null,
 	}
 
 	if (config.method !== 'get') {
-		axiosConfig.body = data
+		fetchConfig.body = data
 	}
 
-	fetch(config.url, { ...axiosConfig })
+	fetch(config.url, fetchConfig)
 		.then(res => {
-			// status: 401
+			// Check for authentication errors first
 			if (res.status === 401 || res.status === 403) {
-				setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
-				console.log('trigger-login-401')
-				goLogin()
-				return res.json()
+				// Only redirect for non-auth endpoints
+				if (
+					!config.url.includes('/users/register') &&
+					!config.url.includes('/users/login')
+				) {
+					setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
+					console.log('trigger-login-401')
+					goLogin()
+					return res.json()
+				}
 			}
 
-			return res.json()
+			// Check if response is successful (2xx status codes)
+			if (res.ok) {
+				return res.json()
+			} else {
+				// For any other error status codes, throw an error
+				throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+			}
 		})
 		.then(result => {
 			config.done && config.done()
 			config.success && config.success(result)
 		})
 		.catch(err => {
-			console.log('fetch-err', err)
 			config.done && config.done()
-			config.fail && config.fail(API_FAILED)
+			config.fail && config.fail(err.message || API_FAILED)
 		})
 }
