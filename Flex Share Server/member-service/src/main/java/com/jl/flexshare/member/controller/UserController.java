@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Result> register(@Validated({SignUpGroup.class}) @RequestBody User user) {
-        
+
         QueryWrapper<User> query = new QueryWrapper<>();
         query.eq("email",user.getEmail());
         User qy = userService.getOne(query);
