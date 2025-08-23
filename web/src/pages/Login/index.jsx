@@ -9,13 +9,16 @@ import {
   Switch
 } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline, UserOutline } from 'antd-mobile-icons';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { EMAIL_REG } from '@/constant';
 import { login } from '@/api/index.js';
+import { setCookie } from '@/utils/storage';
+import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 import './index.css';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -23,6 +26,7 @@ export default function Login() {
   const [isDriver, setIsDriver] = useState(false);
 
   const role = searchParams.get('role');
+  const from = location.state?.from; // Get the page user was trying to access
 
   // Set initial role based on URL parameter
   React.useEffect(() => {
@@ -38,6 +42,7 @@ export default function Login() {
     values.role = isDriver ? 'driver' : 'passenger'
     console.log("🚀 --- values:", values)
     setLoading(true);
+
     login({
       data: values,
       success: (result) => {
@@ -48,15 +53,27 @@ export default function Login() {
           });
         }
         else {
+          // Save token to cookie
+          if (result.token) {
+            setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: result.token });
+          }
+
           Toast.show({
             content: 'Login successful!',
             position: 'center',
           });
-          // Redirect based on toggle state
-          if (isDriver) {
-            navigate('/driver');
+
+          // Redirect logic: prioritize 'from' path, then role-based redirect
+          if (from) {
+            // Redirect to the page user was originally trying to access
+            navigate(from);
           } else {
-            navigate('/passenger');
+            // Default role-based redirect
+            if (isDriver) {
+              navigate('/driver');
+            } else {
+              navigate('/passenger');
+            }
           }
         }
       },
@@ -79,6 +96,7 @@ export default function Login() {
         <div className="login-header">
           <h2>Welcome Back</h2>
           <p>Sign in to your account to continue</p>
+
           {/* Role Switcher */}
           <div className="role-switcher">
             <div className={`role-option ${!isDriver ? 'active' : ''}`}>
@@ -129,6 +147,7 @@ export default function Login() {
               clearable
             />
           </Form.Item>
+
           <Form.Item
             name="password"
             label="Password"
@@ -138,7 +157,7 @@ export default function Login() {
           >
             <Input
               placeholder="Please enter password"
-              type={passwordVisible ? 'text' : 'password'}
+              type="password"
               clearable
               extra={
                 <div onClick={() => setPasswordVisible(!passwordVisible)}>

@@ -19,7 +19,13 @@ export const apiReqs = {
 
 export function goLogin() {
 	// ?from=${encodeURIComponent(window.location.href)}
-	window.location.href = `${location.origin}${location.pathname}#/login`
+	window.location.href = `${location.origin}${location.pathname}#/`
+}
+
+export function logout() {
+	// Clear token and redirect to login
+	setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
+	window.location.href = `${location.origin}${location.pathname}#/`
 }
 // register
 export function register(config) {
