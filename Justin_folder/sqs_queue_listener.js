@@ -20,7 +20,7 @@ async function pollMessages() {
                 for(const msg of messages){
                     const body = msg.Body;
                     const receiptHandle = msg.ReceiptHandle;
-                    console.log('Received: ${body}'); //processing
+                    console.log(`Received: ${body}`); //processing
 
                     //Delete messages from queue after processing
                     await sqs.send(new DeleteMessageCommand({QueueUrl:QUEUE_URL, ReceiptHandle:receiptHandle,}));
