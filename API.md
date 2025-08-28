@@ -1,29 +1,30 @@
 # **API**
 
-- [**API**](#api)
-  - [**1. Authentication Module**](#1-authentication-module)
-    - [1.1 Get Email Verification Code](#11-get-email-verification-code)
-    - [1.2 User Registration](#12-user-registration)
-    - [1.3 Email Verification (Link)](#13-email-verification-link)
-    - [1.4 User Login](#14-user-login)
-    - [1.5 Get Current User Info](#15-get-current-user-info)
-  - [**2. Driver Module**](#2-driver-module)
-    - [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
-    - [2.2 Publish a Route](#22-publish-a-route)
-    - [2.3 Driver View/Search Passenger Orders](#23-driver-viewsearch-passenger-orders)
-    - [2.4 Accept an Schedule](#24-accept-an-schedule)
-    - [2.5 Cancel an Schedule](#25-cancel-an-schedule)
-    - [2.6 Broadcast Driver Location (Real-Time Tracking)](#26-broadcast-driver-location-real-time-tracking)
-    - [2.7 Start a Trip](#27-start-a-trip)
-    - [2.8 End a Trip](#28-end-a-trip)
-  - [**3. Passenger Module**](#3-passenger-module)
-    - [3.1 View/Search for Routes](#31-viewsearch-for-routes)
-    - [3.2 Place an Schedule](#32-place-an-schedule)
-    - [3.3 Cancel an Schedule](#33-cancel-an-schedule)
-    - [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
-  - [**4. Schedule Module（Background management system）**](#4-schedule-modulebackground-management-system)
-    - [4.1 Get Schedule List](#41-get-schedule-list)
-    - [4.2 Get Schedule Details](#42-get-schedule-details)
+-   [**API**](#api)
+    -   [**1. Authentication Module**](#1-authentication-module)
+        -   [1.1 Get Email Verification Code](#11-get-email-verification-code)
+        -   [1.2 User Registration](#12-user-registration)
+        -   [1.3 Email Verification (Link)](#13-email-verification-link)
+        -   [1.4 User Login](#14-user-login)
+        -   [1.5 Get Current User Info](#15-get-current-user-info)
+    -   [**2. Driver Module**](#2-driver-module)
+        -   [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
+        -   [2.2 Publish a Route](#22-publish-a-route)
+        -   [2.3 Driver View/Search Passenger Orders](#23-driver-viewsearch-passenger-orders)
+        -   [2.4 Get Current Schedule List](#24-get-current-schedule-list)
+        -   [2.5 Accept an Schedule](#25-accept-an-schedule)
+        -   [2.6 Cancel an Schedule](#26-cancel-an-schedule)
+        -   [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
+        -   [2.8 Start a Trip](#28-start-a-trip)
+        -   [2.9 End a Trip](#29-end-a-trip)
+    -   [**3. Passenger Module**](#3-passenger-module)
+        -   [3.1 View/Search for Routes](#31-viewsearch-for-routes)
+        -   [3.2 Place an Schedule](#32-place-an-schedule)
+        -   [3.3 Cancel an Schedule](#33-cancel-an-schedule)
+        -   [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
+    -   [**4. Schedule Module（Background management system）**](#4-schedule-modulebackground-management-system)
+        -   [4.1 Get Schedule List](#41-get-schedule-list)
+        -   [4.2 Get Schedule Details](#42-get-schedule-details)
 
 ```mermaid
 sequenceDiagram
@@ -81,7 +82,7 @@ sequenceDiagram
 
 ```json
 {
-  "email": "user@example.com"
+	"email": "user@example.com"
 }
 ```
 
@@ -89,8 +90,8 @@ sequenceDiagram
 
 ```json
 {
-  "status": "success",
-  "message": "Verification code sent to your email"
+	"status": "success",
+	"message": "Verification code sent to your email"
 }
 ```
 
@@ -116,8 +117,8 @@ sequenceDiagram
 
 ```json
 {
-  "status": "success",
-  "message": "Registration successful"
+	"status": "success",
+	"message": "Registration successful"
 }
 ```
 
@@ -129,14 +130,14 @@ sequenceDiagram
 
 **Query Parameters**:
 
-- `token` – verification token from email link
+-   `token` – verification token from email link
 
 **Response**:
 
 ```json
 {
-  "status": "success",
-  "message": "Email verified successfully"
+	"status": "success",
+	"message": "Email verified successfully"
 }
 ```
 
@@ -150,8 +151,8 @@ sequenceDiagram
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "string"
+	"email": "user@example.com",
+	"password": "string"
 }
 ```
 
@@ -178,7 +179,7 @@ sequenceDiagram
 
 **Headers**:
 
-- `Authorization: Bearer jwt_token`
+-   `Authorization: Bearer jwt_token`
 
 **Response**:
 
@@ -212,8 +213,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Documents uploaded successfully"
+	"status": "success",
+	"message": "Documents uploaded successfully"
 }
 ```
 
@@ -227,12 +228,12 @@ driver_license: string
 
 ```json
 {
-  "start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
-  "end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
-  "stops": [{ "lat": 123.5, "lng": 67.9, "address": "string" }],
-  "departure_time": "2025-08-12T09:00:00Z",
-  "available_seats": 4,
-  "price_per_km": 2.5
+	"start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
+	"end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
+	"stops": [{ "lat": 123.5, "lng": 67.9, "address": "string" }],
+	"departure_time": "2025-08-12T09:00:00Z",
+	"available_seats": 4,
+	"price_per_km": 2.5
 }
 ```
 
@@ -240,8 +241,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "route_id": "string"
+	"status": "success",
+	"route_id": "string"
 }
 ```
 
@@ -269,28 +270,48 @@ driver_license: string
 
 ```json
 {
-  "orders": [
-    {
-      "schedule_id": "ord_123",
-      "passenger_id": "usr_789",
-      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-      "pickup_time": "2025-08-22T09:00:00Z",
-      "price": 10.5,
-      "seat_count": 1
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "page_size": 20,
-    "total": 52
-  }
+	"orders": [
+		{
+			"schedule_id": "ord_123",
+			"passenger_id": "usr_789",
+			"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
+			"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
+			"pickup_time": "2025-08-22T09:00:00Z",
+			"price": 10.5,
+			"seat_count": 1
+		}
+	],
+	"pagination": {
+		"page": 1,
+		"page_size": 20,
+		"total": 52
+	}
 }
 ```
 
 ---
 
-### 2.4 Accept an Schedule
+### 2.4 Get Current Schedule List
+
+**GET** `/api/driver/schedule/current`
+
+**Response**:
+
+```json
+[
+	{
+		"schedule_id": "string",
+		"status": "pending|accepted",
+		"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
+		"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
+		"price": 20.0
+	}
+]
+```
+
+---
+
+### 2.5 Accept an Schedule
 
 **POST** `/api/driver/schedule/{schedule_id}/accept`
 
@@ -298,14 +319,14 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Schedule accepted"
+	"status": "success",
+	"message": "Schedule accepted"
 }
 ```
 
 ---
 
-### 2.5 Cancel an Schedule
+### 2.6 Cancel an Schedule
 
 **POST** `/api/driver/schedule/{schedule_id}/cancel`
 
@@ -313,7 +334,7 @@ driver_license: string
 
 ```json
 {
-  "reason": "string"
+	"reason": "string"
 }
 ```
 
@@ -321,27 +342,27 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Schedule cancelled"
+	"status": "success",
+	"message": "Schedule cancelled"
 }
 ```
 
 ---
 
-### 2.6 Broadcast Driver Location (Real-Time Tracking)
+### 2.7 Broadcast Driver Location (Real-Time Tracking)
 
 **POST** `/api/driver/location`
 
 **Headers**:
 
-- `Authorization: Bearer jwt_token` (driver)
+-   `Authorization: Bearer jwt_token` (driver)
 
 **Request Body**:
 
 ```json
 {
-  "lat": 123.45,
-  "lng": 67.89
+	"lat": 123.45,
+	"lng": 67.89
 }
 ```
 
@@ -349,14 +370,14 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Location updated"
+	"status": "success",
+	"message": "Location updated"
 }
 ```
 
 ---
 
-### 2.7 Start a Trip
+### 2.8 Start a Trip
 
 **POST** `/api/driver/trips/{trip_id}/start`
 
@@ -364,14 +385,14 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Trip started"
+	"status": "success",
+	"message": "Trip started"
 }
 ```
 
 ---
 
-### 2.8 End a Trip
+### 2.9 End a Trip
 
 **POST** `/api/driver/trips/{trip_id}/end`
 
@@ -379,8 +400,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Trip completed"
+	"status": "success",
+	"message": "Trip completed"
 }
 ```
 
@@ -410,16 +431,16 @@ driver_license: string
 
 ```json
 [
-  {
-    "route_id": "string",
-    "driver": { "id": "string", "name": "string", "rating": 4.8 },
-    "start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
-    "end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
-    "stops": [],
-    "departure_time": "2025-08-12T09:00:00Z",
-    "available_seats": 3,
-    "price_estimate": 15.0
-  }
+	{
+		"route_id": "string",
+		"driver": { "id": "string", "name": "string", "rating": 4.8 },
+		"start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
+		"end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
+		"stops": [],
+		"departure_time": "2025-08-12T09:00:00Z",
+		"available_seats": 3,
+		"price_estimate": 15.0
+	}
 ]
 ```
 
@@ -433,10 +454,10 @@ driver_license: string
 
 ```json
 {
-  "route_id": "string",
-  "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-  "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-  "seat_count": 1
+	"route_id": "string",
+	"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
+	"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
+	"seat_count": 1
 }
 ```
 
@@ -444,8 +465,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "schedule_id": "string"
+	"status": "success",
+	"schedule_id": "string"
 }
 ```
 
@@ -459,7 +480,7 @@ driver_license: string
 
 ```json
 {
-  "reason": "string"
+	"reason": "string"
 }
 ```
 
@@ -467,8 +488,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Schedule cancelled"
+	"status": "success",
+	"message": "Schedule cancelled"
 }
 ```
 
@@ -480,14 +501,14 @@ driver_license: string
 
 **Headers**:
 
-- `Authorization: Bearer jwt_token` (passenger)
+-   `Authorization: Bearer jwt_token` (passenger)
 
 **Request Body**:
 
 ```json
 {
-  "lat": 123.5,
-  "lng": 67.95
+	"lat": 123.5,
+	"lng": 67.95
 }
 ```
 
@@ -495,8 +516,8 @@ driver_license: string
 
 ```json
 {
-  "status": "success",
-  "message": "Passenger location updated"
+	"status": "success",
+	"message": "Passenger location updated"
 }
 ```
 
@@ -510,20 +531,20 @@ driver_license: string
 
 **Query Parameters**:
 
-- `role=passenger|driver`
-- `status=pending|accepted|completed|cancelled`
+-   `role=passenger|driver`
+-   `status=pending|accepted|completed|cancelled`
 
 **Response**:
 
 ```json
 [
-  {
-    "schedule_id": "string",
-    "status": "pending",
-    "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-    "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-    "price": 20.0
-  }
+	{
+		"schedule_id": "string",
+		"status": "pending",
+		"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
+		"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
+		"price": 20.0
+	}
 ]
 ```
 
