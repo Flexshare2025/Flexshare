@@ -74,9 +74,9 @@ export default function App() {
             panControl: false,
             rotateControl: false
           }}
-          onCameraChanged={(ev) =>
-            console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-          }
+        // onCameraChanged={(ev) =>
+        //   console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+        // }
         >
           <AdvancedMarker position={position} />
         </Map>
@@ -125,7 +125,7 @@ export default function App() {
         <div className='item-flex item-large flex-start'>
           <TeamOutline
             className='item-large-icon'
-            color='#1677ff'
+            color='#531dab'
           />
           <Stepper
             defaultValue={1}

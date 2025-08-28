@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 
-const AddressSearch = ({ onPlaceSelect, placeholder = '' }) => {
+const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) => {
   const searchInputRef = useRef(null);
   const [autocomplete, setAutocomplete] = useState(null);
 
@@ -46,6 +46,7 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '' }) => {
       <input
         ref={searchInputRef}
         type="text"
+        defaultValue={defaultValue}
         placeholder={placeholder || "input address"}
         style={{
           width: '100%',

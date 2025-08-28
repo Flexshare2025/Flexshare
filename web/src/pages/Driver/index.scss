@@ -1,0 +1,15 @@
+.driver-page-container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+
+	.driver-page-content {
+		flex: 1;
+	}
+
+	.driver-page-tab-bar {
+		flex: 0;
+		border-top: solid 1px var(--adm-color-border);
+		padding-top: 10px;
+	}
+}

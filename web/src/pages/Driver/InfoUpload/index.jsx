@@ -7,6 +7,8 @@ import {
 } from 'antd-mobile';
 import NavBar from '@/components/Nav';
 
+import { useNavigate } from "react-router-dom"
+
 function mockUpload(file) {
   return {
     url: URL.createObjectURL(file),
@@ -14,11 +16,14 @@ function mockUpload(file) {
 }
 
 export default function App() {
+  const navigate = useNavigate();
   const maxCount = 1;
   const [vehicle_photo, setVehiclePhoto] = useState([])
   const [driver_license_image, setVDriverLicenseImage] = useState([])
   const onFinish = (values) => {
     console.log('Form values:', values);
+    // todo submit to backend
+    navigate('/driver/publish');
   }
 
   return (

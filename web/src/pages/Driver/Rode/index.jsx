@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
+import { Button, NoticeBar, Space } from 'antd-mobile';
+
+import './index.scss';
 
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
@@ -18,7 +21,7 @@ const GoogleMapsNavigation = () => {
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
 
-  console.log('start', start);
+  console.log('start', start, 'loading', loading, 'end', end);
 
   const handlePlaceSelect = (type, place) => {
     console.log('Selected location information:', place);
@@ -49,6 +52,11 @@ const GoogleMapsNavigation = () => {
         lat: res.latitude,
         lng: res.longitude
       };
+      setStartPoint({
+        lat: res.latitude,
+        lng: res.longitude,
+        address: 'Current Location' // todo
+      });
       loader.load().then(() => {
         const newMap = new window.google.maps.Map(mapRef.current, {
           zoom: 15,
@@ -70,7 +78,7 @@ const GoogleMapsNavigation = () => {
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
           map: newMap,
-          panel: document.getElementById('directions-panel')
+          // panel: document.getElementById('directions-panel')
         });
 
         setDirectionsService(service);
@@ -89,14 +97,16 @@ const GoogleMapsNavigation = () => {
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
+          console.log('Updated position:', pos);
           const latLng = {
             lat: pos.coords.latitude,
-            lng: pos.coords.longitude
+            lng: pos.coords.longitude,
+            address: 'Current Location'
           };
           setStartPoint(latLng);
-          if (end) {
-            calculateRoute(latLng, end);
-          }
+          // if (end) {
+          //   calculateRoute(latLng, end);
+          // }
         },
         (err) => setError('error: ' + err.message),
         { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
@@ -152,32 +162,61 @@ const GoogleMapsNavigation = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className='driver-rode-container'>
+      <NoticeBar
+        content={<div className='notice-order-content'>
+          <p className='notice-order-line'>Do you want to accept the order?</p>
+          <p className='notice-order-line'>Order detail...</p>
+          <div className='notice-order-action'>
+            <Space style={{ '--gap': '12px' }}>
+              <span>Accept</span>
+              <span>Close</span>
+            </Space>
+          </div>
+        </div>}
+        wrap
+        color='alert'
+      />
+      <div className='driver-rode-search-container'>
         <AddressSearch
           onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
           placeholder="Pickup location"
+          defaultValue={start ? start.address : ''}
         />
         <AddressSearch
           onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
-          placeholder="Drop location"
+          placeholder='Drop location'
         />
-        <button onClick={calculateRoute}
-        // disabled={loading || !start || !end}
-        >
-          {loading ? '...' : 'navigate'}
-        </button>
-      </div>
-      <div ref={mapRef} style={{ width: '100%', height: '400px', margin: '16px 0' }} />
-      <div id="directions-panel" style={{ maxHeight: 200, overflowY: 'auto' }} />
-      {routeSummary && (
-        <div>
-          <div>distance: {routeSummary.distance}</div>
-          <div>time: {routeSummary.duration}</div>
-          <div>path: {routeSummary.summary}</div>
+        <div className='driver-rode-action-bar'>
+          <Button
+            onClick={calculateRoute}
+            color='primary'
+            fill='solid'
+            loading={loading}
+            disabled={loading || !start || !end}
+            className='driver-rode-navigate-button'
+          >
+            Navigate
+          </Button>
+          <div className='driver-route-summary'>
+            {routeSummary && (
+              <div>
+                <div>Distance: {routeSummary.distance}</div>
+                <div>Time: {routeSummary.duration}</div>
+                <div>Path: {routeSummary.summary}</div>
+              </div>
+            )}
+            {error && <div style={{ color: 'red' }}>{error}</div>}
+          </div>
         </div>
-      )}
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      </div>
+      <div ref={mapRef} className='rode-map-container' />
+      <div id="directions-panel" style={{ maxHeight: 200, overflowY: 'auto' }} />
+      <div className='order-info'>
+        <p>
+          TODO Order List
+        </p>
+      </div>
     </div>
   );
 };
