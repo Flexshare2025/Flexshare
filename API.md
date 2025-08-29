@@ -17,8 +17,8 @@
         -   [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
         -   [2.8 Start a Trip](#28-start-a-trip)
         -   [2.9 End a Trip](#29-end-a-trip)
-        -   [2.10 **Driver View Own Published Routes**](#210-driver-view-own-published-routes)
-        -   [2.11 **Driver Cancel Published Route**](#211-driver-cancel-published-route)
+        -   [2.10 Driver View Own Published Routes](#210-driver-view-own-published-routes)
+        -   [2.11 Driver Cancel Published Route](#211-driver-cancel-published-route)
     -   [**3. Passenger Module**](#3-passenger-module)
         -   [3.1 View/Search for Routes](#31-viewsearch-for-routes)
         -   [3.2 Place an Schedule](#32-place-an-schedule)
@@ -410,7 +410,7 @@ driver_license: string
 
 ---
 
-### 2.10 **Driver View Own Published Routes**
+### 2.10 Driver View Own Published Routes
 
 **POST** `/api/driver/routes`
 
@@ -451,7 +451,7 @@ driver_license: string
 
 ---
 
-### 2.11 **Driver Cancel Published Route**
+### 2.11 Driver Cancel Published Route
 
 **Post** `/api/driver/routes/{route_id}`
 
