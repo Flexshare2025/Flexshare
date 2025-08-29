@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
@@ -222,7 +222,7 @@ const GoogleMapsNavigation = () => {
     <div className='driver-rode-container'>
       <NoticeBar
         content={<div className='notice-order-content'>
-          <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} - ${order.dropoff_point.address}`}</p>
+          <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} — ${order.dropoff_point.address}`}</p>
           <div className='notice-order-action'>
             <Space style={{ '--gap': '12px' }}>
               <span>Accept</span>
@@ -238,7 +238,7 @@ const GoogleMapsNavigation = () => {
           {currentOrders.map(order => (
             <List.Item
               key={order.schedule_id}
-              extra={order.status === 'accepted' ? <Button size='small' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
+              extra={order.status === 'accepted' ? <Button size='mini' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
             >
               <p className={`order-item ${order.status === 'accepted' ? 'grey' : ''}`}>
                 <span className='price'>${order.price.toFixed(0)} ({order.seat_count} people)</span>

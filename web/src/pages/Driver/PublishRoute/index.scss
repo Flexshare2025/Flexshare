@@ -71,3 +71,18 @@
 		}
 	}
 }
+
+.driver-float-icon {
+	width: 40px;
+	height: 40px;
+	position: fixed;
+	bottom: 80px;
+	right: 20px;
+	z-index: 10;
+}
+
+.driver-list-popup-content {
+	width: 100vw;
+	padding: 40px 0;
+	box-sizing: border-box;
+}

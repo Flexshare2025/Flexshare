@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { getCurrentPosition } from '@/utils/position';
 import AddressSearch from '@/components/search-location';
-import { DatePicker, Stepper, Button } from 'antd-mobile'
+import { DatePicker, Stepper, Button, Popup, Tabs } from 'antd-mobile'
 import { ClockCircleOutline, TeamOutline } from 'antd-mobile-icons';
 import { formatDateTime } from '@/utils/common';
+import RouteList from './components/RouteList';
+import UserOrderList from './components/UserOrderList';
+import OrderIcon from '@/assets/order_icon.png'
 
 import './index.scss';
 
@@ -18,6 +21,7 @@ export default function App() {
   const [passengerCount, setPassengerCount] = useState(1);
   const [date, setDate] = useState('');
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
+  const [visibleCloseRight, setVisibleCloseRight] = useState(false)
 
   useEffect(() => {
     getCurrentPosition().then(res => {
@@ -59,96 +63,122 @@ export default function App() {
   }
 
   return (
-    <div className='driver-map-container'>
-      <APIProvider apiKey={KEY}>
-        <Map
-          center={position}
-          defaultZoom={15}
-          mapId="1"
-          options={{
-            fullscreenControl: false,
-            zoomControl: false,
-            streetViewControl: false,
-            mapTypeControl: false,
-            scaleControl: false,
-            panControl: false,
-            rotateControl: false
-          }}
-        // onCameraChanged={(ev) =>
-        //   console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-        // }
-        >
-          <AdvancedMarker position={position} />
-        </Map>
-      </APIProvider>
-      <div className='driver-map-search'>
-        <div className='item-flex'>
-          <span className='item-icon green' />
-          <AddressSearch
-            onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
-            placeholder="Pickup location"
-          />
-        </div>
-        <div className='item-flex'>
-          <span className='item-icon blue' />
-          <AddressSearch
-            onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
-            placeholder="Where to?"
-          />
-        </div>
-        <div className='item-flex item-large'>
-          <ClockCircleOutline
-            className='item-large-icon'
-            color='#722ed1'
-          />
-          <span className={`item-large-label ${!date ? 'item-large-label-placeholder' : ''}`}
-            onClick={() => {
-              setVisible(true)
+    <>
+      <div className='driver-map-container'>
+        <APIProvider apiKey={KEY}>
+          <Map
+            center={position}
+            defaultZoom={15}
+            mapId="1"
+            options={{
+              fullscreenControl: false,
+              zoomControl: false,
+              streetViewControl: false,
+              mapTypeControl: false,
+              scaleControl: false,
+              panControl: false,
+              rotateControl: false
             }}
+          // onCameraChanged={(ev) =>
+          //   console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+          // }
           >
-            {date || 'Leave time'}
-          </span>
-          <DatePicker
-            min={new Date()}
-            max={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000) /* 7 days later */}
-            visible={visible}
-            onClose={() => {
-              setVisible(false)
-            }}
-            precision='minute'
-            onConfirm={val => {
-              setDate(formatDateTime(val));
-            }}
-          />
+            <AdvancedMarker position={position} />
+          </Map>
+        </APIProvider>
+        <div className='driver-map-search'>
+          <div className='item-flex'>
+            <span className='item-icon green' />
+            <AddressSearch
+              onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
+              placeholder="Pickup location"
+            />
+          </div>
+          <div className='item-flex'>
+            <span className='item-icon blue' />
+            <AddressSearch
+              onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
+              placeholder="Where to?"
+            />
+          </div>
+          <div className='item-flex item-large'>
+            <ClockCircleOutline
+              className='item-large-icon'
+              color='#722ed1'
+            />
+            <span className={`item-large-label ${!date ? 'item-large-label-placeholder' : ''}`}
+              onClick={() => {
+                setVisible(true)
+              }}
+            >
+              {date || 'Leave time'}
+            </span>
+            <DatePicker
+              min={new Date()}
+              max={new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000) /* 7 days later */}
+              visible={visible}
+              onClose={() => {
+                setVisible(false)
+              }}
+              precision='minute'
+              onConfirm={val => {
+                setDate(formatDateTime(val));
+              }}
+            />
 
+          </div>
+          <div className='item-flex item-large flex-start'>
+            <TeamOutline
+              className='item-large-icon'
+              color='#531dab'
+            />
+            <Stepper
+              defaultValue={4}
+              min={1}
+              max={4}
+              style={{
+                '--border': '1px solid #f5f5f5',
+                '--border-inner': 'none',
+                '--height': '36px',
+                '--input-width': '40px',
+                '--input-background-color': 'var(--adm-color-background)',
+                '--active-border': '1px solid #1677ff',
+                '--input-font-size': '18px',
+              }}
+              onChange={value => setPassengerCount(value)}
+            />
+          </div>
+          {startPoint && endPoint && date && (
+            <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
+              Submit
+            </Button>
+          )}
         </div>
-        <div className='item-flex item-large flex-start'>
-          <TeamOutline
-            className='item-large-icon'
-            color='#531dab'
-          />
-          <Stepper
-            defaultValue={4}
-            min={1}
-            max={4}
-            style={{
-              '--border': '1px solid #f5f5f5',
-              '--border-inner': 'none',
-              '--height': '36px',
-              '--input-width': '40px',
-              '--input-background-color': 'var(--adm-color-background)',
-              '--active-border': '1px solid #1677ff',
-              '--input-font-size': '18px',
-            }}
-            onChange={value => setPassengerCount(value)}
-          />
-        </div>
-        {startPoint && endPoint && date && (
-          <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
-            Submit
-          </Button>
-        )}
+        <img
+          onClick={() => {
+            setVisibleCloseRight(true)
+          }}
+          className='driver-float-icon' src={OrderIcon} alt="" />
       </div>
-    </div>
+      <Popup
+        position='right'
+        visible={visibleCloseRight}
+        showCloseButton
+        onClose={() => {
+          setVisibleCloseRight(false)
+        }}
+      >
+        <div className='driver-list-popup-content'>
+          <Tabs defaultActiveKey={'routes'}>
+            <Tabs.Tab title='Publish Routes' key='routes'>
+              <RouteList />
+            </Tabs.Tab>
+            <Tabs.Tab title='User Orders' key='user'>
+              <UserOrderList />
+            </Tabs.Tab>
+          </Tabs>
+        </div>
+      </Popup>
+    </>
   )
 }
