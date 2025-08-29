@@ -17,6 +17,8 @@
         -   [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
         -   [2.8 Start a Trip](#28-start-a-trip)
         -   [2.9 End a Trip](#29-end-a-trip)
+        -   [2.10 **Driver View Own Published Routes**](#210-driver-view-own-published-routes)
+        -   [2.11 **Driver Cancel Published Route**](#211-driver-cancel-published-route)
     -   [**3. Passenger Module**](#3-passenger-module)
         -   [3.1 View/Search for Routes](#31-viewsearch-for-routes)
         -   [3.2 Place an Schedule](#32-place-an-schedule)
@@ -403,6 +405,63 @@ driver_license: string
 {
 	"status": "success",
 	"message": "Trip completed"
+}
+```
+
+---
+
+### 2.10 **Driver View Own Published Routes**
+
+**POST** `/api/driver/routes`
+
+**Request Body**:
+
+```json
+{
+	"status": "active|cancelled|completed (optional)",
+	"sort_by": "departure_time|created_at",
+	"order": "asc|desc",
+	"page": 1,
+	"page_size": 20
+}
+```
+
+**Response**:
+
+```json
+{
+	"routes": [
+		{
+			"route_id": "rte_456",
+			"start_point": { "lat": 123.45, "lng": 67.89, "address": "string" },
+			"end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
+			"departure_time": "2025-08-22T08:30:00Z",
+			"available_seats": 3,
+			"status": "active",
+			"created_at": "2025-08-20T10:00:00Z"
+		}
+	],
+	"pagination": {
+		"page": 1,
+		"page_size": 20,
+		"total": 12
+	}
+}
+```
+
+---
+
+### 2.11 **Driver Cancel Published Route**
+
+**Post** `/api/driver/routes/{route_id}`
+
+**Response**:
+
+```json
+{
+	"success": true,
+	"route_id": "rte_456",
+	"status": "cancelled"
 }
 ```
 
