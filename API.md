@@ -304,7 +304,8 @@ driver_license: string
 		"status": "pending|accepted",
 		"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
 		"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-		"price": 20.0
+		"price": 20.0,
+		"seat_count": 1
 	}
 ]
 ```
