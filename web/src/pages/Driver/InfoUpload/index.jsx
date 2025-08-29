@@ -5,9 +5,10 @@ import {
   Button,
   ImageUploader,
 } from 'antd-mobile';
-import NavBar from '@/components/Nav';
-
+// import NavBar from '@/components/Nav';
 import { useNavigate } from "react-router-dom"
+
+import './index.scss';
 
 function mockUpload(file) {
   return {
@@ -28,7 +29,8 @@ export default function App() {
 
   return (
     <>
-      <NavBar title="Driver Info" />
+      {/* <NavBar title="Driver Verification" /> */}
+      <p className='driver-info-title'>Driver Verification</p>
       <Form
         onFinish={onFinish}
         footer={
@@ -46,7 +48,7 @@ export default function App() {
         </Form.Item>
         <Form.Item
           name='driver_license'
-          label='Driver license'
+          label='Driver license number'
           rules={[{ required: true, message: 'The driver license number cannot be empty' }]}
         >
           <Input onChange={console.log} placeholder='Please input driver license number' />

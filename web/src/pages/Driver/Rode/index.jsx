@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
-import { Button, NoticeBar, Space } from 'antd-mobile';
+import { Button, NoticeBar, Space, List, Modal, Toast } from 'antd-mobile';
+import { removeCountryInAddress } from '@/utils/common';
+import RightArrow from '@/assets/right_arrow.png';
 
 import './index.scss';
 
@@ -161,12 +163,66 @@ const GoogleMapsNavigation = () => {
     });
   };
 
+  // todo mock current order list
+  const currentOrders = [
+    {
+      "schedule_id": "11",
+      "status": "pending",
+      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "University of Waikato" },
+      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "Hamilton Lake" },
+      "price": 10.0,
+      "seat_count": 1,
+    },
+    {
+      "schedule_id": "22",
+      "status": "pending",
+      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "address21" },
+      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "address22" },
+      "price": 10,
+      "seat_count": 1,
+    },
+    {
+      "schedule_id": "33",
+      "status": "accepted",
+      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "ANZ House The Strand, Onetangi, Waiheke Island, New Zealand" },
+      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "University of Waikato" },
+      "price": 5.0,
+      "seat_count": 2,
+    }
+
+  ]
+
+  const order = {
+    "schedule_id": "11",
+    "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "University of Waikato" },
+    "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "Hamilton Lake" },
+    "pickup_time": "2025-08-22T09:00:00Z",
+    "seat_count": 1,
+    "price": 10.0
+  }
+
+  const cancelOrder = () => {
+    Modal.confirm({
+      title: 'Cancel Order',
+      content: 'Are you sure you want to cancel this order?',
+      confirmText: 'Sure',
+      cancelText: 'Cancel',
+      onClose: () => { },
+      onConfirm: () => {
+        // todo call api to cancel order
+        Toast.show({
+          content: 'Order cancelled',
+          duration: 1000,
+        });
+      },
+    });
+  }
+
   return (
     <div className='driver-rode-container'>
       <NoticeBar
         content={<div className='notice-order-content'>
-          <p className='notice-order-line'>Do you want to accept the order?</p>
-          <p className='notice-order-line'>Order detail...</p>
+          <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} - ${order.dropoff_point.address}`}</p>
           <div className='notice-order-action'>
             <Space style={{ '--gap': '12px' }}>
               <span>Accept</span>
@@ -177,6 +233,23 @@ const GoogleMapsNavigation = () => {
         wrap
         color='alert'
       />
+      <div className='order-info'>
+        <List header='Current Orders'>
+          {currentOrders.map(order => (
+            <List.Item
+              key={order.schedule_id}
+              extra={order.status === 'accepted' ? <Button size='small' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
+            >
+              <p className={`order-item ${order.status === 'accepted' ? 'grey' : ''}`}>
+                <span className='price'>${order.price.toFixed(0)} ({order.seat_count} people)</span>
+                <span className='address'> {removeCountryInAddress(order.pickup_point.address)}</span>
+                <img className='rode-icon' src={RightArrow} alt="" />
+                <span className='address'>{removeCountryInAddress(order.dropoff_point.address)}</span>
+              </p>
+            </List.Item>
+          ))}
+        </List>
+      </div>
       <div className='driver-rode-search-container'>
         <AddressSearch
           onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
@@ -212,11 +285,6 @@ const GoogleMapsNavigation = () => {
       </div>
       <div ref={mapRef} className='rode-map-container' />
       <div id="directions-panel" style={{ maxHeight: 200, overflowY: 'auto' }} />
-      <div className='order-info'>
-        <p>
-          TODO Order List
-        </p>
-      </div>
     </div>
   );
 };

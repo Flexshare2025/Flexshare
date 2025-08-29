@@ -16,14 +16,13 @@ export default function Driver() {
       key: 'publish',
       title: 'Route',
       icon: (active) =>
-        active ? <img src={CarActiveIcon} /> : <img src={CarIcon} />,
+        active ? <img className='driver-tab-icon' src={CarActiveIcon} /> : <img className='driver-tab-icon' src={CarIcon} />,
     },
-
     {
       key: 'rode',
       title: 'Orders',
       icon: (active) =>
-        active ? <img src={PeopleActiveIcon} /> : <img src={PeopleIcon} />,
+        active ? <img className='driver-tab-icon' src={PeopleActiveIcon} /> : <img className='driver-tab-icon' src={PeopleIcon} />,
     },
   ]
 

@@ -16,3 +16,12 @@ export function formatDateTime(date) {
 
 	return `${year}-${month}-${day} ${hours}:${minutes}`
 }
+
+export function removeCountryInAddress(str) {
+	if (!str) return str
+	const parts = str.split(',').map(part => part.trim())
+	if (parts.length > 1) {
+		return parts.slice(0, -1).join(', ')
+	}
+	return str
+}

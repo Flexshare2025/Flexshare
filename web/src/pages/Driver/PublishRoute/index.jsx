@@ -128,7 +128,7 @@ export default function App() {
             color='#531dab'
           />
           <Stepper
-            defaultValue={1}
+            defaultValue={4}
             min={1}
             max={4}
             style={{
@@ -147,10 +147,8 @@ export default function App() {
           <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
             Submit
           </Button>
-        )
-        }
+        )}
       </div>
-
     </div>
   )
 }

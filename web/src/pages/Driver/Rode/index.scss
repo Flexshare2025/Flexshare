@@ -3,7 +3,7 @@
 	height: 100%;
 	box-sizing: border-box;
 	.driver-rode-search-container {
-		padding: 16px;
+		padding: 2px 12px 10px 12px;
 	}
 	.driver-rode-action-bar {
 		display: flex;
@@ -30,5 +30,26 @@
 	}
 	.notice-order-action {
 		text-align: right;
+	}
+	.adm-list-item-content-main {
+		margin: 0;
+		padding: 0;
+		font-size: 14px;
+	}
+	.order-item {
+		color: #000;
+		margin: 0;
+		padding: 0;
+		&.grey {
+			color: #777;
+		}
+		.price {
+			color: #4c5ec0;
+			font-weight: bold;
+		}
+		.rode-icon {
+			vertical-align: middle;
+			margin-left: 3px;
+		}
 	}
 }
