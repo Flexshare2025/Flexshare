@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
   <diagram name="Page-1" id="hDD48A4KDWdSw8KQpUDE">
-    <mxGraphModel dx="2360" dy="2303" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2576" dy="2611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -26,10 +26,10 @@
         <mxCell id="tgtyTVIXUpreaaZbHXpW-8" value="DynamoDB&lt;div&gt;Shared Session&lt;/div&gt;&lt;div&gt;&lt;div&gt;Order information&lt;/div&gt;&lt;div&gt;HistoryGPS data&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=15;" parent="1" vertex="1">
           <mxGeometry x="525" y="255" width="200" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-10" value="Client&lt;div&gt;H5 App/Broswer&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
-          <mxGeometry x="-630" y="175" width="120" height="80" as="geometry" />
+        <mxCell id="tgtyTVIXUpreaaZbHXpW-10" value="Client&lt;div&gt;H5 App/Broswer&lt;/div&gt;&lt;div&gt;Flexshare Application&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
+          <mxGeometry x="-785" y="73.75" width="210" height="111.25" as="geometry" />
         </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.963;exitY=0.64;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=15;" parent="1" source="tgtyTVIXUpreaaZbHXpW-10" target="tgtyTVIXUpreaaZbHXpW-4" edge="1">
+        <mxCell id="tgtyTVIXUpreaaZbHXpW-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.963;exitY=0.64;exitDx=0;exitDy=0;exitPerimeter=0;fontSize=15;" parent="1" source="tgtyTVIXUpreaaZbHXpW-10" target="tgtyTVIXUpreaaZbHXpW-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-20" y="330" as="sourcePoint" />
             <mxPoint x="-100" y="330" as="targetPoint" />
@@ -56,7 +56,7 @@
             <mxPoint x="250" y="280" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-46" value="&lt;font&gt;EC2 3&lt;/font&gt;&lt;div&gt;Redis Read cache&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;font&gt;Mysql Server&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
+        <mxCell id="tgtyTVIXUpreaaZbHXpW-46" value="&lt;font&gt;EC2 3&lt;/font&gt;&lt;div&gt;Redis Read cache&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Mysql Server&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
           <mxGeometry x="550" y="73.75" width="150" height="110" as="geometry" />
         </mxCell>
         <mxCell id="tgtyTVIXUpreaaZbHXpW-49" value="&lt;span style=&quot;font-size: 15px; font-weight: 400;&quot;&gt;&amp;nbsp;Elastic Load Balancing&lt;/span&gt;" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -102,7 +102,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="tgtyTVIXUpreaaZbHXpW-64" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Cloudwatch:Auto em&lt;/font&gt;&lt;span style=&quot;font-size: 15px; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;beded as monitor&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="-150" y="-90" width="200" height="70" as="geometry" />
+          <mxGeometry x="-160" y="-60" width="270" height="70" as="geometry" />
         </mxCell>
         <mxCell id="tgtyTVIXUpreaaZbHXpW-81" value="λ&lt;div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Collect&amp;amp;Save GPS/Order Info&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br style=&quot;font-size: 15px;&quot;&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="-270" y="436.26" width="180" height="52.5" as="geometry" />
@@ -111,6 +111,11 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-150" y="440" as="sourcePoint" />
             <mxPoint x="-100" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Zut3uiBuUSHxXWKhbwJS-7" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;API: pushGPSInfo&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tgtyTVIXUpreaaZbHXpW-83">
+          <mxGeometry x="-0.0003" y="-3" relative="1" as="geometry">
+            <mxPoint y="1" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="tgtyTVIXUpreaaZbHXpW-92" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="tgtyTVIXUpreaaZbHXpW-2" target="tgtyTVIXUpreaaZbHXpW-8" edge="1">
@@ -124,12 +129,6 @@
             <mxPoint x="420" y="340" as="sourcePoint" />
             <mxPoint x="585" y="539" as="targetPoint" />
           </mxGeometry>
-        </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-97" value="EC2 4&lt;div&gt;Redis Read cache&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;Mysql Server(backup)&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=15;" parent="1" vertex="1">
-          <mxGeometry x="550" y="-180" width="150" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="tgtyTVIXUpreaaZbHXpW-98" value="λ&lt;div&gt;sqldump&lt;/div&gt;&lt;div&gt;Backup Data&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-          <mxGeometry x="560" y="-30" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="j9EnIpM5jgdTIfBxhtx7-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="tgtyTVIXUpreaaZbHXpW-81" target="j9EnIpM5jgdTIfBxhtx7-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -173,28 +172,13 @@
         <mxCell id="j9EnIpM5jgdTIfBxhtx7-12" value="λ&lt;div&gt;Store To Cache&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="-10" y="443.13" width="120" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="j9EnIpM5jgdTIfBxhtx7-22" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="tgtyTVIXUpreaaZbHXpW-97" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="330" y="120" as="sourcePoint" />
-            <mxPoint x="360" y="100" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="Zut3uiBuUSHxXWKhbwJS-1" value="&lt;span style=&quot;font-size: 15px;&quot;&gt;Backend Manage Application&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-790" y="240" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="j9EnIpM5jgdTIfBxhtx7-23" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" source="tgtyTVIXUpreaaZbHXpW-65" target="tgtyTVIXUpreaaZbHXpW-97" edge="1">
+        <mxCell id="Zut3uiBuUSHxXWKhbwJS-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.159;entryY=0.654;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="Zut3uiBuUSHxXWKhbwJS-1" target="tgtyTVIXUpreaaZbHXpW-4">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="310" y="150" as="sourcePoint" />
-            <mxPoint x="550" y="-70" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="j9EnIpM5jgdTIfBxhtx7-25" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="tgtyTVIXUpreaaZbHXpW-98" target="tgtyTVIXUpreaaZbHXpW-97" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="310" y="150" as="sourcePoint" />
-            <mxPoint x="360" y="100" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="j9EnIpM5jgdTIfBxhtx7-26" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="tgtyTVIXUpreaaZbHXpW-46" target="tgtyTVIXUpreaaZbHXpW-98" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="310" y="150" as="sourcePoint" />
-            <mxPoint x="360" y="100" as="targetPoint" />
+            <mxPoint x="-470" y="300" as="sourcePoint" />
+            <mxPoint x="-420" y="220" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
