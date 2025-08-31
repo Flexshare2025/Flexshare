@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { Loader } from "@googlemaps/js-api-loader";
+import { generateRoutePoints } from './utils';
 import { getCurrentPosition } from '@/utils/position';
 import AddressSearch from '@/components/search-location';
 import { DatePicker, Stepper, Button, Popup, Tabs } from 'antd-mobile'
@@ -7,7 +9,7 @@ import { ClockCircleOutline, TeamOutline } from 'antd-mobile-icons';
 import { formatDateTime } from '@/utils/common';
 import RouteList from './components/RouteList';
 import UserOrderList from './components/UserOrderList';
-import OrderIcon from '@/assets/order_icon.png'
+import OrderIcon from '@/assets/order_icon.png';
 
 import './index.scss';
 
@@ -60,6 +62,38 @@ export default function App() {
     console.log('End Point:', endPoint);
     console.log('Leave Time:', date);
     console.log('Passenger Count:', passengerCount);
+
+    // todo 
+    const loader = new Loader({
+      apiKey: KEY,
+      version: "weekly",
+      libraries: ["places"],
+    });
+
+    loader.load().then(async () => {
+      const google = window.google;
+
+
+      const directionsService = new google.maps.DirectionsService();
+
+      const result = await directionsService.route({
+        origin: startPoint,
+        destination: endPoint,
+        travelMode: google.maps.TravelMode.DRIVING,
+      });
+
+      if (result.routes.length > 0) {
+        const route = result.routes[0];
+        const polylineStr = route.overview_polyline;
+        const points = generateRoutePoints(polylineStr, 500);
+        console.log('Generated Route Points:', points);
+      } else {
+        console.error('No routes found');
+      }
+    }).catch(e => {
+      console.error('Error loading Google Maps:', e);
+    });
+
   }
 
   return (
