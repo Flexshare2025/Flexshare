@@ -224,7 +224,7 @@ driver_license: string
 
 ### 2.2 Publish a Route Schedule
 
-**POST** `/api/schedule/create`
+**POST** `/api/schedule`
 
 **Request Body**:
 
