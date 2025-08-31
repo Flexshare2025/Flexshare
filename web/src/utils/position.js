@@ -4,6 +4,7 @@ export function getCurrentPosition() {
 			reject(new Error('Geolocation is not supported by this browser.'))
 			return
 		}
+		// Use the Geolocation API to get the current position
 		navigator.geolocation.getCurrentPosition(
 			position => {
 				resolve({

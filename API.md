@@ -276,8 +276,16 @@ driver_license: string
 		{
 			"schedule_id": "ord_123",
 			"passenger_id": "usr_789",
-			"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-			"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
+			"pickup_point": {
+				"lat": 123.46,
+				"lng": 67.91,
+				"address": "string"
+			},
+			"dropoff_point": {
+				"lat": 123.99,
+				"lng": 68.01,
+				"address": "string"
+			},
 			"pickup_time": "2025-08-22T09:00:00Z",
 			"price": 10.5,
 			"seat_count": 1

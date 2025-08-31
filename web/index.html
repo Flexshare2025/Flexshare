@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="manifest" href="/manifest.json" />
-		<link rel="apple-touch-icon" href="/logo192.png" />
-		<meta name="apple-mobile-web-app-title" content="FlexShare" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-		<link rel="icon" type="image/svg+xml" href="/car.svg" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-		<title>FlexShare</title>
-	</head>
-	<script>
-		;(function (d, c) {
-			var e = d.documentElement,
-				b = 'orientationchange' in window ? 'orientationchange' : 'resize',
-				a = function () {
-					var f = e.clientWidth
-					if (!f) {
-						return
-					}
-					if (
-						!/Android|webOS|iPhone|iPod|BlackBerry|SymbianOS|Windows Phone/i.test(
-							navigator.userAgent,
-						)
-					) {
-						return
-					}
-					e.style.fontSize = 100 * (f / 375) + 'px'
+
+<head>
+	<meta charset="UTF-8" />
+	<link rel="manifest" href="/manifest.json" />
+	<link rel="apple-touch-icon" href="/logo192.png" />
+	<meta name="apple-mobile-web-app-title" content="FlexShare" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="icon" type="image/svg+xml" href="/car.svg" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+	<title>FlexShare</title>
+</head>
+<script>
+	; (function (d, c) {
+		var e = d.documentElement,
+			b = 'orientationchange' in window ? 'orientationchange' : 'resize',
+			a = function () {
+				var f = e.clientWidth
+				if (!f) {
+					return
 				}
-			if (!d.addEventListener) {
-				return
+				if (
+					!/Android|webOS|iPhone|iPod|BlackBerry|SymbianOS|Windows Phone/i.test(
+						navigator.userAgent,
+					)
+				) {
+					return
+				}
+				e.style.fontSize = 100 * (f / 375) + 'px'
 			}
-			c.addEventListener(b, a, false)
-			d.addEventListener('DOMContentLoaded', a, false)
-		})(document, window)
-	</script>
-	<body>
-		<div id="root"></div>
-		<script type="module" src="/src/main.jsx"></script>
-	</body>
+		if (!d.addEventListener) {
+			return
+		}
+		c.addEventListener(b, a, false)
+		d.addEventListener('DOMContentLoaded', a, false)
+	})(document, window)
+</script>
+
+<body>
+	<div id="root"></div>
+	<script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
