@@ -1,6 +1,6 @@
 //package com.flexshare;
 //
-//import com.jl.flexshare.MemberApplication;
+//import com.jl.flexshare.FlexShareApplication;
 //import com.jl.flexshare.member.entity.User;
 //import com.jl.flexshare.member.mapper.UserMapper;
 //import org.junit.Test;
@@ -14,7 +14,7 @@
 //import java.util.List;
 //
 //@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = MemberApplication.class)
+//@SpringBootTest(classes = FlexShareApplication.class)
 //@ComponentScan(basePackages = "com.jl.flexshare.member")
 //public class MemberTest {
 //

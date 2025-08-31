@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @MapperScan("com.jl.flexshare.member.mapper")
-public class MemberApplication {
+public class FlexShareApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MemberApplication.class, args);
+        SpringApplication.run(FlexShareApplication.class, args);
     }
 }
