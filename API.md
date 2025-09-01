@@ -232,7 +232,7 @@ driver_license: string
 {
 	"start_point":{"lat": 123.45,"lng":67.89,"address":"string" },
 	"end_point":{"lat":124.0,"lng":68.0,"address":"string" },
-	"route_points": {},//eg.{[{123.5,50.5}{115,60.5}]}, 
+	"route_points": [],//eg.[{123.5,50.5},{115,60.5}], 
 	"stops": [],//eg.{[{123.5,50.5}{115,60.5}]}, 
 	"departure_time": "2025-08-12T09:00:00Z",
 	"available_seats": 4,
