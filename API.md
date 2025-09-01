@@ -1,32 +1,32 @@
 # **API**
 
-- [**API**](#api)
-	- [**1. Authentication Module**](#1-authentication-module)
-		- [1.1 Get Email Verification Code](#11-get-email-verification-code)
-		- [1.2 User Registration](#12-user-registration)
-		- [1.3 Email Verification (Link)](#13-email-verification-link)
-		- [1.4 User Login](#14-user-login)
-		- [1.5 Get Current User Info](#15-get-current-user-info)
-	- [**2. Driver Module**](#2-driver-module)
-		- [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
-		- [2.2 Publish a Route](#22-publish-a-route)
-		- [2.3 Driver View/Search Passenger Orders](#23-driver-viewsearch-passenger-orders)
-		- [2.4 Get Current Schedule List](#24-get-current-schedule-list)
-		- [2.5 Accept an Schedule](#25-accept-an-schedule)
-		- [2.6 Cancel an Schedule](#26-cancel-an-schedule)
-		- [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
-		- [2.8 Start a Trip](#28-start-a-trip)
-		- [2.9 End a Trip](#29-end-a-trip)
-		- [2.10 Driver View Own Published Routes](#210-driver-view-own-published-routes)
-		- [2.11 Driver Cancel Published Route](#211-driver-cancel-published-route)
-	- [**3. Passenger Module**](#3-passenger-module)
-		- [3.1 View/Search for Routes](#31-viewsearch-for-routes)
-		- [3.2 Place an Schedule](#32-place-an-schedule)
-		- [3.3 Cancel an Schedule](#33-cancel-an-schedule)
-		- [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
-	- [**4. Schedule Module（Background management system）**](#4-schedule-modulebackground-management-system)
-		- [4.1 Get Schedule List](#41-get-schedule-list)
-		- [4.2 Get Schedule Details](#42-get-schedule-details)
+-   [**API**](#api)
+    -   [**1. Authentication Module**](#1-authentication-module)
+        -   [1.1 Get Email Verification Code](#11-get-email-verification-code)
+        -   [1.2 User Registration](#12-user-registration)
+        -   [1.3 Email Verification (Link)](#13-email-verification-link)
+        -   [1.4 User Login](#14-user-login)
+        -   [1.5 Get Current User Info](#15-get-current-user-info)
+    -   [**2. Driver Module**](#2-driver-module)
+        -   [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
+        -   [2.2 Publish a Route](#22-publish-a-route)
+        -   [2.3 Driver View/Search Passenger Orders](#23-driver-viewsearch-passenger-orders)
+        -   [2.4 Get Current Schedule List](#24-get-current-schedule-list)
+        -   [2.5 Accept an Schedule](#25-accept-an-schedule)
+        -   [2.6 Cancel an Schedule](#26-cancel-an-schedule)
+        -   [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
+        -   [2.8 Start a Trip](#28-start-a-trip)
+        -   [2.9 End a Trip](#29-end-a-trip)
+        -   [2.10 Driver View Own Published Routes](#210-driver-view-own-published-routes)
+        -   [2.11 Driver Cancel Published Route](#211-driver-cancel-published-route)
+    -   [**3. Passenger Module**](#3-passenger-module)
+        -   [3.1 View/Search for Routes](#31-viewsearch-for-routes)
+        -   [3.2 Place an Schedule](#32-place-an-schedule)
+        -   [3.3 Cancel an Schedule](#33-cancel-an-schedule)
+        -   [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
+    -   [**4. Schedule Module（Background management system）**](#4-schedule-modulebackground-management-system)
+        -   [4.1 Get Schedule List](#41-get-schedule-list)
+        -   [4.2 Get Schedule Details](#42-get-schedule-details)
 
 ```mermaid
 sequenceDiagram
@@ -224,7 +224,7 @@ driver_license: string
 
 ### 2.2 Publish a Route
 
-**POST** `/api/driver/routes`
+**POST** `/api/driver/route`
 
 **Request Body**:
 
@@ -234,11 +234,19 @@ driver_license: string
 	"end_point": { "lat": 124.0, "lng": 68.0, "address": "string" },
 	"stops": [{ "lat": 123.5, "lng": 67.9, "address": "string" }],
 	"route_points": [
-		{ "lat": 123.0, "lng": 60.1 },
-		{ "lat": 123.5, "lng": 65.0 },
-		{ "lat": 124.0, "lng": 68.0 }
+		[
+			[-36.84925, 174.76346],
+			[-36.848443190092766, 174.76147862772547],
+			[-36.85258581598056, 174.75931948464387],
+			[-36.856528268685395, 174.75666085948717],
+			[-36.85962971384861, 174.7589223641967],
+			[-36.86154166130732, 174.76366918762983],
+			[-36.86498001355628, 174.76714706600038],
+			[-36.8686889419483, 174.7700563278551],
+			[-36.871869903174854, 174.77398576761965]
+		]
 	],
-	"departure_time": "2025-08-12T09:00:00Z",
+	"departure_time": " 2025-09-01 11:00:00",
 	"available_seats": 4,
 	"price_per_km": 2.5
 }
