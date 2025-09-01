@@ -3,13 +3,16 @@ import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
 import { Button, NoticeBar, Space, List, Modal, Toast } from 'antd-mobile';
-import { removeCountryInAddress } from '@/utils/common';
+import { removeCountryInAddress, enterFullscreen, exitFullscreen } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
+import FullscreenIcon from '@/assets/fullscreen.png';
+import ExitfullscreenIcon from '@/assets/exitfullscreen.png';
 
 import './index.scss';
 
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
+  const mapWrapRef = useRef(null);
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
 
@@ -22,6 +25,17 @@ const GoogleMapsNavigation = () => {
   const END_POINT = 'end_point';
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const requestFullScreen = () => {
+    setIsFullscreen(true);
+    enterFullscreen(mapWrapRef.current);
+  }
+
+  const requestEXitFullScreen = () => {
+    setIsFullscreen(false);
+    exitFullscreen(mapWrapRef.current);
+  }
 
   console.log('start', start, 'loading', loading, 'end', end);
 
@@ -80,7 +94,6 @@ const GoogleMapsNavigation = () => {
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
           map: newMap,
-          // panel: document.getElementById('directions-panel')
         });
 
         setDirectionsService(service);
@@ -280,11 +293,24 @@ const GoogleMapsNavigation = () => {
               </div>
             )}
             {error && <div style={{ color: 'red' }}>{error}</div>}
+            {routeSummary && <img
+              className='fullscreen-icon'
+              src={FullscreenIcon}
+              alt=""
+              onClick={requestFullScreen}
+            />}
           </div>
         </div>
       </div>
-      <div ref={mapRef} className='rode-map-container' />
-      <div id="directions-panel" style={{ maxHeight: 200, overflowY: 'auto' }} />
+      <div ref={mapWrapRef} className='rode-map-wrapper'>
+        {isFullscreen && <img
+          className='fullscreen-icon exit'
+          src={ExitfullscreenIcon}
+          alt=""
+          onClick={requestEXitFullScreen}
+        />}
+        <div ref={mapRef} className='rode-map-container' />
+      </div>
     </div>
   );
 };

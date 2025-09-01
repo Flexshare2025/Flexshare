@@ -7,19 +7,44 @@
 	}
 	.driver-rode-action-bar {
 		display: flex;
-		height: 60px;
+		height: 50px;
 	}
 	.driver-route-summary {
 		margin-left: 16px;
-		font-size: 18px;
+		font-size: 14px;
+		width: calc(100% - 100px);
+		display: flex;
+		justify-content: space-between;
+	}
+	.fullscreen-icon {
+		width: 24px;
+		height: 24px;
+		margin-top: 22px;
+		&.exit {
+			position: absolute;
+			right: 10px;
+			top: 0px;
+			z-index: 10;
+			width: 30px;
+			height: 30px;
+			background-color: #fff;
+			border-radius: 15px;
+			padding: 4px;
+			box-sizing: border-box;
+		}
 	}
 	.driver-rode-navigate-button {
 		height: 40px;
 		font-size: 18px;
 	}
-	.rode-map-container {
+	.rode-map-wrapper {
 		width: 100%;
 		height: 45%;
+		position: relative;
+	}
+	.rode-map-container {
+		width: 100%;
+		height: 100%;
 	}
 	.notice-order-content {
 		width: calc(100vw - 50px);
@@ -40,6 +65,7 @@
 		color: #000;
 		margin: 0;
 		padding: 0;
+		line-height: 14px;
 		&.grey {
 			color: #777;
 		}

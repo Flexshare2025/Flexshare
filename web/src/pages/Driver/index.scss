@@ -2,6 +2,8 @@
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
+	box-sizing: border-box;
+	padding: 0;
 
 	.driver-page-content {
 		flex: 1;
@@ -9,8 +11,18 @@
 
 	.driver-page-tab-bar {
 		flex: 0;
+		z-index: 1;
 		border-top: solid 1px var(--adm-color-border);
-		padding-top: 10px;
+		height: 46px;
+		background-color: #fff;
+		box-sizing: border-box;
+		.adm-tab-bar-wrap {
+			height: 46px;
+			background-color: #fff;
+		}
+		.adm-tab-bar-item-title.adm-tab-bar-item-title-with-icon {
+			margin: 0;
+		}
 	}
 	.driver-tab-icon {
 		width: 22px;

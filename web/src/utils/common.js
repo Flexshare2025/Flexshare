@@ -25,3 +25,27 @@ export function removeCountryInAddress(str) {
 	}
 	return str
 }
+
+export function enterFullscreen(ele) {
+	if (ele.requestFullscreen) {
+		ele.requestFullscreen()
+	} else if (ele.mozRequestFullScreen) {
+		ele.mozRequestFullScreen()
+	} else if (ele.webkitRequestFullscreen) {
+		ele.webkitRequestFullscreen()
+	} else if (ele.msRequestFullscreen) {
+		ele.msRequestFullscreen()
+	}
+}
+
+export function exitFullscreen(element) {
+	if (document.exitFullScreen) {
+		document.exitFullScreen()
+	} else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen()
+	} else if (document.webkitExitFullscreen) {
+		document.webkitExitFullscreen()
+	} else if (element.msExitFullscreen) {
+		element.msExitFullscreen()
+	}
+}
