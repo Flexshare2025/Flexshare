@@ -10,7 +10,19 @@ spring:
     url: jdbc:mysql://54.237.25.193:3306/member?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: app_member
     password: dfsjiiknh1212475$^%#12SDGDS
-
-#mybatis:
-#  mapperLocations: classpath:mapper/*.xml #后面 mapper 文件的位置
-#  type-aliases-package: com.hspedu.springcloud.entity # 实体类的包路径
+  mail:
+    host: smtp.gmail.com
+    username: leon.lee.dev@gmail.com
+    password: sxcf ocbb wmok udya
+    port: 587
+    default-encoding: UTF-8
+    properties:
+      "mail.smtp.connectiontimeout": 5000
+      "mail.smtp.timeout": 3000
+      "mail.smtp.writetimeout": 5000
+      "mail.smtp.auth": true
+      "mail.smtp.starttls.enable": true
+  redis:
+    host: 3.80.137.105
+    port: 6379
+    password: sahdjbvw8j21#!@$%15sxcbasf
