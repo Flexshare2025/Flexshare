@@ -68,7 +68,7 @@ export default function Login() {
           } else {
             // Default role-based redirect
             if (isDriver) {
-              navigate('/driver');
+              navigate('/driver/publish');
             } else {
               navigate('/passenger');
             }

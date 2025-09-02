@@ -4,19 +4,9 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'http://192.168.212.61:10001/'
+export const API_DOMAIN = 'http://192.168.46.61:10001/'
 
 let token = ''
-
-export const apiReqs = {
-	// Get Email Verification Code
-	sendVerificationCode: config => {
-		config.url = API_DOMAIN + '/api/auth/send-verification-code'
-		config.method = 'post'
-		apiFetch(config)
-	},
-	// ...
-}
 
 export function goLogin() {
 	// ?from=${encodeURIComponent(window.location.href)}
@@ -84,6 +74,7 @@ export async function apiFetch(config) {
 
 	let axiosConfig = {
 		method: config.method,
+		credentials: 'include',
 		headers: newHeaders,
 		body: null,
 	}
@@ -113,4 +104,95 @@ export async function apiFetch(config) {
 			config.done && config.done()
 			config.fail && config.fail(API_FAILED)
 		})
+}
+
+// Driver Api
+// Publish a Route Schedule
+export function publishSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'schedule',
+		method: 'post',
+	})
+}
+
+// Driver View/Search Passenger Orders
+export function scheduleOrders(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'driver/schedule/orders',
+		method: 'post',
+	})
+}
+
+// Get Current Schedule List
+export function getCurrentSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'driver/schedule/current',
+		method: 'post',
+	})
+}
+
+// Accept an Schedule
+export function acceptSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/schedule/${config.data.schedule_id}/accept`,
+		method: 'post',
+	})
+}
+
+// Cancel an Schedule
+export function cancelSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/schedule/${config.data.schedule_id}/cancel`,
+		method: 'post',
+	})
+}
+
+// Broadcast Driver Location (Real-Time Tracking)
+export function broadcastLocation(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/location`,
+		method: 'post',
+	})
+}
+
+// Start a Trip
+export function startTrip(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/trips/${config.data.trip_id}/start`,
+		method: 'post',
+	})
+}
+
+// End a Trip
+export function endTrip(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/trips/${config.data.trip_id}/end`,
+		method: 'post',
+	})
+}
+
+// Driver View Own Published Routes
+export function viewPublishRoutes(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/routes`,
+		method: 'post',
+	})
+}
+
+// Driver Cancel Published Route
+export function cancelPublishRoutes(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + `driver/routes/${config.data.route_id}`,
+		method: 'post',
+	})
 }

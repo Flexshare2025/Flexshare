@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "antd-mobile";
 import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
@@ -24,7 +24,7 @@ export default function App() {
         '--adm-color-text': '#333',
       }}
     >
-      <HashRouter>
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
@@ -60,7 +60,7 @@ export default function App() {
           } />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </ConfigProvider>
   )
 }
