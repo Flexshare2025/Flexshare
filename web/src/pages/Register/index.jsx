@@ -356,7 +356,6 @@ const Register = () => {
 
         <Divider>
           <Space>
-            <span>Already have an account?</span>
             <Button
               fill="none"
               color="primary"

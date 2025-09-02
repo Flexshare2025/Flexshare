@@ -9,6 +9,7 @@ import Driver from "@/pages/Driver";
 import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
 import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/login/:role" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* Protected Routes */}
           <Route path="/driver/*" element={
             // <ProtectedRoute requiredRole="driver">

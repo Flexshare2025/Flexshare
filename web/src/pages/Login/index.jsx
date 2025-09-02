@@ -167,7 +167,14 @@ export default function Login() {
 
         <Divider>
           <Space>
-            <span>Don't have an account?</span>
+            <Button
+              fill="none"
+              color="danger"
+              size="small"
+              onClick={() => navigate('/forgot-password')}
+            >
+              Forget password?
+            </Button>
             <Button
               fill="none"
               color="primary"

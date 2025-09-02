@@ -18,6 +18,7 @@ export default function DirectionsProvider({ children }) {
   }, [routesLibrary, map]);
 
   const handleBook = (item) => {
+    console.log("🚀 --- item:", item)
     if (!directionsService || !directionsRenderer) return;
 
     const origin = {

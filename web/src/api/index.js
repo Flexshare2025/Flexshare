@@ -60,6 +60,14 @@ export function emailVerification(config) {
 	})
 }
 
+export function resetPassword(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'users/reset-password',
+		method: 'post',
+	})
+}
+
 export async function apiFetch(config) {
 	if (config.data === undefined) {
 		config.data = {}

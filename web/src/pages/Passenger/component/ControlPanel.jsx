@@ -63,7 +63,7 @@ export default function ControlPanel({
   };
 
   return (
-    <div className='driver-rode-search-container'>
+    <div style={{ padding: '12px' }}>
       <AddressSearch
         onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
         placeholder="Pickup location"
@@ -74,16 +74,15 @@ export default function ControlPanel({
         placeholder='Drop location'
         defaultValue={end ? end.address : ''}
       />
-      <div className='driver-rode-action-bar'>
+      <div>
         <Button
           onClick={calculateRoute}
           color='primary'
           fill='solid'
           loading={loading}
           disabled={loading || !start || !end}
-          className='driver-rode-navigate-button'
         >
-          Navigate
+          Match Route
         </Button>
         <div className='driver-route-summary'>
           {routeSummary && (
