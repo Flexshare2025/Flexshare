@@ -52,7 +52,7 @@ const Register = () => {
   // Captcha state
   const [captcha, setCaptcha] = useState(generateCaptcha());
   //2 minute expiration time
-  const [captchaExpireTime, setCaptchaExpireTime] = useState(Date.now() + 30 * 1000);
+  const [captchaExpireTime, setCaptchaExpireTime] = useState(Date.now() + 2 * 60 * 1000);
   const [captchaInput, setCaptchaInput] = useState('');
   const captchaCanvasRef = useRef(null);
   useEffect(() => {
@@ -68,11 +68,12 @@ const Register = () => {
   // Refresh captcha and reset expiration time
   const refreshCaptcha = () => {
     setCaptcha(generateCaptcha());
-    setCaptchaExpireTime(Date.now() + 30 * 1000); // 更新有效期
+    setCaptchaExpireTime(Date.now() + 2 * 60 * 1000); // 更新有效期
   };
   // Handle email verification
   const handleSendVerificationCode = async () => {
     const email = form.getFieldValue('email');
+    console.log("🚀 --- email:", email)
     if (!email) {
       Toast.show({
         content: 'Please enter your email address first',
@@ -80,7 +81,6 @@ const Register = () => {
       });
       return;
     }
-
     if (!EMAIL_REG.test(email)) {
       Toast.show({
         content: 'Please enter a valid email format',
@@ -88,7 +88,28 @@ const Register = () => {
       });
       return;
     }
-
+    // Validate captcha before sending mail verification
+    if (!captchaInput || captchaInput.trim().length === 0) {
+      Toast.show({
+        content: 'Please enter captcha',
+        position: 'center',
+      });
+      return;
+    }
+    if (Date.now() > captchaExpireTime) {
+      Toast.show({
+        content: 'Captcha expired, please refresh',
+        position: 'center',
+      });
+      return;
+    }
+    if (captchaInput.trim().toUpperCase() !== captcha) {
+      Toast.show({
+        content: 'Incorrect captcha code',
+        position: 'center',
+      });
+      return;
+    }
     setVerificationLoading(true);
     emailVerification({
       data: { email },
@@ -111,7 +132,7 @@ const Register = () => {
       },
       fail: (error) => {
         Toast.show({
-          content: 'Failed to send verification code, please try again',
+          content: 'Failed to send verification code: ' + error,
           position: 'center',
         });
       },
@@ -123,6 +144,10 @@ const Register = () => {
 
   // Handle form submission
   const handleSubmit = async (values) => {
+    console.log("🚀 --- values:", values)
+    // delete captcha from values
+    delete values.captcha;
+
     // Validate captcha
     if (captchaInput.trim().toUpperCase() !== captcha) {
       Toast.show({
@@ -169,10 +194,6 @@ const Register = () => {
         setLoading(false);
       }
     });
-  };
-  // Handle back navigation
-  const handleBack = () => {
-    navigate(-1);
   };
   return (
     <div className="register-page">
@@ -267,7 +288,6 @@ const Register = () => {
             label="captcha"
             required
             rules={[
-              { required: true, message: 'Please input captcha' },
               {
                 validator: (_, value) => {
                   if (!value) {
@@ -293,14 +313,6 @@ const Register = () => {
                   onClick={() => refreshCaptcha()}
                   title="Click to refresh"
                 />
-                <Button
-                  size="mini"
-                  color="primary"
-                  fill="outline"
-                  onClick={() => refreshCaptcha()}
-                  style={{ marginLeft: 4 }}
-                  icon={<EyeOutline />}
-                > Refresh</Button>
               </div>
             }
           >
@@ -313,10 +325,10 @@ const Register = () => {
             />
           </Form.Item>
           <Form.Item
-            name="verification_code"
+            name="mail_verification"
             label="Email Verification Code"
             rules={[
-              { required: false, message: 'Please enter verification code' },
+              { required: true, message: 'Please enter verification code' },
               { len: 6, message: 'Verification code should be 6 digits' }
             ]}
             extra={

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { getCurrentPosition } from '@/utils/position'
-import DirectionsProvider from './component/DirectionsProvider';
+import DirectionsProvider, { DirectionsContext } from './component/DirectionsProvider';
 import MapView from './component/MapView';
 import ControlPanel from './component/ControlPanel';
 import OrderList from './component/OrderList';
@@ -15,6 +15,7 @@ export default function App() {
   const [routeSummary, setRouteSummary] = useState(null);
   const [error, setError] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const directions = useContext(DirectionsContext);
 
   useEffect(() => {
     getCurrentPosition()
@@ -42,18 +43,34 @@ export default function App() {
     }
   };
 
-  const calculateRoute = () => {
-    // 这里实现计算路线的逻辑
-    setLoading(true);
-    // 模拟API调用
-    setTimeout(() => {
-      setLoading(false);
+  const calculateRoute = async () => {
+    if (!start || !end) return;
+    if (!directions || !directions.calculateRouteBetween) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      setRouteSummary(null);
+
+      const origin = { lat: start.lat, lng: start.lng };
+      const destination = { lat: end.lat, lng: end.lng };
+
+      const { totalDistanceMeters, totalDurationSeconds, etaDate } = await directions.calculateRouteBetween(origin, destination);
+
+      const distanceKm = (totalDistanceMeters / 1000).toFixed(2) + ' km';
+      const durationMin = Math.round(totalDurationSeconds / 60) + ' mins';
+      const eta = etaDate.toLocaleTimeString();
+
       setRouteSummary({
-        distance: '5.2 km',
-        duration: '15 mins',
-        summary: 'Shortest route'
+        distance: distanceKm,
+        duration: durationMin,
+        eta,
       });
-    }, 1000);
+    } catch (e) {
+      setError(e.message || 'Route calculation failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const requestFullScreen = () => {
@@ -88,13 +105,15 @@ export default function App() {
           <MapView position={position} />
           <ControlPanel
             onPlaceSelect={handlePlaceSelect}
-            onCalculateRoute={calculateRoute}
             start={start}
             end={end}
             loading={loading}
             routeSummary={routeSummary}
             error={error}
             onFullscreen={requestFullScreen}
+            onSetLoading={setLoading}
+            onSetRouteSummary={setRouteSummary}
+            onSetError={setError}
           />
           <OrderList orderLists={orderLists} />
         </DirectionsProvider>

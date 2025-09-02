@@ -4,7 +4,7 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'http://34.229.93.154:10001/'
+export const API_DOMAIN = 'http://192.168.212.61:10001/'
 
 let token = ''
 
@@ -15,19 +15,27 @@ export const apiReqs = {
 		config.method = 'post'
 		apiFetch(config)
 	},
+	// ...
 }
 
 export function goLogin() {
 	// ?from=${encodeURIComponent(window.location.href)}
-	window.location.href = `${location.origin}${location.pathname}#/`
+	window.location.href = `${location.origin}${location.pathname}#/login`
 }
 
-export function logout() {
-	// Clear token and redirect to login
-	setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
-	window.location.href = `${location.origin}${location.pathname}#/`
+async function addHeader(h) {
+	if (!h['Authorization']) {
+		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
+
+		if (token) {
+			h['Authorization'] = `Bearer ${token}`
+		} else {
+			// goLogin()
+		}
+	}
+
+	return h
 }
-// register
 export function register(config) {
 	apiFetch({
 		...config,
@@ -47,41 +55,9 @@ export function login(config) {
 export function emailVerification(config) {
 	apiFetch({
 		...config,
-		url: API_DOMAIN + '/api/auth/email-verification',
-		method: 'get',
+		url: API_DOMAIN + 'users/mail-verification',
+		method: 'post',
 	})
-}
-// According to requirements, make further changes.
-// export function emailVerification(config) {
-//   const params = new URLSearchParams(config.data).toString();
-//   apiFetch({
-//     ...config,
-//     url: API_DOMAIN + `/api/auth/email-verification?${params}`,
-//     method: 'get',
-//     data: null // GET
-//   })
-// }
-async function addHeader(h, config) {
-	// Skip token check for authentication endpoints
-	if (
-		config.url &&
-		(config.url.includes('/users/register') ||
-			config.url.includes('/users/login'))
-	) {
-		return h
-	}
-
-	if (!h['Authorization']) {
-		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
-
-		if (token) {
-			h['Authorization'] = `Bearer ${token}`
-		} else {
-			goLogin()
-		}
-	}
-
-	return h
 }
 
 export async function apiFetch(config) {
@@ -98,43 +74,35 @@ export async function apiFetch(config) {
 
 	const newHeaders = await addHeader(headers, config)
 
-	let fetchConfig = {
+	let axiosConfig = {
 		method: config.method,
 		headers: newHeaders,
+		body: null,
 	}
 
 	if (config.method !== 'get') {
-		fetchConfig.body = data
+		axiosConfig.body = data
 	}
-	fetch(config.url, fetchConfig)
+
+	fetch(config.url, { ...axiosConfig })
 		.then(res => {
-			// Check for authentication errors first
+			// status: 401
 			if (res.status === 401 || res.status === 403) {
-				// Only redirect for non-auth endpoints
-				if (
-					!config.url.includes('/users/register') &&
-					!config.url.includes('/users/login')
-				) {
-					setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
-					console.log('trigger-login-401')
-					goLogin()
-					return res.json()
-				}
-			}
-			// Check if response is successful (2xx status codes)
-			if (res.ok) {
+				setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
+				console.log('trigger-login-401')
+				// goLogin()
 				return res.json()
-			} else {
-				// For any other error status codes, throw an error
-				throw new Error(`HTTP ${res.status}: ${res.statusText}`)
 			}
+
+			return res.json()
 		})
 		.then(result => {
 			config.done && config.done()
 			config.success && config.success(result)
 		})
 		.catch(err => {
+			console.log('fetch-err', err)
 			config.done && config.done()
-			config.fail && config.fail(err.message || API_FAILED)
+			config.fail && config.fail(API_FAILED)
 		})
 }

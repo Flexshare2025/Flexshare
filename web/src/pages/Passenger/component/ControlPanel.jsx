@@ -1,22 +1,22 @@
-import { useState, useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { Button } from 'antd-mobile';
 import AddressSearch from '@/components/search-location';
 import { DirectionsContext } from './DirectionsProvider';
-import FullscreenIcon from '@/assets/fullscreen.png';
 
 export default function ControlPanel({
   onPlaceSelect,
-  onCalculateRoute,
   start,
   end,
   loading,
   routeSummary,
   error,
-  onFullscreen
+  onSetLoading,
+  onSetRouteSummary,
+  onSetError
 }) {
   const START_PONIT = 'start_point';
   const END_POINT = 'end_point';
-  const { handleBook } = useContext(DirectionsContext);
+  const { calculateRouteBetween } = useContext(DirectionsContext);
 
   const handlePlaceSelect = (type, place) => {
     console.log('Selected location information:', place);
@@ -34,9 +34,32 @@ export default function ControlPanel({
       onPlaceSelect({ address, lat, lng }, 'end');
     }
   };
+  //calculate route between start and end
+  const calculateRoute = async () => {
+    if (!start || !end || !calculateRouteBetween) return;
+    try {
+      onSetLoading && onSetLoading(true);
+      onSetError && onSetError(null);
+      onSetRouteSummary && onSetRouteSummary(null);
 
-  const calculateRoute = () => {
-    onCalculateRoute();
+      const origin = { lat: start.lat, lng: start.lng };
+      const destination = { lat: end.lat, lng: end.lng };
+      const { totalDistanceMeters, totalDurationSeconds, etaDate } = await calculateRouteBetween(origin, destination);
+
+      const distanceKm = (totalDistanceMeters / 1000).toFixed(2) + ' km';
+      const durationMin = Math.round(totalDurationSeconds / 60) + ' mins';
+      const eta = etaDate.toLocaleTimeString();
+
+      onSetRouteSummary && onSetRouteSummary({
+        distance: distanceKm,
+        duration: durationMin,
+        eta,
+      });
+    } catch (e) {
+      onSetError && onSetError(e.message || 'Route calculation failed');
+    } finally {
+      onSetLoading && onSetLoading(false);
+    }
   };
 
   return (
@@ -67,16 +90,10 @@ export default function ControlPanel({
             <div>
               <div>Distance: {routeSummary.distance}</div>
               <div>Time: {routeSummary.duration}</div>
-              <div>Path: {routeSummary.summary}</div>
+              {routeSummary.eta && <div>ETA: {routeSummary.eta}</div>}
             </div>
           )}
           {error && <div style={{ color: 'red' }}>{error}</div>}
-          {routeSummary && <img
-            className='fullscreen-icon'
-            src={FullscreenIcon}
-            alt=""
-            onClick={onFullscreen}
-          />}
         </div>
       </div>
     </div>

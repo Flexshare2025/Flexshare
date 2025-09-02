@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Dialog } from 'antd-mobile';
 
@@ -72,7 +72,7 @@ export default function DirectionsProvider({ children }) {
             cancelText: 'Cancel',
             onConfirm: () => {
               Dialog.alert({
-                content: '✅ Ride booked successfully!\nHave a safe trip!'
+                content: 'ride booked successfully'
               });
             },
             onCancel: () => { }
@@ -84,8 +84,49 @@ export default function DirectionsProvider({ children }) {
     );
   };
 
+  const calculateRouteBetween = async (origin, destination, waypoints = []) => {
+    if (!directionsService || !directionsRenderer) {
+      throw new Error('Directions service not ready');
+    }
+
+    const request = {
+      origin,
+      destination,
+      waypoints,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+
+    return new Promise((resolve, reject) => {
+      directionsService.route(request, (result, status) => {
+        if (status === 'OK' && result) {
+          directionsRenderer.setDirections(result);
+
+          const legs = result.routes[0].legs || [];
+          let totalDistanceMeters = 0;
+          let totalDurationSeconds = 0;
+          legs.forEach(leg => {
+            totalDistanceMeters += leg.distance?.value || 0;
+            totalDurationSeconds += leg.duration?.value || 0;
+          });
+
+          const etaDate = new Date(Date.now() + totalDurationSeconds * 1000);
+
+          resolve({
+            result,
+            legs,
+            totalDistanceMeters,
+            totalDurationSeconds,
+            etaDate
+          });
+        } else {
+          reject(new Error(`Directions failed: ${status}`));
+        }
+      });
+    });
+  };
+
   return (
-    <DirectionsContext.Provider value={{ handleBook }}>
+    <DirectionsContext.Provider value={{ handleBook, calculateRouteBetween }}>
       {children}
     </DirectionsContext.Provider>
   );
