@@ -23,6 +23,12 @@ export default function MapView({ position }) {
       mapId="1"
       style={{ height: '400px', width: '100%' }}
       gestureHandling="greedy"
+      zoomControl={false}
+      streetViewControl={false}
+      mapTypeControl={false}
+      scaleControl={false}
+      rotateControl={false}
+      clickableIcons={false}
     >
       <AdvancedMarker position={position} />
     </Map>
