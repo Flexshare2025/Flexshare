@@ -53,8 +53,8 @@ export default function Login() {
         }
         else {
           // Save token to cookie
-          if (result.token) {
-            setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: result.token });
+          if (result.data) {
+            setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: result.data });
           }
 
           Toast.show({

@@ -14,11 +14,11 @@ export function goLogin() {
 }
 
 async function addHeader(h) {
-	if (!h['Authorization']) {
+	if (!h['authorization']) {
 		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
 
 		if (token) {
-			h['Authorization'] = `Bearer ${token}`
+			h['authorization'] = `${token}`
 		} else {
 			// goLogin()
 		}
@@ -111,7 +111,8 @@ export async function apiFetch(config) {
 export function publishSchedule(config) {
 	apiFetch({
 		...config,
-		url: API_DOMAIN + 'schedule',
+		// url: API_DOMAIN + 'schedule',
+		url: API_DOMAIN + 'users/test',
 		method: 'post',
 	})
 }
