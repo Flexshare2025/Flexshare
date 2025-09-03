@@ -11,11 +11,25 @@ export function haversine(lat1, lon1, lat2, lon2) {
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-export function generateRoutePoints(polylineStr, interval = 500) {
+function toFiveDecimals(num) {
+	return Math.round(num * 100000) / 100000
+}
+
+function calculateDistance(str) {
+	return parseFloat(str) * 1000
+}
+
+export function generateRoutePoints(polylineStr, distance) {
+	const interval = calculateDistance(distance) / 5
+	console.log('interval', interval)
+
 	const coords = polyline.decode(polylineStr) // [[lat,lng], ...]
 	let points = []
 	let distanceAccum = 0
-	points.push(coords[0])
+	points.push({
+		lat: toFiveDecimals(coords[0]?.[0]),
+		lng: toFiveDecimals(coords[0]?.[1]),
+	})
 
 	for (let i = 1; i < coords.length; i++) {
 		let [lat1, lon1] = coords[i - 1]
@@ -28,7 +42,10 @@ export function generateRoutePoints(polylineStr, interval = 500) {
 			let ratio = (segmentDist - overshoot) / segmentDist
 			let newLat = lat1 + (lat2 - lat1) * ratio
 			let newLon = lon1 + (lon2 - lon1) * ratio
-			points.push([newLat, newLon])
+			points.push({
+				lat: toFiveDecimals(newLat),
+				lng: toFiveDecimals(newLon),
+			})
 			distanceAccum -= interval
 		}
 	}

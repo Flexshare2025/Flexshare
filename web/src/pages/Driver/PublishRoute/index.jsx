@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { useEffect, useState, useRef } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
 import { generateRoutePoints } from './utils';
 import { getCurrentPosition } from '@/utils/position';
@@ -15,6 +14,7 @@ import { publishSchedule } from '@/api/index.js';
 import './index.scss';
 
 export default function App() {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const START_PONIT = 'start_point';
   const END_POINT = 'end_point';
   const KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -24,19 +24,61 @@ export default function App() {
   const [passengerCount, setPassengerCount] = useState(4);
   const [date, setDate] = useState('');
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [visibleCloseRight, setVisibleCloseRight] = useState(false)
+  const [routeSummary, setRouteSummary] = useState(null);
+  const mapRef = useRef(null);
+  const [directionsService, setDirectionsService] = useState(null);
+  const [directionsRenderer, setDirectionsRenderer] = useState(null);
 
   useEffect(() => {
+    const loader = new Loader({
+      apiKey,
+      version: "weekly",
+      libraries: ["places"]
+    });
+
     getCurrentPosition().then(res => {
       console.log('Current position:', res);
-      setPosition({
+      const initialLocation = {
         lat: res.latitude,
         lng: res.longitude
+      };
+      setStartPoint({
+        lat: res.latitude,
+        lng: res.longitude,
+        address: 'Current Location' // todo
+      });
+      loader.load().then(() => {
+        const newMap = new window.google.maps.Map(mapRef.current, {
+          zoom: 15,
+          center: initialLocation,
+          mapTypeId: 'roadmap',
+          gestureHandling: 'greedy',
+          options: {
+            zoomControl: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            rotateControl: false,
+            clickableIcons: false,
+          }
+        });
+
+        const service = new window.google.maps.DirectionsService();
+        const renderer = new window.google.maps.DirectionsRenderer({
+          map: newMap,
+        });
+
+        setDirectionsService(service);
+        setDirectionsRenderer(renderer);
+
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
     });
-  }, []);
+  }, [apiKey]);
 
   const handlePlaceSelect = (type, place) => {
     console.log('Selected location information:', place);
@@ -52,6 +94,59 @@ export default function App() {
       setEndPoint({ address, lat, lng });
     }
 
+  }
+
+  const GenerateRoute = () => {
+    if (!startPoint || !endPoint || !date) {
+      console.error('Please fill in all required fields.');
+      return;
+    }
+    console.log('Start Point:', startPoint);
+    console.log('End Point:', endPoint);
+    console.log('Leave Time:', date);
+    console.log('Passenger Count:', passengerCount);
+
+    console.log('Calculating route with start:', startPoint, 'end:', endPoint);
+    if (!startPoint || !endPoint || !directionsService) {
+      setError('Please enter both start and end locations');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setRouteSummary(null);
+
+    const request = {
+      origin: startPoint,
+      destination: endPoint,
+      travelMode: 'DRIVING',
+      unitSystem: window.google.maps.UnitSystem.METRIC,
+      drivingOptions: {
+        departureTime: new Date(),
+        trafficModel: 'bestguess'
+      }
+    };
+
+    console.log('Calculating route with request:', request);
+
+
+    directionsService.route(request, (response, status) => {
+      setLoading(false);
+
+      if (status === 'OK') {
+        directionsRenderer.setDirections(response);
+        const route = response.routes[0];
+        if (route && route.legs && route.legs.length > 0) {
+          setRouteSummary({
+            distance: route.legs[0].distance.text,
+            duration: route.legs[0].duration.text,
+            summary: route.summary
+          });
+        }
+      } else {
+        setError(`Could not retrieve directions: ${status}`);
+      }
+    });
   }
 
   const publishRoute = () => {
@@ -83,10 +178,12 @@ export default function App() {
         travelMode: google.maps.TravelMode.DRIVING,
       });
 
+
+      console.log('result', result)
       if (result.routes.length > 0) {
         const route = result.routes[0];
         const polylineStr = route.overview_polyline;
-        const points = generateRoutePoints(polylineStr, 500);
+        const points = generateRoutePoints(polylineStr, routeSummary.distance);
         console.log('Generated Route Points:', points);
 
         publishSchedule({
@@ -95,8 +192,9 @@ export default function App() {
             "end_point": endPoint,
             "route_points": points,
             "stops": [],
-            "departure_time": date,
+            "departure_time": date + ':00',
             "available_seats": passengerCount,
+            // "path": routeSummary.summary,
           },
           success: res => {
             console.log('res', res);
@@ -114,27 +212,7 @@ export default function App() {
   return (
     <>
       <div className='driver-map-container'>
-        <APIProvider apiKey={KEY}>
-          <Map
-            center={position}
-            defaultZoom={15}
-            mapId="1"
-            options={{
-              fullscreenControl: false,
-              zoomControl: false,
-              streetViewControl: false,
-              mapTypeControl: false,
-              scaleControl: false,
-              panControl: false,
-              rotateControl: false
-            }}
-          // onCameraChanged={(ev) =>
-          //   console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-          // }
-          >
-            <AdvancedMarker position={position} />
-          </Map>
-        </APIProvider>
+        <div ref={mapRef} className='publish-map-container' />
         <div className='driver-map-search'>
           <div className='item-flex'>
             <span className='item-icon green' />
@@ -198,6 +276,22 @@ export default function App() {
             />
           </div>
           {startPoint && endPoint && date && (
+            <div className='generate-wrap'>
+              <Button className='submit-btn bottom-btn' type='submit' color='primary' size='large' onClick={GenerateRoute}>
+                GenerateRoute
+              </Button>
+              <div className='driver-route-summary'>
+                {routeSummary && (
+                  <div>
+                    <div>Distance: {routeSummary.distance}</div>
+                    <div>Time: {routeSummary.duration}</div>
+                    <div>Path: {routeSummary.summary}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {routeSummary && startPoint && endPoint && date && (
             <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
               Submit
             </Button>
