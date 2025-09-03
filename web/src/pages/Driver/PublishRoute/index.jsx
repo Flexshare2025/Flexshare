@@ -10,6 +10,7 @@ import { formatDateTime } from '@/utils/common';
 import RouteList from './components/RouteList';
 import UserOrderList from './components/UserOrderList';
 import OrderIcon from '@/assets/order_icon.png';
+import { publishSchedule } from '@/api/index.js';
 
 import './index.scss';
 
@@ -87,6 +88,20 @@ export default function App() {
         const polylineStr = route.overview_polyline;
         const points = generateRoutePoints(polylineStr, 500);
         console.log('Generated Route Points:', points);
+
+        publishSchedule({
+          data: {
+            "start_point": startPoint,
+            "end_point": endPoint,
+            "route_points": points,
+            "stops": [],
+            "departure_time": date,
+            "available_seats": passengerCount,
+          },
+          success: res => {
+            console.log('res', res);
+          }
+        })
       } else {
         console.error('No routes found');
       }
