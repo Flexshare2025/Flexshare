@@ -21,7 +21,7 @@ export default function App() {
   const [visible, setVisible] = useState(false)
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
-  const [passengerCount, setPassengerCount] = useState(1);
+  const [passengerCount, setPassengerCount] = useState(4);
   const [date, setDate] = useState('');
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const [visibleCloseRight, setVisibleCloseRight] = useState(false)

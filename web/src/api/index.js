@@ -96,8 +96,12 @@ export async function apiFetch(config) {
 			return res.json()
 		})
 		.then(result => {
-			config.done && config.done()
-			config.success && config.success(result)
+			if (result.code === '4005') {
+				goLogin()
+			} else {
+				config.done && config.done()
+				config.success && config.success(result)
+			}
 		})
 		.catch(err => {
 			console.log('fetch-err', err)
@@ -111,8 +115,7 @@ export async function apiFetch(config) {
 export function publishSchedule(config) {
 	apiFetch({
 		...config,
-		// url: API_DOMAIN + 'schedule',
-		url: API_DOMAIN + 'users/test',
+		url: API_DOMAIN + 'schedules/create',
 		method: 'post',
 	})
 }
