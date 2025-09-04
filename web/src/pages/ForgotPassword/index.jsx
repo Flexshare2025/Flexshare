@@ -49,7 +49,7 @@ export default function ForgotPassword() {
     resetPassword({
       data: values,
       success: (result) => {
-        if (result.code && String(result.code) !== '200') {
+        if (result.code && String(result.code) != '200') {
           Toast.show({ content: result.msg || 'Reset failed', position: 'center' });
         } else {
           Toast.show({ content: 'Password reset successfully', position: 'center' });
@@ -123,7 +123,7 @@ export default function ForgotPassword() {
           </Form.Item>
 
           <Form.Item
-            name="new_password"
+            name="password"
             label="New Password"
             rules={[
               { required: true, message: 'Please enter new password' },

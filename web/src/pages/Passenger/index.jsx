@@ -89,10 +89,10 @@ export default function App() {
       startPoint: { latitude: -37.775033246987796, longitude: 175.28347354539358, address: '53 boundary road' },
       endPoint: { latitude: -37.7473964, longitude: 175.2320289, address: 'the base shopping center' },
       end: 'the base shopping center',
-      routPoints: [
-        { latitude: -37.775033246987796, longitude: 175.28347354539358 },
-        { latitude: -37.7473964, longitude: 175.2320289 }
-      ],
+      // routPoints: [
+      //   { latitude: -37.775033246987796, longitude: 175.28347354539358 },
+      //   { latitude: -37.7473964, longitude: 175.2320289 }
+      // ],
       stops: [{ latitude: -37.7798687, longitude: 175.2728966 }],
       price: '5$'
     }
