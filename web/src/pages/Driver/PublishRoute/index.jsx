@@ -3,7 +3,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import { generateRoutePoints } from './utils';
 import { getCurrentPosition } from '@/utils/position';
 import AddressSearch from '@/components/search-location';
-import { DatePicker, Stepper, Button, Popup, Tabs } from 'antd-mobile'
+import { DatePicker, Stepper, Button, Popup, Tabs, Toast } from 'antd-mobile'
 import { ClockCircleOutline, TeamOutline } from 'antd-mobile-icons';
 import { formatDateTime } from '@/utils/common';
 import RouteList from './components/RouteList';
@@ -159,7 +159,6 @@ export default function App() {
     console.log('Leave Time:', date);
     console.log('Passenger Count:', passengerCount);
 
-    // todo 
     const loader = new Loader({
       apiKey: KEY,
       version: "weekly",
@@ -198,6 +197,22 @@ export default function App() {
           },
           success: res => {
             console.log('res', res);
+            Toast.show({
+              icon: 'success',
+              content: 'Success',
+            })
+
+            // clear form state
+            setStartPoint(null);
+            setEndPoint(null);
+            setPassengerCount(0);
+            setDate('');
+          },
+          error: err => {
+            Toast.show({
+              icon: 'fail',
+              content: err?.msg,
+            })
           }
         })
       } else {

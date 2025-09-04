@@ -43,10 +43,10 @@ export default function App() {
     )
   }
 
-  const acceptOrder = () => {
+  const refuseOrder = () => {
     Modal.confirm({
-      title: 'Accept Order',
-      content: 'Are you sure you want to accept this order?',
+      title: 'Refuse Order',
+      content: 'Are you sure you want to refuse this order?',
       confirmText: 'Sure',
       cancelText: 'Cancel',
       onClose: () => { },
@@ -68,9 +68,9 @@ export default function App() {
             rightActions={[
               {
                 key: 'accept',
-                text: 'Accept',
-                color: 'primary',
-                onClick: acceptOrder,
+                text: 'Refuse',
+                color: 'danger',
+                onClick: refuseOrder,
               },
             ]}
           >
