@@ -262,7 +262,7 @@ export default function App() {
             <Stepper
               defaultValue={4}
               min={1}
-              max={4}
+              max={30}
               style={{
                 '--border': '1px solid #f5f5f5',
                 '--border-inner': 'none',
