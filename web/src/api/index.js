@@ -4,7 +4,7 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'http://192.168.134.61:10001/'
+export const API_DOMAIN = 'http://3.90.221.31:10002/'
 
 let token = ''
 
@@ -116,6 +116,22 @@ export function publishSchedule(config) {
 	apiFetch({
 		...config,
 		url: API_DOMAIN + 'schedules/create',
+		method: 'post',
+	})
+}
+// match a Route Schedule
+export function matchSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'schedules/match',
+		method: 'post',
+	})
+}
+// book a Route Schedule
+export function bookSchedule(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'schedules/book',
 		method: 'post',
 	})
 }

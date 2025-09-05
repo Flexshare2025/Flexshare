@@ -66,7 +66,7 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
   }, [onPlaceSelect]);
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '16px 0' }}>
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <input
         ref={searchInputRef}
         type="text"
