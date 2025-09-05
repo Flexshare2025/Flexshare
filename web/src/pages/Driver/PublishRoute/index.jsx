@@ -3,11 +3,10 @@ import { Loader } from "@googlemaps/js-api-loader";
 import { generateRoutePoints } from './utils';
 import { getCurrentPosition } from '@/utils/position';
 import AddressSearch from '@/components/search-location';
-import { DatePicker, Stepper, Button, Popup, Tabs, Toast } from 'antd-mobile'
+import { DatePicker, Stepper, Button, Popup, Toast } from 'antd-mobile'
 import { ClockCircleOutline, TeamOutline } from 'antd-mobile-icons';
 import { formatDateTime } from '@/utils/common';
 import RouteList from './components/RouteList';
-import UserOrderList from './components/UserOrderList';
 import OrderIcon from '@/assets/order_icon.png';
 import { publishSchedule } from '@/api/index.js';
 
@@ -145,7 +144,9 @@ export default function App() {
         }
       } else {
         setError(`Could not retrieve directions: ${status}`);
+        setLoading(false);
       }
+
     });
   }
 
@@ -184,7 +185,7 @@ export default function App() {
         const polylineStr = route.overview_polyline;
         const points = generateRoutePoints(polylineStr, routeSummary.distance);
         console.log('Generated Route Points:', points);
-
+        setLoading(true);
         publishSchedule({
           data: {
             "start_point": startPoint,
@@ -201,12 +202,14 @@ export default function App() {
               icon: 'success',
               content: 'Success',
             })
+            setLoading(false);
 
             // clear form state
             setPassengerCount(0);
             setDate('');
           },
-          error: err => {
+          fail: err => {
+            setLoading(false);
             Toast.show({
               icon: 'fail',
               content: err?.msg,
@@ -215,9 +218,11 @@ export default function App() {
         })
       } else {
         console.error('No routes found');
+        setLoading(false);
       }
     }).catch(e => {
       console.error('Error loading Google Maps:', e);
+      setLoading(false);
     });
 
   }
@@ -306,7 +311,7 @@ export default function App() {
             </div>
           )}
           {routeSummary && startPoint && endPoint && date && (
-            <Button className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
+            <Button loading={loading} className='submit-btn bottom-btn' block type='submit' color='primary' size='large' onClick={publishRoute}>
               Submit
             </Button>
           )}

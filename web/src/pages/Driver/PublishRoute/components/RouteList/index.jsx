@@ -4,6 +4,7 @@ import { removeCountryInAddress } from '@/utils/common';
 import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
 import { viewPublishRoutes } from '@/api';
+import UserOrderList from '../UserOrderList';
 import './index.scss';
 
 
@@ -17,9 +18,11 @@ export default function App() {
       success: res => {
         setLoading(false)
         console.log('viewPublishRoutes-res', res)
-        setList(res.data);
+        const data = res.data;
+        console.log('viewPublishRoutes-data', data)
+        setList(data);
       },
-      err: () => {
+      fail: () => {
         setLoading(false)
       }
     })
@@ -56,7 +59,7 @@ export default function App() {
   return (
     <div className='route-list-container'>
       <List header='Publish Routes'>
-        {list.map(order => (
+        {list.map(order => order && (
           <SwipeAction
             rightActions={[
               {
@@ -79,6 +82,7 @@ export default function App() {
                   <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
                 </p>
               </div>
+              {/* <UserOrderList /> */}
             </List.Item>
           </SwipeAction>
         ))}
