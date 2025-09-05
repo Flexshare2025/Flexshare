@@ -96,7 +96,7 @@ export async function apiFetch(config) {
 			return res.json()
 		})
 		.then(result => {
-			if (result.code === '4005') {
+			if (result.code === '4005' || result.code === '4102') {
 				goLogin()
 			} else {
 				config.done && config.done()
