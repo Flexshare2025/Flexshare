@@ -5,6 +5,7 @@ import { getCurrentPosition } from '@/utils/position';
 import { Button, NoticeBar, Space, List, Modal, Toast } from 'antd-mobile';
 import { removeCountryInAddress } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
+import { viewPublishRoutes } from '@/api';
 
 import './index.scss';
 
@@ -22,6 +23,29 @@ const GoogleMapsNavigation = () => {
   const END_POINT = 'end_point';
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
+  const [currentOrder, setCurrentOrder] = useState([]);
+
+  // todo filter currentorder ??
+  // list.filter status !== 'cancel', sort by departure_time??
+  // render stops
+  function getPublishRoutes() {
+    setLoading(true)
+    viewPublishRoutes({
+      success: res => {
+        setLoading(false)
+        console.log('viewPublishRoutes-res', res)
+        const data = res.data;
+        console.log('viewPublishRoutes-data', data)
+      },
+      fail: () => {
+        setLoading(false)
+      }
+    })
+  }
+
+  useEffect(() => {
+    // getPublishRoutes()
+  }, []);
 
 
 

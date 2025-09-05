@@ -15,6 +15,9 @@ export default function App() {
   function getPublishRoutes() {
     setLoading(true)
     viewPublishRoutes({
+      data: {
+        role: 'driver'
+      },
       success: res => {
         setLoading(false)
         console.log('viewPublishRoutes-res', res)
