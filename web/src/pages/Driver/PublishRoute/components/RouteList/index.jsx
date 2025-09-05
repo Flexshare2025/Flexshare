@@ -1,29 +1,34 @@
-import { List, ErrorBlock, Button, Modal, Toast, SwipeAction } from 'antd-mobile'
+import { useEffect, useState } from 'react';
+import { List, ErrorBlock, Modal, Toast, SwipeAction } from 'antd-mobile'
 import { removeCountryInAddress } from '@/utils/common';
+import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
+import { viewPublishRoutes } from '@/api';
 import './index.scss';
 
+
 export default function App() {
-  const list = [
-    {
-      "route_id": "rte_456",
-      "start_point": { "lat": 123.45, "lng": 67.89, "address": "ANZ House The Strand" },
-      "end_point": { "lat": 124.0, "lng": 68.0, "address": "University of Waikato" },
-      "departure_time": "2025-09-01 08:30:00",
-      "available_seats": 3,
-      "status": "active",
-      "created_at": "2025-09-01T10:00:00Z"
-    },
-    {
-      "route_id": "rte_456",
-      "start_point": { "lat": 123.45, "lng": 67.89, "address": "ANZ House The Strand" },
-      "end_point": { "lat": 124.0, "lng": 68.0, "address": "University of Waikato" },
-      "departure_time": "2025-09-02 08:30:00",
-      "available_seats": 3,
-      "status": "active",
-      "created_at": "2025-09-02T10:00:00Z"
-    }
-  ];
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    viewPublishRoutes({
+      success: res => {
+        setLoading(false)
+        console.log('viewPublishRoutes-res', res)
+        setList(res.data);
+      },
+      err: () => {
+        setLoading(false)
+      }
+    })
+  }, [])
+
+  if (loading) {
+    return <Loading />
+  }
+
   if (list.length === 0) {
     return (
       <ErrorBlock status='empty' description="" />
@@ -50,7 +55,7 @@ export default function App() {
 
   return (
     <div className='route-list-container'>
-      <List header=''>
+      <List header='Publish Routes'>
         {list.map(order => (
           <SwipeAction
             rightActions={[
@@ -66,6 +71,7 @@ export default function App() {
               <div>
                 <p className="route-item">
                   <span>{order.departure_time}</span>
+                  <span className='seat-item'>({order.available_seats} seats)</span>
                 </p>
                 <p className='route-item-detail'>
                   <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>

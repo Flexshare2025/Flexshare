@@ -203,7 +203,7 @@ export function endTrip(config) {
 export function viewPublishRoutes(config) {
 	apiFetch({
 		...config,
-		url: API_DOMAIN + `driver/routes`,
+		url: API_DOMAIN + `schedules/list`,
 		method: 'post',
 	})
 }

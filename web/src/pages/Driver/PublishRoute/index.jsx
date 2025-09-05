@@ -203,8 +203,6 @@ export default function App() {
             })
 
             // clear form state
-            setStartPoint(null);
-            setEndPoint(null);
             setPassengerCount(0);
             setDate('');
           },
@@ -276,6 +274,7 @@ export default function App() {
             />
             <Stepper
               defaultValue={4}
+              value={passengerCount}
               min={1}
               max={30}
               style={{
@@ -322,19 +321,13 @@ export default function App() {
         position='right'
         visible={visibleCloseRight}
         showCloseButton
+        destroyOnClose
         onClose={() => {
           setVisibleCloseRight(false)
         }}
       >
         <div className='driver-list-popup-content'>
-          <Tabs defaultActiveKey={'routes'}>
-            <Tabs.Tab title='Publish Routes' key='routes'>
-              <RouteList />
-            </Tabs.Tab>
-            <Tabs.Tab title='User Orders' key='user'>
-              <UserOrderList />
-            </Tabs.Tab>
-          </Tabs>
+          <RouteList />
         </div>
       </Popup>
     </>

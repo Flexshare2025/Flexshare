@@ -20,7 +20,7 @@ export default function Driver() {
     },
     {
       key: 'rode',
-      title: 'Orders',
+      title: 'Current Order',
       icon: (active) =>
         active ? <img className='driver-tab-icon' src={PeopleActiveIcon} /> : <img className='driver-tab-icon' src={PeopleIcon} />,
     },

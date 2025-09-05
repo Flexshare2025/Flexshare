@@ -219,7 +219,7 @@ const GoogleMapsNavigation = () => {
 
   return (
     <div className='driver-rode-container'>
-      <NoticeBar
+      {/* <NoticeBar
         content={<div className='notice-order-content'>
           <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} — ${order.dropoff_point.address}`}</p>
           <div className='notice-order-action'>
@@ -231,13 +231,13 @@ const GoogleMapsNavigation = () => {
         </div>}
         wrap
         color='alert'
-      />
+      /> */}
       <div className='order-info'>
         <List header='Current Orders'>
           {currentOrders.map(order => (
             <List.Item
               key={order.schedule_id}
-              extra={order.status === 'accepted' ? <Button size='mini' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
+            // extra={order.status === 'accepted' ? <Button size='mini' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
             >
               <p className={`order-item ${order.status === 'accepted' ? 'grey' : ''}`}>
                 <span className='price'>${order.price.toFixed(0)} ({order.seat_count} people)</span>
