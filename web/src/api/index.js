@@ -212,7 +212,7 @@ export function viewPublishRoutes(config) {
 export function cancelPublishRoutes(config) {
 	apiFetch({
 		...config,
-		url: API_DOMAIN + `driver/routes/${config.data.route_id}`,
+		url: API_DOMAIN + `schedules/terminate`,
 		method: 'post',
 	})
 }

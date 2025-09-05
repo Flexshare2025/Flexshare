@@ -3,7 +3,7 @@ import { List, ErrorBlock, Modal, Toast, SwipeAction } from 'antd-mobile'
 import { removeCountryInAddress } from '@/utils/common';
 import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
-import { viewPublishRoutes } from '@/api';
+import { viewPublishRoutes, cancelPublishRoutes } from '@/api';
 import UserOrderList from '../UserOrderList';
 import './index.scss';
 
@@ -12,7 +12,7 @@ export default function App() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
+  function getPublishRoutes() {
     setLoading(true)
     viewPublishRoutes({
       success: res => {
@@ -26,6 +26,10 @@ export default function App() {
         setLoading(false)
       }
     })
+  }
+
+  useEffect(() => {
+    getPublishRoutes()
   }, [])
 
   if (loading) {
@@ -39,7 +43,7 @@ export default function App() {
     )
   }
 
-  const cancelOrder = () => {
+  const cancelOrder = (order) => {
     Modal.confirm({
       title: 'Cancel Order',
       content: 'Are you sure you want to cancel this order?',
@@ -48,14 +52,36 @@ export default function App() {
       onClose: () => { },
       onConfirm: () => {
         // todo call api to cancel order
-        Toast.show({
-          content: 'Order cancelled',
-          duration: 1000,
-        });
+        cancelPublishRoutes({
+          data: { schedule_id: order.schedule_id },
+          success: res => {
+            console.log('cancelOrder--res', res)
+            if (res.code == '200') {
+              getPublishRoutes();
+              Toast.show({
+                content: 'Order cancelled',
+                duration: 500,
+              });
+            } else {
+              Toast.show({
+                content: res.msg,
+                duration: 500,
+              });
+            }
+          },
+          fail: err => {
+            console.log('cancelOrder--err', err)
+            Toast.show({
+              content: err.msg,
+              duration: 500,
+            });
+          }
+        })
       },
     });
   }
 
+  // todo different status different color
   return (
     <div className='route-list-container'>
       <List header='Publish Routes'>
@@ -66,7 +92,7 @@ export default function App() {
                 key: 'delete',
                 text: 'Cancel',
                 color: 'danger',
-                onClick: cancelOrder,
+                onClick: () => cancelOrder(order),
               },
             ]}
           >
