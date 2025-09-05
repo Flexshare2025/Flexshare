@@ -255,10 +255,12 @@ const GoogleMapsNavigation = () => {
           placeholder="Pickup location"
           defaultValue={start ? start.address : ''}
         />
-        <AddressSearch
-          onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
-          placeholder='Drop location'
-        />
+        <div className='driver-rode-search-item'>
+          <AddressSearch
+            onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
+            placeholder='Drop location'
+          />
+        </div>
         <div className='driver-rode-action-bar'>
           <Button
             onClick={calculateRoute}
