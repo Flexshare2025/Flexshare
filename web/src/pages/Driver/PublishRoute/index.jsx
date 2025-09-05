@@ -96,7 +96,7 @@ export default function App() {
   }
 
   const GenerateRoute = () => {
-    if (!startPoint || !endPoint || !date) {
+    if (!startPoint || !endPoint || !date || !passengerCount) {
       console.error('Please fill in all required fields.');
       return;
     }
@@ -151,7 +151,7 @@ export default function App() {
   }
 
   const publishRoute = () => {
-    if (!startPoint || !endPoint || !date) {
+    if (!startPoint || !endPoint || !date || !passengerCount) {
       console.error('Please fill in all required fields.');
       return;
     }

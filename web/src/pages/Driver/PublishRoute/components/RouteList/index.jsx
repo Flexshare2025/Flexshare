@@ -51,7 +51,6 @@ export default function App() {
       cancelText: 'Cancel',
       onClose: () => { },
       onConfirm: () => {
-        // todo call api to cancel order
         cancelPublishRoutes({
           data: { schedule_id: order.schedule_id },
           success: res => {
@@ -81,13 +80,14 @@ export default function App() {
     });
   }
 
-  // todo different status different color
+  const isCancel = i => i === 'cancel';
+
   return (
     <div className='route-list-container'>
       <List header='Publish Routes'>
         {list.map(order => order && (
           <SwipeAction
-            rightActions={[
+            rightActions={isCancel(order.status) ? [] : [
               {
                 key: 'delete',
                 text: 'Cancel',
@@ -96,7 +96,7 @@ export default function App() {
               },
             ]}
           >
-            <List.Item key={order.schedule_id}>
+            <List.Item key={order.schedule_id} className={`${isCancel(order.status) ? 'disabled' : ''}`}>
               <div>
                 <p className="route-item">
                   <span>{order.departure_time}</span>
