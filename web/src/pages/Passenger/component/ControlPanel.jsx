@@ -233,7 +233,7 @@ export default function ControlPanel({
           className='submit-btn bottom-btn'
           size='large'
         >
-          Match Route
+          {loading ? 'Matching Routes...' : 'Match Route'}
         </Button>
         {(routeSummary || error) && (
           <div className='driver-route-summary'>

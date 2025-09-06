@@ -135,6 +135,22 @@ export function bookSchedule(config) {
 		method: 'post',
 	})
 }
+// list all schedules
+export function listSchedules(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'schedules/list',
+		method: 'post',
+	})
+}
+// cancel a Route Schedule
+export function cancelSchedulePassenger(config) {
+	apiFetch({
+		...config,
+		url: API_DOMAIN + 'schedules/cancel',
+		method: 'post',
+	})
+}
 
 // Driver View/Search Passenger Orders
 export function scheduleOrders(config) {

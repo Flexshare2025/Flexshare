@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { APIProvider } from '@vis.gl/react-google-maps';
+import { Popup } from 'antd-mobile';
 import { getCurrentPosition } from '@/utils/position'
 import DirectionsProvider from './component/DirectionsProvider';
 import MapView from './component/MapView';
 import ControlPanel from './component/ControlPanel';
 import OrderList from './component/OrderList';
+import PassengerOrderList from './component/PassengerOrderList';
+import OrderIcon from '@/assets/order_icon.png';
+import './index.scss';
 
 export default function App() {
   const KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -16,6 +20,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [matchedSchedules, setMatchedSchedules] = useState([]); // store matched schedules data
   const [passengerCount, setPassengerCount] = useState(1); // store passenger count
+  const [visibleOrderList, setVisibleOrderList] = useState(false); // control order list popup
 
   useEffect(() => {
     getCurrentPosition()
@@ -130,8 +135,32 @@ export default function App() {
             passengerCount={passengerCount}
             onUpdateSchedule={handleUpdateSchedule}
           />
+          {/* order list float icon */}
+          <img
+            onClick={() => {
+              setVisibleOrderList(true)
+            }}
+            className='passenger-float-icon'
+            src={OrderIcon}
+            alt="order list"
+          />
         </DirectionsProvider>
       </APIProvider>
+
+      {/* order list popup */}
+      <Popup
+        position='right'
+        visible={visibleOrderList}
+        showCloseButton
+        destroyOnClose
+        onClose={() => {
+          setVisibleOrderList(false)
+        }}
+      >
+        <div className='passenger-order-popup-content'>
+          <PassengerOrderList />
+        </div>
+      </Popup>
     </div>
   );
 }

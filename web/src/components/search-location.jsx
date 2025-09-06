@@ -4,6 +4,15 @@ import { Loader } from '@googlemaps/js-api-loader';
 const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) => {
   const searchInputRef = useRef(null);
   const [autocomplete, setAutocomplete] = useState(null);
+  const [inputValue, setInputValue] = useState(defaultValue);
+  const [isUserInput, setIsUserInput] = useState(false); // check if user input
+
+  // when defaultValue changes, update inputValue (but only if not user input)
+  useEffect(() => {
+    if (!isUserInput && defaultValue !== inputValue) {
+      setInputValue(defaultValue);
+    }
+  }, [defaultValue, isUserInput, inputValue]);
 
   useEffect(() => {
     const loader = new Loader({
@@ -47,9 +56,7 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
           onPlaceSelect(placeData);
 
           // Set the input value to keep the selected address visible
-          if (searchInputRef.current) {
-            searchInputRef.current.value = placeData.formatted_address;
-          }
+          setInputValue(placeData.formatted_address);
         } else {
           console.log("[AddressSearch] This location was not found or has no geometry");
         }
@@ -65,17 +72,30 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
     };
   }, [onPlaceSelect]);
 
+  // clear input content
+  const clearInput = () => {
+    setInputValue('');
+    setIsUserInput(false);
+  };
+
+  // handle input change
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    setIsUserInput(true); // mark as user input
+  };
+
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
       <input
         ref={searchInputRef}
         type="text"
-        defaultValue={defaultValue}
+        value={inputValue}
         placeholder={placeholder || "input address"}
+        onChange={handleInputChange}
         style={{
           width: '100%',
           maxWidth: 1000,
-          padding: '12px 16px',
+          padding: '12px 40px 12px 16px',
           borderRadius: 8,
           border: '1px solid #ccc',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -86,6 +106,42 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
         onFocus={e => (e.currentTarget.style.borderColor = '#646cff')}
         onBlur={e => (e.currentTarget.style.borderColor = '#ccc')}
       />
+      {/* clear button - only show when user input */}
+      {inputValue && isUserInput && (
+        <button
+          onClick={clearInput}
+          style={{
+            position: 'absolute',
+            right: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '18px',
+            color: '#999',
+            padding: '4px',
+            borderRadius: '50%',
+            width: '24px',
+            height: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'color 0.2s, background-color 0.2s',
+          }}
+          onMouseEnter={e => {
+            e.target.style.color = '#666';
+            e.target.style.backgroundColor = '#f0f0f0';
+          }}
+          onMouseLeave={e => {
+            e.target.style.color = '#999';
+            e.target.style.backgroundColor = 'transparent';
+          }}
+          title="Clear"
+        >
+          ×
+        </button>
+      )}
       {/*  CSS for Google Places Autocomplete dropdown */}
       <style>
         {`
@@ -146,19 +202,6 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
           }
           .pac-container::-webkit-scrollbar-thumb:hover {
             background: rgba(100, 108, 255, 0.5) !important;
-          }
-          .pac-container {
-            animation: slideDown 0.2s ease-out !important;
-          }
-          @keyframes slideDown {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
           }
           input:focus + .pac-container {
             border-color: #646cff !important;
