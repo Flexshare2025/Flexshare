@@ -198,15 +198,20 @@ export default function App() {
           },
           success: res => {
             console.log('res', res);
-            Toast.show({
-              icon: 'success',
-              content: 'Success',
-            })
             setLoading(false);
-
-            // clear form state
-            setPassengerCount(0);
-            setDate('');
+            if (res.code === '200') {
+              Toast.show({
+                icon: 'success',
+                content: 'Success',
+              })
+              // clear form data
+              setDate('');
+            } else {
+              Toast.show({
+                icon: 'fail',
+                content: res.msg,
+              })
+            }
           },
           fail: err => {
             setLoading(false);
