@@ -302,7 +302,7 @@ export default function App() {
           {startPoint && endPoint && date && (
             <div className='generate-wrap'>
               <Button className='submit-btn bottom-btn' type='submit' color='primary' size='large' onClick={GenerateRoute}>
-                GenerateRoute
+                Generate Route
               </Button>
               <div className='driver-route-summary'>
                 {routeSummary && (

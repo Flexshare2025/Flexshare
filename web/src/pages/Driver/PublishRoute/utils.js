@@ -16,10 +16,18 @@ function toFiveDecimals(num) {
 }
 
 function calculateDistance(str) {
+	// 1,491 km
+	if (str.includes(',')) {
+		const str2 = str?.replace(' km', '')
+		const arr = str2.split(',')
+		console.log('arr', arr)
+		return (parseFloat(arr[0]) * 1000 + parseFloat(arr[1])) * 1000
+	}
 	return parseFloat(str) * 1000
 }
 
 export function generateRoutePoints(polylineStr, distance) {
+	console.log('distance', distance)
 	const interval = calculateDistance(distance) / 5
 	console.log('interval', interval)
 
