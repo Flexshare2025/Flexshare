@@ -11,7 +11,7 @@ import { EyeInvisibleOutline, EyeOutline, UserOutline } from 'antd-mobile-icons'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { EMAIL_REG } from '@/constant';
 import { login } from '@/api/index.js';
-import { setCookie } from '@/utils/storage';
+import { setLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 import './index.css';
 
@@ -54,7 +54,7 @@ export default function Login() {
         else {
           // Save token to cookie
           if (result.data) {
-            setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: result.data });
+            setLocalData({ key: FLEXSHARE_ACCESS_TOKEN, value: result.data });
           }
 
           Toast.show({

@@ -1,10 +1,10 @@
-import { getCookie, setCookie } from '@/utils/storage'
+import { getLocalData, setLocalData } from '@/utils/storage'
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'http://3.90.221.31:10001/'
+export const API_DOMAIN = 'http://192.168.171.61:10001/'
 
 let token = ''
 
@@ -15,7 +15,7 @@ export function goLogin() {
 
 async function addHeader(h) {
 	if (!h['authorization']) {
-		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
+		token = getLocalData(FLEXSHARE_ACCESS_TOKEN) || ''
 
 		if (token) {
 			h['authorization'] = `${token}`
@@ -87,7 +87,7 @@ export async function apiFetch(config) {
 		.then(res => {
 			// status: 401
 			if (res.status === 401 || res.status === 403) {
-				setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
+				setLocalData({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
 				console.log('trigger-login-401')
 				// goLogin()
 				return res.json()
