@@ -4,8 +4,8 @@ import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
 import DriverInfoUpload from "@/pages/Driver/InfoUpload";
 import DriverPublishRoute from "@/pages/Driver/PublishRoute";
-import DriverRode from "@/pages/Driver/Rode";
-import Driver from "@/pages/Driver";
+// import DriverRode from "@/pages/Driver/Rode";
+// import Driver from "@/pages/Driver";
 import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
 import Register from "@/pages/Register";
@@ -32,18 +32,18 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* Protected Routes */}
-          <Route path="/driver/*" element={
-            // <ProtectedRoute requiredRole="driver">
-            <Driver />
-            // </ProtectedRoute>
-          } >
-            <Route path="publish" element={
-              <DriverPublishRoute />
-            } />
-            <Route path="rode" element={
-              <DriverRode />
-            } />
-          </Route>
+          {/* <Route path="/driver/*" element={
+            <ProtectedRoute requiredRole="driver">
+              <Driver />
+            </ProtectedRoute>
+          } > */}
+          <Route path="/driver/publish" element={
+            <DriverPublishRoute />
+          } />
+          {/* <Route path="rode" element={
+            <DriverRode />
+          } /> */}
+          {/* </Route> */}
           <Route path="/driver/upload" element={
             <DriverInfoUpload />
           } />
