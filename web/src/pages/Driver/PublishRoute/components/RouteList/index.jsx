@@ -42,7 +42,6 @@ export default function App() {
   if (!list || list?.length === 0) {
     return (
       <ErrorBlock status='empty' description="" />
-
     )
   }
 

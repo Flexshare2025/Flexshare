@@ -156,12 +156,7 @@ const GoogleMapsNavigation = () => {
     const request = {
       origin: start,
       destination: end,
-      travelMode: 'DRIVING',
-      unitSystem: window.google.maps.UnitSystem.METRIC,
-      drivingOptions: {
-        departureTime: new Date(),
-        trafficModel: 'bestguess'
-      }
+      travelMode: google.maps.TravelMode.DRIVING,
     };
 
     console.log('Calculating route with request:', request);

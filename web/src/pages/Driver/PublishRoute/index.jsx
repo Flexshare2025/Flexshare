@@ -16,20 +16,18 @@ export default function App() {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const START_PONIT = 'start_point';
   const END_POINT = 'end_point';
-  const KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [visible, setVisible] = useState(false)
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [passengerCount, setPassengerCount] = useState(4);
   const [date, setDate] = useState('');
-  const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [visibleCloseRight, setVisibleCloseRight] = useState(false)
   const [routeSummary, setRouteSummary] = useState(null);
   const mapRef = useRef(null);
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
+  const [points, setPoints] = useState([])
 
   useEffect(() => {
     const loader = new Loader({
@@ -107,23 +105,16 @@ export default function App() {
 
     console.log('Calculating route with start:', startPoint, 'end:', endPoint);
     if (!startPoint || !endPoint || !directionsService) {
-      setError('Please enter both start and end locations');
       return;
     }
 
     setLoading(true);
-    setError(null);
     setRouteSummary(null);
 
     const request = {
       origin: startPoint,
       destination: endPoint,
-      travelMode: 'DRIVING',
-      unitSystem: window.google.maps.UnitSystem.METRIC,
-      drivingOptions: {
-        departureTime: new Date(),
-        trafficModel: 'bestguess'
-      }
+      travelMode: window.google.maps.TravelMode.DRIVING,
     };
 
     console.log('Calculating route with request:', request);
@@ -133,17 +124,41 @@ export default function App() {
       setLoading(false);
 
       if (status === 'OK') {
-        directionsRenderer.setDirections(response);
         const route = response.routes[0];
         if (route && route.legs && route.legs.length > 0) {
           setRouteSummary({
             distance: route.legs[0].distance.text,
             duration: route.legs[0].duration.text,
-            summary: route.summary
+            summary: route.summary,
+            overview_polyline: route.overview_polyline
+          });
+
+
+          const currentPoints = generateRoutePoints(route.overview_polyline, route.legs[0].distance.text);
+          console.log('currentPoints', currentPoints);
+
+          setPoints(currentPoints)
+          // Convert route points to waypoints
+          const waypoints = currentPoints.length > 2
+            ? currentPoints.slice(1, -1).map(point => ({
+              location: { lat: point.lat, lng: point.lng },
+              stopover: true
+            }))
+            : [];
+
+          console.log('currentPoints', currentPoints, 'waypoints', waypoints)
+          directionsService.route({
+            origin: startPoint,
+            destination: endPoint,
+            travelMode: window.google.maps.TravelMode.DRIVING,
+            waypoints: waypoints?.length > 0 ? waypoints : undefined,
+          }, (res, sta) => {
+            if (sta === 'OK') {
+              directionsRenderer.setDirections(res);
+            }
           });
         }
       } else {
-        setError(`Could not retrieve directions: ${status}`);
         setLoading(false);
       }
 
@@ -160,75 +175,43 @@ export default function App() {
     console.log('Leave Time:', date);
     console.log('Passenger Count:', passengerCount);
 
-    const loader = new Loader({
-      apiKey: KEY,
-      version: "weekly",
-      libraries: ["places"],
-    });
-
-    loader.load().then(async () => {
-      const google = window.google;
-
-
-      const directionsService = new google.maps.DirectionsService();
-
-      const result = await directionsService.route({
-        origin: startPoint,
-        destination: endPoint,
-        travelMode: google.maps.TravelMode.DRIVING,
-      });
-
-
-      console.log('result', result)
-      if (result.routes.length > 0) {
-        const route = result.routes[0];
-        const polylineStr = route.overview_polyline;
-        const points = generateRoutePoints(polylineStr, routeSummary.distance);
-        console.log('Generated Route Points:', points);
-        setLoading(true);
-        publishSchedule({
-          data: {
-            "start_point": startPoint,
-            "end_point": endPoint,
-            "route_points": points,
-            "stops": [],
-            "departure_time": date + ':00',
-            "available_seats": passengerCount,
-            // "path": routeSummary.summary,
-          },
-          success: res => {
-            console.log('res', res);
-            setLoading(false);
-            if (res.code === '200') {
-              Toast.show({
-                icon: 'success',
-                content: 'Success',
-              })
-              // clear form data
-              setDate('');
-            } else {
-              Toast.show({
-                icon: 'fail',
-                content: res.msg,
-              })
-            }
-          },
-          fail: err => {
-            setLoading(false);
-            Toast.show({
-              icon: 'fail',
-              content: err?.msg,
-            })
-          }
-        })
-      } else {
-        console.error('No routes found');
+    setLoading(true);
+    publishSchedule({
+      data: {
+        "start_point": startPoint,
+        "end_point": endPoint,
+        "route_points": points,
+        "stops": [],
+        "departure_time": date + ':00',
+        "available_seats": passengerCount,
+      },
+      success: res => {
+        console.log('res', res);
         setLoading(false);
+        if (res.code === '200') {
+          Toast.show({
+            icon: 'success',
+            content: 'Success',
+          })
+          // clear form data
+          setDate('');
+        } else {
+          Toast.show({
+            icon: 'fail',
+            content: res.msg,
+          })
+        }
+      },
+      fail: err => {
+        setLoading(false);
+        Toast.show({
+          icon: 'fail',
+          content: err?.msg,
+        })
       }
-    }).catch(e => {
-      console.error('Error loading Google Maps:', e);
-      setLoading(false);
-    });
+    })
+
+
 
   }
 

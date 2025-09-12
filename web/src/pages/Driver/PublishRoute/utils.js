@@ -50,10 +50,12 @@ export function generateRoutePoints(polylineStr, distance) {
 			let ratio = (segmentDist - overshoot) / segmentDist
 			let newLat = lat1 + (lat2 - lat1) * ratio
 			let newLon = lon1 + (lon2 - lon1) * ratio
-			points.push({
-				lat: toFiveDecimals(newLat),
-				lng: toFiveDecimals(newLon),
-			})
+			if (points?.length < 5) {
+				points.push({
+					lat: toFiveDecimals(newLat),
+					lng: toFiveDecimals(newLon),
+				})
+			}
 			distanceAccum -= interval
 		}
 	}
