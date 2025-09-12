@@ -39,7 +39,7 @@ export default function App() {
     return <Loading />
   }
 
-  if (list.length === 0) {
+  if (!list || list?.length === 0) {
     return (
       <ErrorBlock status='empty' description="" />
 
