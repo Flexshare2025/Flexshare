@@ -4,7 +4,8 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'http://192.168.171.61:10001/'
+export const API_DOMAIN =
+	'https://3pbqtr14ye.execute-api.us-east-1.amazonaws.com/flexshare/app/'
 
 let token = ''
 
