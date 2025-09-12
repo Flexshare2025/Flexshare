@@ -4,6 +4,7 @@ import com.jl.flexshare.FlexShareApplication;
 import com.jl.flexshare.member.entity.User;
 import com.jl.flexshare.member.mapper.UserMapper;
 import com.jl.flexshare.member.service.MailService;
+import com.jl.flexshare.member.service.RedisService;
 import com.jl.flexshare.member.service.UserService;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +29,9 @@ public class MemberTest {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private RedisService redisService;
+
 
     @Test
     public void testSelectAll() {
@@ -39,6 +43,11 @@ public class MemberTest {
     public void  testSendEmail() throws MessagingException, UnsupportedEncodingException {
         mailService.send("qik236899@gmail.com","Test","Hello World");
         System.out.println("11111");
+    }
+
+    @Test
+    public void testRedisService() throws MessagingException, UnsupportedEncodingException {
+        redisService.save("test", "test01");
     }
 
 }

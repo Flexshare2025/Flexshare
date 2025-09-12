@@ -22,18 +22,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers( "/users/register","/users/login").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-    }
+        http
+                .csrf().disable()
 
+                .authorizeRequests()
+                .anyRequest().permitAll()
+                .and()
+
+                .httpBasic().disable()
+                .formLogin().disable()
+                .logout().disable()
+                .rememberMe().disable()
+                .requestCache().disable()
+                .securityContext().disable()
+                .anonymous()
+                .and()
+
+                .exceptionHandling().disable()
+                .sessionManagement().disable();
+    }
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
