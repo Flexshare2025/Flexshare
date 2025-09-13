@@ -38,6 +38,14 @@ export default function App() {
       })
       .catch(error => {
         console.error('Error getting current position:', error);
+        const defaultPosition = { lat: -36.8485, lng: 174.7633 }; // auckland
+        setPosition(defaultPosition);
+        setStartPoint({
+          lat: defaultPosition.lat,
+          lng: defaultPosition.lng,
+          address: 'Default Location',
+          realAddress: 'Auckland, New Zealand'
+        });
       });
   }, []);
 

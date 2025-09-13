@@ -4,7 +4,6 @@ import { Map, AdvancedMarker, useMapsLibrary } from '@vis.gl/react-google-maps'
 export default function MapView({ position, start, end }) {
   const routesLibrary = useMapsLibrary('places')
   const [ready, setReady] = useState(false)
-
   // wait for the map library to load
   useEffect(() => {
     if (routesLibrary) {
@@ -14,13 +13,16 @@ export default function MapView({ position, start, end }) {
 
   // Calculate map center based on available data
   const getMapCenter = () => {
-    if (start && end) {
-      return {
-        lat: (start.lat + end.lat) / 2,
-        lng: (start.lng + end.lng) / 2
-      }
+    // Priority use current position
+    if (position && position.lat !== 0 && position.lng !== 0) {
+      return position
     }
-    return position
+    // If there is no current position, but there is a start point, use the start point
+    if (start && start.lat && start.lng) {
+      return { lat: start.lat, lng: start.lng }
+    }
+    // Finally use default position
+    return { lat: -36.8485, lng: 174.7633 } // default position auckland
   }
 
   if (!ready) {
@@ -41,7 +43,7 @@ export default function MapView({ position, start, end }) {
       rotateControl={false}
       clickableIcons={false}
     >
-      {/* Current Location Marker */}
+      {/* Current location marker */}
       <AdvancedMarker
         position={position}
         title="Current Location"
@@ -66,7 +68,7 @@ export default function MapView({ position, start, end }) {
         </div>
       </AdvancedMarker>
 
-      {/* Start Point Marker (Green) */}
+      {/* Start point marker (green) */}
       {start && (
         <AdvancedMarker
           position={{ lat: start.lat, lng: start.lng }}
@@ -91,7 +93,7 @@ export default function MapView({ position, start, end }) {
         </AdvancedMarker>
       )}
 
-      {/* End Point Marker (Blue) */}
+      {/* End point marker (blue) */}
       {end && (
         <AdvancedMarker
           position={{ lat: end.lat, lng: end.lng }}
