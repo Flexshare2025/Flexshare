@@ -159,14 +159,13 @@ export default function App() {
       <Popup
         position='right'
         visible={visibleOrderList}
-        showCloseButton
         destroyOnClose
         onClose={() => {
           setVisibleOrderList(false)
         }}
       >
-        <div className='passenger-order-popup-content'>
-          <PassengerOrderList />
+        <div className='passenger-order-popup-content' style={{ height: '100vh', overflowY: 'scroll' }}>
+          <PassengerOrderList onClose={() => setVisibleOrderList(false)} />
         </div>
       </Popup>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { List, ErrorBlock, Modal, Toast, SwipeAction } from 'antd-mobile'
+import { List, ErrorBlock, Modal, Toast, SwipeAction, Button } from 'antd-mobile'
 import { removeCountryInAddress } from '@/utils/common';
 import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
@@ -9,7 +9,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import './index.scss';
 
 
-export default function App() {
+export default function App({ onClose }) {
   const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false)
@@ -94,7 +94,35 @@ export default function App() {
 
   return (
     <div className='route-list-container'>
-      <List header='Publish Routes'>
+      {/* Header with back button */}
+      <div className='driver-route-header'>
+        <Button
+          fill='none'
+          size='small'
+          onClick={onClose}
+          style={{
+            color: '#1677ff',
+            fontSize: '16px',
+            padding: '8px 12px',
+            border: 'none'
+          }}
+        >
+          ←
+        </Button>
+        <h2 style={{
+          margin: 0,
+          fontSize: '18px',
+          fontWeight: 'bold',
+          color: '#333',
+          flex: 1,
+          textAlign: 'center'
+        }}>
+          Publish Routes
+        </h2>
+        <div style={{ width: '60px' }}></div> {/* placeholder to keep title centered */}
+      </div>
+
+      <List>
         {list.map(order => order && (
           <SwipeAction
             rightActions={isPending(order.status) ? [

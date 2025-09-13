@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import { List, ErrorBlock, Modal, Toast, SwipeAction } from 'antd-mobile'
+import { List, ErrorBlock, Modal, Toast, SwipeAction, Button } from 'antd-mobile'
 import { removeCountryInAddress } from '@/utils/common';
 import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
 import { listSchedules, cancelSchedulePassenger } from '@/api';
 import './PassengerOrderList.scss';
 
-export default function PassengerOrderList() {
+export default function PassengerOrderList({ onClose }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
   //avoid duplicate loading
@@ -77,7 +77,35 @@ export default function PassengerOrderList() {
   const isCancel = i => i === 'cancel' || i === 'invalid' || i === 'timeout';
   return (
     <div className='passenger-order-list-container'>
-      <List header='My Orders'>
+      {/* Header with back button */}
+      <div className='passenger-order-header'>
+        <Button
+          fill='none'
+          size='small'
+          onClick={onClose}
+          style={{
+            color: '#1677ff',
+            fontSize: '16px',
+            padding: '8px 12px',
+            border: 'none'
+          }}
+        >
+          ←
+        </Button>
+        <h2 style={{
+          margin: 0,
+          fontSize: '18px',
+          fontWeight: 'bold',
+          color: '#333',
+          flex: 1,
+          textAlign: 'center'
+        }}>
+          My Orders
+        </h2>
+        <div style={{ width: '60px' }}></div> {/* placeholder to keep title centered */}
+      </div>
+
+      <List >
         {list.map(order => order && (
           <SwipeAction
             key={order.schedule_id}

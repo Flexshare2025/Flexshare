@@ -313,7 +313,6 @@ export default function App() {
       <Popup
         position='right'
         visible={visibleCloseRight}
-        showCloseButton
         destroyOnClose
         onClose={() => {
           setVisibleCloseRight(false)
@@ -321,7 +320,7 @@ export default function App() {
       >
         <div className='driver-list-popup-content' style={{ height: '100vh', overflowY: 'scroll' }}
         >
-          <RouteList />
+          <RouteList onClose={() => setVisibleCloseRight(false)} />
         </div>
       </Popup>
     </>
