@@ -4,7 +4,7 @@ import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
 import DriverInfoUpload from "@/pages/Driver/InfoUpload";
 import DriverPublishRoute from "@/pages/Driver/PublishRoute";
-// import DriverRode from "@/pages/Driver/Rode";
+import DriverRode from "@/pages/Driver/Rode";
 // import Driver from "@/pages/Driver";
 import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
@@ -38,11 +38,15 @@ export default function App() {
             </ProtectedRoute>
           } > */}
           <Route path="/driver/publish" element={
-            <DriverPublishRoute />
+            <ProtectedRoute requiredRole="driver">
+              <DriverPublishRoute />
+            </ProtectedRoute>
           } />
-          {/* <Route path="rode" element={
-            <DriverRode />
-          } /> */}
+          <Route path="/driver/rode" element={
+            <ProtectedRoute requiredRole="driver">
+              <DriverRode />
+            </ProtectedRoute>
+          } />
           {/* </Route> */}
           <Route path="/driver/upload" element={
             <DriverInfoUpload />

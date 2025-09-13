@@ -2,15 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
-import { Button, NoticeBar, Space, List, Modal, Toast } from 'antd-mobile';
+import { Button, List, Modal, Toast } from 'antd-mobile';
 import { removeCountryInAddress } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
-import { viewPublishRoutes } from '@/api';
+import { getSearchParam } from '@/utils/url';
+import Nav from '@/components/Nav';
 
 import './index.scss';
 
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
+  const urlParams = getSearchParam('current');
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
 
@@ -23,29 +25,22 @@ const GoogleMapsNavigation = () => {
   const END_POINT = 'end_point';
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
-  const [currentOrder, setCurrentOrder] = useState([]);
+  const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
 
-  // todo filter currentorder ??
-  // list.filter status !== 'cancel', sort by departure_time??
-  // render stops
-  function getPublishRoutes() {
-    setLoading(true)
-    viewPublishRoutes({
-      success: res => {
-        setLoading(false)
-        console.log('viewPublishRoutes-res', res)
-        const data = res.data;
-        console.log('viewPublishRoutes-data', data)
-      },
-      fail: () => {
-        setLoading(false)
-      }
-    })
-  }
 
   useEffect(() => {
-    // getPublishRoutes()
-  }, []);
+    const data = urlParams ? JSON.parse(urlParams) : null;
+    if (data.start_point) {
+      setStartPoint(data.start_point)
+    }
+    if (data.end_point) {
+      setEndPoint(data.end_point)
+    }
+    setCurrentOrder(data)
+
+  }, [urlParams]);
+
+  console.log('currentOrder', currentOrder, start, end)
 
 
 
@@ -80,11 +75,7 @@ const GoogleMapsNavigation = () => {
         lat: res.latitude,
         lng: res.longitude
       };
-      setStartPoint({
-        lat: res.latitude,
-        lng: res.longitude,
-        address: 'Current Location' // todo
-      });
+
       loader.load().then(() => {
         const newMap = new window.google.maps.Map(mapRef.current, {
           zoom: 15,
@@ -118,20 +109,18 @@ const GoogleMapsNavigation = () => {
   }, [apiKey]);
 
   useEffect(() => {
+    if (start && end && directionsService) {
+      calculateRoute();
+    }
+  }, [directionsService])
+
+  useEffect(() => {
     let watchId;
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           console.log('Updated position:', pos);
-          const latLng = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            address: 'Current Location'
-          };
-          setStartPoint(latLng);
-          // if (end) {
-          //   calculateRoute(latLng, end);
-          // }
+
         },
         (err) => setError('error: ' + err.message),
         { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
@@ -141,6 +130,18 @@ const GoogleMapsNavigation = () => {
       if (watchId) navigator.geolocation.clearWatch(watchId);
     };
   }, [end, directionsService]);
+
+  const calculateWayponits = () => {
+    const waypoints = []
+    const v = Object.values(currentOrder?.passengerSchedules || {});
+    v.map((item) => {
+      waypoints.push({
+        location: { lat: item.stops?.[0]?.lat, lng: item.stops?.[0]?.lng },
+        stopover: true
+      })
+    })
+    return waypoints
+  };
 
   const calculateRoute = () => {
     console.log('Calculating route with start:', start, 'end:', end);
@@ -152,11 +153,14 @@ const GoogleMapsNavigation = () => {
     setLoading(true);
     setError(null);
     setRouteSummary(null);
+    const waypoints = calculateWayponits();
+    console.log('waypoints22', waypoints)
 
     const request = {
       origin: start,
       destination: end,
-      travelMode: google.maps.TravelMode.DRIVING,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      waypoints: waypoints?.length > 0 ? waypoints : undefined,
     };
 
     console.log('Calculating route with request:', request);
@@ -181,64 +185,11 @@ const GoogleMapsNavigation = () => {
     });
   };
 
-  // todo mock current order list
-  const currentOrders = [
-    {
-      "schedule_id": "11",
-      "status": "pending",
-      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "University of Waikato" },
-      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "Hamilton Lake" },
-      "price": 10.0,
-      "seat_count": 1,
-    },
-    {
-      "schedule_id": "22",
-      "status": "pending",
-      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "address21" },
-      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "address22" },
-      "price": 10,
-      "seat_count": 1,
-    },
-    {
-      "schedule_id": "33",
-      "status": "accepted",
-      "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "ANZ House The Strand, Onetangi, Waiheke Island, New Zealand" },
-      "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "University of Waikato" },
-      "price": 5.0,
-      "seat_count": 2,
-    }
-
-  ]
-
-  const order = {
-    "schedule_id": "11",
-    "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "University of Waikato" },
-    "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "Hamilton Lake" },
-    "pickup_time": "2025-08-22T09:00:00Z",
-    "seat_count": 1,
-    "price": 10.0
-  }
-
-  const cancelOrder = () => {
-    Modal.confirm({
-      title: 'Cancel Order',
-      content: 'Are you sure you want to cancel this order?',
-      confirmText: 'Sure',
-      cancelText: 'Cancel',
-      onClose: () => { },
-      onConfirm: () => {
-        // todo call api to cancel order
-        Toast.show({
-          content: 'Order cancelled',
-          duration: 1000,
-        });
-      },
-    });
-  }
-
   return (
-    <div className='driver-rode-container'>
-      {/* <NoticeBar
+    <>
+      <Nav title='Current Order' />
+      <div className='driver-rode-container'>
+        {/* <NoticeBar
         content={<div className='notice-order-content'>
           <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} — ${order.dropoff_point.address}`}</p>
           <div className='notice-order-action'>
@@ -251,60 +202,64 @@ const GoogleMapsNavigation = () => {
         wrap
         color='alert'
       /> */}
-      <div className='order-info'>
-        <List header='Current Orders'>
-          {currentOrders.map(order => (
-            <List.Item
-              key={order.schedule_id}
-            // extra={order.status === 'accepted' ? <Button size='mini' color='danger' onClick={cancelOrder}>Cancel</Button> : null}
-            >
-              <p className={`order-item ${order.status === 'accepted' ? 'grey' : ''}`}>
-                <span className='price'>${order.price.toFixed(0)} ({order.seat_count} people)</span>
-                <span className='address'> {removeCountryInAddress(order.pickup_point.address)}</span>
-                <img className='rode-icon' src={RightArrow} alt="" />
-                <span className='address'>{removeCountryInAddress(order.dropoff_point.address)}</span>
-              </p>
-            </List.Item>
-          ))}
-        </List>
-      </div>
-      <div className='driver-rode-search-container'>
-        <AddressSearch
-          onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
-          placeholder="Pickup location"
-          defaultValue={start ? start.address : ''}
-        />
-        <div className='driver-rode-search-item'>
-          <AddressSearch
-            onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
-            placeholder='Drop location'
-          />
+        <div className='order-info'>
+          <List header=''>
+            <p className='route-item-detail'>
+              <span className='address'> {removeCountryInAddress(currentOrder.start_point.address)}</span>
+              <img className='rode-icon' src={RightArrow} alt="" />
+              <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
+            </p>
+            {Object.values(currentOrder?.passengerSchedules)?.map((order, index) => (
+              <List.Item
+                key={order.schedule_id}
+              >
+                <p className="route-item">
+                  {/* <span className='seat-item'>Order{index + 1}: </span> */}
+                  <span>{order.departure_time}</span>
+                  <span className='seat-item'>({order.num_passenger} people)</span>
+                </p>
+              </List.Item>
+            ))}
+          </List>
         </div>
-        <div className='driver-rode-action-bar'>
-          <Button
-            onClick={calculateRoute}
-            color='primary'
-            fill='solid'
-            loading={loading}
-            disabled={loading || !start || !end}
-            className='driver-rode-navigate-button'
-          >
-            Navigate
-          </Button>
-          <div className='driver-route-summary'>
-            {routeSummary && (
-              <div>
-                <div>Distance: {routeSummary.distance}</div>
-                <div>Time: {routeSummary.duration}</div>
-                <div>Path: {routeSummary.summary}</div>
-              </div>
-            )}
-            {error && <div style={{ color: 'red' }}>{error}</div>}
+        <div className='driver-rode-search-container'>
+          <AddressSearch
+            onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
+            placeholder="Pickup location"
+            defaultValue={start ? start.address : ''}
+          />
+          <div className='driver-rode-search-item'>
+            <AddressSearch
+              onPlaceSelect={v => handlePlaceSelect(END_POINT, v)}
+              placeholder='Drop location'
+              defaultValue={end ? end.address : ''}
+            />
+          </div>
+          <div className='driver-rode-action-bar'>
+            <Button
+              onClick={calculateRoute}
+              color='primary'
+              fill='solid'
+              loading={loading}
+              disabled={loading || !start || !end}
+              className='driver-rode-navigate-button'
+            >
+              Navigate
+            </Button>
+            <div className='driver-route-summary'>
+              {routeSummary && (
+                <div>
+                  <div>Distance: {routeSummary.distance}</div>
+                  <div>Time: {routeSummary.duration}</div>
+                  <div>Path: {routeSummary.summary}</div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+        <div ref={mapRef} className='rode-map-container' />
       </div>
-      <div ref={mapRef} className='rode-map-container' />
-    </div>
+    </>
   );
 };
 

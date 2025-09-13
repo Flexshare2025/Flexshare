@@ -5,10 +5,12 @@ import Loading from '@/components/Loading';
 import RightArrow from '@/assets/right_arrow.png';
 import { viewPublishRoutes, cancelPublishRoutes } from '@/api';
 import UserOrderList from '../UserOrderList';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import './index.scss';
 
 
 export default function App() {
+  const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false)
 
@@ -84,6 +86,12 @@ export default function App() {
 
   const isCancel = i => i === 'cancel';
 
+  const goDetail = (currentOrder) => {
+    if (currentOrder) {
+      navigate(`/driver/rode?current=${JSON.stringify(currentOrder)}`);
+    }
+  }
+
   return (
     <div className='route-list-container'>
       <List header='Publish Routes'>
@@ -95,6 +103,12 @@ export default function App() {
                 text: 'Cancel',
                 color: 'danger',
                 onClick: () => cancelOrder(order),
+              },
+              {
+                key: 'detail',
+                text: 'Detail',
+                color: 'primary',
+                onClick: () => goDetail(order),
               },
             ]}
           >
