@@ -84,7 +84,7 @@ export default function App() {
     });
   }
 
-  const isCancel = i => i === 'cancel';
+  const isPending = i => i === 'pending';
 
   const goDetail = (currentOrder) => {
     if (currentOrder) {
@@ -97,7 +97,7 @@ export default function App() {
       <List header='Publish Routes'>
         {list.map(order => order && (
           <SwipeAction
-            rightActions={isCancel(order.status) ? [] : [
+            rightActions={isPending(order.status) ? [
               {
                 key: 'delete',
                 text: 'Cancel',
@@ -110,9 +110,9 @@ export default function App() {
                 color: 'primary',
                 onClick: () => goDetail(order),
               },
-            ]}
+            ] : []}
           >
-            <List.Item key={order.schedule_id} className={`${isCancel(order.status) ? 'disabled' : ''}`}>
+            <List.Item key={order.schedule_id} className={`${isPending(order.status) ? '' : 'disabled'}`}>
               <div>
                 <p className="route-item">
                   <span>{order.departure_time}</span>
