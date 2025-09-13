@@ -49,3 +49,25 @@ export function exitFullscreen(element) {
 		element.msExitFullscreen()
 	}
 }
+
+export function convertMinutesToHoursAndMinutes(totalMinutes) {
+	const hours = Math.floor(totalMinutes / 60)
+	const minutes = totalMinutes % 60
+
+	let result = ''
+
+	if (hours > 0) {
+		result += `${hours} hour${hours !== 1 ? 's' : ''}`
+	}
+
+	if (minutes > 0) {
+		if (result) result += ' '
+		result += `${minutes} minute${minutes !== 1 ? 's' : ''}`
+	}
+
+	if (result === '') {
+		result = '0 minutes'
+	}
+
+	return result
+}

@@ -3,7 +3,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
 import { Button, List, Modal, Toast } from 'antd-mobile';
-import { removeCountryInAddress } from '@/utils/common';
+import { removeCountryInAddress, convertMinutesToHoursAndMinutes } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
 import { getSearchParam } from '@/utils/url';
 import Nav from '@/components/Nav';
@@ -172,10 +172,19 @@ const GoogleMapsNavigation = () => {
       if (status === 'OK') {
         directionsRenderer.setDirections(response);
         const route = response.routes[0];
+        console.log('route ', route)
         if (route && route.legs && route.legs.length > 0) {
+          let totalDistanceMeters = 0;
+          let totalDurationSeconds = 0;
+          route.legs.forEach(leg => {
+            totalDistanceMeters += leg.distance?.value || 0;
+            totalDurationSeconds += leg.duration?.value || 0;
+          });
+          const km = (totalDistanceMeters / 1000).toFixed(1);
+          let minutes = Math.round(totalDurationSeconds / 60);
           setRouteSummary({
-            distance: route.legs[0].distance.text,
-            duration: route.legs[0].duration.text,
+            distance: km + 'km',
+            duration: convertMinutesToHoursAndMinutes(minutes),
             summary: route.summary
           });
         }
