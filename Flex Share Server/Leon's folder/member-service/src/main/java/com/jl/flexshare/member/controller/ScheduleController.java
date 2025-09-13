@@ -27,10 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.jl.flexshare.member.controller.ScheduleController.ScheduleOperation.Cancel;
@@ -430,6 +427,7 @@ public class ScheduleController {
                 }
             }
         }
+        schedules.sort(Comparator.comparing(Schedule::getDeparture_time).reversed());
         return schedules;
     }
 
