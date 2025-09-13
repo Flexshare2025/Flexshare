@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { List, ErrorBlock, Modal, Toast, SwipeAction, Button } from 'antd-mobile'
+import { List, ErrorBlock, Modal, Toast, SwipeAction } from 'antd-mobile'
 import { removeCountryInAddress } from '@/utils/common';
 import Loading from '@/components/Loading';
+import Header from '@/components/Header';
 import RightArrow from '@/assets/right_arrow.png';
 import { viewPublishRoutes, cancelPublishRoutes } from '@/api';
 import UserOrderList from '../UserOrderList';
@@ -37,15 +38,6 @@ export default function App({ onClose }) {
     getPublishRoutes()
   }, [])
 
-  if (loading) {
-    return <Loading />
-  }
-
-  if (!list || list?.length === 0) {
-    return (
-      <ErrorBlock status='empty' description="" />
-    )
-  }
 
   const cancelOrder = (order) => {
     Modal.confirm({
@@ -94,69 +86,49 @@ export default function App({ onClose }) {
 
   return (
     <div className='route-list-container'>
-      {/* Header with back button */}
-      <div className='driver-route-header'>
-        <Button
-          fill='none'
-          size='small'
-          onClick={onClose}
-          style={{
-            color: '#1677ff',
-            fontSize: '16px',
-            padding: '8px 12px',
-            border: 'none'
-          }}
-        >
-          ←
-        </Button>
-        <h2 style={{
-          margin: 0,
-          fontSize: '18px',
-          fontWeight: 'bold',
-          color: '#333',
-          flex: 1,
-          textAlign: 'center'
-        }}>
-          Publish Routes
-        </h2>
-        <div style={{ width: '60px' }}></div> {/* placeholder to keep title centered */}
-      </div>
+      <Header title="Publish Routes" onBack={onClose} />
 
-      <List>
-        {list.map(order => order && (
-          <SwipeAction
-            rightActions={isPending(order.status) ? [
-              {
-                key: 'delete',
-                text: 'Cancel',
-                color: 'danger',
-                onClick: () => cancelOrder(order),
-              },
-              {
-                key: 'detail',
-                text: 'Detail',
-                color: 'primary',
-                onClick: () => goDetail(order),
-              },
-            ] : []}
-          >
-            <List.Item key={order.schedule_id} className={`${isPending(order.status) ? '' : 'disabled'}`}>
-              <div>
-                <p className="route-item">
-                  <span>{order.departure_time}</span>
-                  <span className='seat-item'>({order.available_seats} seats)</span>
-                </p>
-                <p className='route-item-detail'>
-                  <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>
-                  <img className='rode-icon' src={RightArrow} alt="" />
-                  <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
-                </p>
-              </div>
-              <UserOrderList data={Object.values(order.passengerSchedules || {})} />
-            </List.Item>
-          </SwipeAction>
-        ))}
-      </List>
+      {loading ? (
+        <Loading />
+      ) : !list || list?.length === 0 ? (
+        <ErrorBlock status='empty' description="" />
+      ) : (
+        <List>
+          {list.map(order => order && (
+            <SwipeAction
+              rightActions={isPending(order.status) ? [
+                {
+                  key: 'delete',
+                  text: 'Cancel',
+                  color: 'danger',
+                  onClick: () => cancelOrder(order),
+                },
+                {
+                  key: 'detail',
+                  text: 'Detail',
+                  color: 'primary',
+                  onClick: () => goDetail(order),
+                },
+              ] : []}
+            >
+              <List.Item key={order.schedule_id} className={`${isPending(order.status) ? '' : 'disabled'}`}>
+                <div>
+                  <p className="route-item">
+                    <span>{order.departure_time}</span>
+                    <span className='seat-item'>({order.available_seats} seats)</span>
+                  </p>
+                  <p className='route-item-detail'>
+                    <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>
+                    <img className='rode-icon' src={RightArrow} alt="" />
+                    <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
+                  </p>
+                </div>
+                <UserOrderList data={Object.values(order.passengerSchedules || {})} />
+              </List.Item>
+            </SwipeAction>
+          ))}
+        </List>
+      )}
     </div>
   )
 }
