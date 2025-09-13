@@ -39,7 +39,10 @@ export default function PassengerOrderList({ onClose }) {
   if (list.length === 0) {
     // no orders
     return (
-      <ErrorBlock status='empty' description="No orders" />
+      <>
+        <Header title="My Orders" onBack={onClose} />
+        <ErrorBlock status='empty' description="No orders" />
+      </>
     )
   }
   const cancelOrder = (order) => {
