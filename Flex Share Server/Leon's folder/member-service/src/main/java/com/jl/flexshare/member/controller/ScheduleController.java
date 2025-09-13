@@ -1,4 +1,6 @@
 package com.jl.flexshare.member.controller;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -79,22 +82,32 @@ public class ScheduleController {
     }
 
     private Result checkSchedule(Schedule schedule) {
-        //Check if departure time >= current time + 5min
-        LocalDateTime departureTime = schedule.getDeparture_time();
-        Duration duration = Duration.between(LocalDateTime.now(), departureTime);
-        long minutes = duration.toMinutes();
+        LocalDateTime localDepartureTime = schedule.getDeparture_time();
+        ZonedDateTime nzDepartureTime = localDepartureTime.atZone(ZoneId.of("Pacific/Auckland"));
 
-        if (minutes < 1) {
+        ZonedDateTime departureUtc = nzDepartureTime.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneId.of("UTC"));
+
+        Duration duration = Duration.between(nowUtc, departureUtc);
+        long seconds = duration.getSeconds();
+
+        if (seconds < 5*60) {
             return Result.error(ResultError.info(ErrorType.Departure_time_too_late));
         }
-        else return null;
+        return null;
     }
 
     private void setScheduleTimeOutFlag(Schedule schedule) {
-        String key="schedule_start_flag:"+schedule.getSchedule_id();
-        LocalDateTime departureTime = schedule.getDeparture_time();
-        Duration duration = Duration.between(LocalDateTime.now(), departureTime);
-        redisService.set_temp(key,null,duration.getSeconds(),TimeUnit.SECONDS);
+        String key = "schedule_start_flag:" + schedule.getSchedule_id();
+        LocalDateTime localDepartureTime = schedule.getDeparture_time();
+        ZonedDateTime nzDepartureTime = localDepartureTime.atZone(ZoneId.of("Pacific/Auckland"));
+        ZonedDateTime departureUtc = nzDepartureTime.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneId.of("UTC"));
+        long secondsUntilExpire = Duration.between(nowUtc, departureUtc).getSeconds();
+        System.out.println(secondsUntilExpire+":"+nzDepartureTime);
+        if (secondsUntilExpire > 60) {
+            redisService.set_temp(key, null, secondsUntilExpire, TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -240,19 +253,26 @@ public class ScheduleController {
      * Set a redis time-out param for the new schedule.
      * @param schedule
      */
-    private void setScheduleTimeOut(Schedule schedule){
-        LocalDateTime departureTime = schedule.getDeparture_time();
-        LocalDateTime now = LocalDateTime.now();
-        long secondsUntilExpire = Duration.between(now, departureTime).getSeconds();
+    private void setScheduleTimeOut(Schedule schedule) {
+        LocalDateTime localDepartureTime = schedule.getDeparture_time();
+        ZonedDateTime nzDepartureTime = localDepartureTime.atZone(ZoneId.of("Pacific/Auckland"));
+        ZonedDateTime departureUtc = nzDepartureTime.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneId.of("UTC"));
+        long secondsUntilExpire = Duration.between(nowUtc, departureUtc).getSeconds();
+
         if (secondsUntilExpire > 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
+            String formattedTime = formatter.format(departureUtc);
+
             redisService.set_temp(
                     schedule.getSchedule_id() + ":timeout",
-                    departureTime.toString(),
+                    formattedTime,
                     secondsUntilExpire,
                     TimeUnit.SECONDS
             );
         }
     }
+
 
 
     @RedisLock(key = "'schedule_lock'+#scheduleId", expire = 2000)
