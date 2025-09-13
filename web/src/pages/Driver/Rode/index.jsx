@@ -209,7 +209,7 @@ const GoogleMapsNavigation = () => {
               <img className='rode-icon' src={RightArrow} alt="" />
               <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
             </p>
-            {Object.values(currentOrder?.passengerSchedules)?.map((order, index) => (
+            {Object.values(currentOrder?.passengerSchedules || {})?.map((order, index) => (
               <List.Item
                 key={order.schedule_id}
               >
