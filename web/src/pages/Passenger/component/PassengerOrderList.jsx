@@ -36,7 +36,7 @@ export default function PassengerOrderList({ onClose }) {
   if (loading) {
     return <Loading />
   }
-  if (list.length === 0) {
+  if (!list || list?.length === 0) {
     // no orders
     return (
       <>
