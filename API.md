@@ -8,71 +8,15 @@
         -   [1.4 User Login](#14-user-login)
         -   [1.5 Get Current User Info](#15-get-current-user-info)
     -   [**2. Driver Module**](#2-driver-module)
-        -   [2.1 Upload License \& Vehicle Info](#21-upload-license--vehicle-info)
-        -   [2.2 Publish a Route](#22-publish-a-route)
-        -   [2.3 Driver View/Search Passenger Orders](#23-driver-viewsearch-passenger-orders)
-        -   [2.4 Get Current Schedule List](#24-get-current-schedule-list)
-        -   [2.5 Accept an Schedule](#25-accept-an-schedule)
-        -   [2.6 Cancel an Schedule](#26-cancel-an-schedule)
-        -   [2.7 Broadcast Driver Location (Real-Time Tracking)](#27-broadcast-driver-location-real-time-tracking)
-        -   [2.8 Start a Trip](#28-start-a-trip)
-        -   [2.9 End a Trip](#29-end-a-trip)
-        -   [2.10 Driver View Own Published Routes](#210-driver-view-own-published-routes)
-        -   [2.11 Driver Cancel Published Route](#211-driver-cancel-published-route)
+        -   [2.1 Publish a Route](#21-publish-a-route)
+        -   [2.2 Broadcast Driver Location (Real-Time Tracking)](#22-broadcast-driver-location-real-time-tracking)
+        -   [2.3 Driver View Own Published Routes](#23-driver-view-own-published-routes)
+        -   [2.4 Driver Cancel Published Route](#24-driver-cancel-published-route)
     -   [**3. Passenger Module**](#3-passenger-module)
         -   [3.1 View/Search for Routes](#31-viewsearch-for-routes)
         -   [3.2 Place an Schedule](#32-place-an-schedule)
         -   [3.3 Cancel an Schedule](#33-cancel-an-schedule)
         -   [3.4 Update Passenger Location (Real-Time)](#34-update-passenger-location-real-time)
-    -   [**4. Schedule Module（Background management system）**](#4-schedule-modulebackground-management-system)
-        -   [4.1 Get Schedule List](#41-get-schedule-list)
-        -   [4.2 Get Schedule Details](#42-get-schedule-details)
-
-```mermaid
-sequenceDiagram
-    participant Passenger
-    participant Backend
-    participant Driver
-
-    %% Registration & Login
-    Passenger->>Backend: Request email verification code
-    Backend-->>Passenger: Send verification code
-    Passenger->>Backend: Register (email, password, code)
-    Backend-->>Passenger: Registration success
-    Passenger->>Backend: Login (email, password)
-    Backend-->>Passenger: Login success + token
-    Driver->>Backend: Register & upload license, car photos, plate
-    Backend-->>Driver: Registration success
-    Driver->>Backend: Login
-    Backend-->>Driver: Login success + token
-
-    %% Route Publish & Search
-    Driver->>Backend: Publish route (time, start, end, stops)
-    Backend-->>Driver: Route published
-    Passenger->>Backend: Search routes (origin, destination, time)
-    Backend-->>Passenger: Matching routes
-
-    %% Schedule Placement & Acceptance
-    Passenger->>Backend: Place schedule (route ID, pickup, drop-off)
-    Backend-->>Passenger: Schedule placed
-    Backend->>Driver: Notify new schedule
-    Driver->>Backend: Accept schedule
-    Backend-->>Passenger: Schedule accepted
-    Passenger->>Backend: Cancel schedule (optional)
-    Driver->>Backend: Cancel schedule (optional)
-
-    %% Real-time Location Sharing
-    Passenger->>Backend: Share current location
-    Backend-->>Driver: Update passenger location
-    Driver->>Backend: Broadcast location
-    Backend-->>Passenger: Update driver location
-
-    %% Trip Start & End
-    Driver->>Backend: Start trip
-    Backend-->>Passenger: Trip started notification
-    Driver->>Backend: End trip
-    Backend-->>Passenger: Trip completed notification
-```
 
 ## **1. Authentication Module**
 
@@ -198,31 +142,7 @@ sequenceDiagram
 
 ## **2. Driver Module**
 
-### 2.1 Upload License & Vehicle Info
-
-**POST** `/api/driver/upload-docs`
-
-**Form Data**:
-
-```
-driver_license_image: file
-vehicle_photo: file
-plate_number: string
-driver_license: string
-```
-
-**Response**:
-
-```json
-{
-	"status": "success",
-	"message": "Documents uploaded successfully"
-}
-```
-
----
-
-### 2.2 Publish a Route
+### 2.1 Publish a Route
 
 **POST** `/api/driver/route`
 
@@ -261,117 +181,7 @@ driver_license: string
 
 ---
 
-### 2.3 Driver View/Search Passenger Orders
-
-**POST** `/api/driver/schedule/orders`
-
-**Request Body**:
-
-```json
-{
-  "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" } (optional),
-  "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" } (optional),
-  "date": "YYYY-MM-DD (optional)",
-  "sort_by": "time|price|distance",
-  "order": "asc|desc",
-  "page": 1,
-  "page_size": 20
-}
-```
-
-**Response**:
-
-```json
-{
-	"orders": [
-		{
-			"schedule_id": "ord_123",
-			"passenger_id": "usr_789",
-			"pickup_point": {
-				"lat": 123.46,
-				"lng": 67.91,
-				"address": "string"
-			},
-			"dropoff_point": {
-				"lat": 123.99,
-				"lng": 68.01,
-				"address": "string"
-			},
-			"pickup_time": "2025-08-22T09:00:00Z",
-			"price": 10.5,
-			"seat_count": 1
-		}
-	],
-	"pagination": {
-		"page": 1,
-		"page_size": 20,
-		"total": 52
-	}
-}
-```
-
----
-
-### 2.4 Get Current Schedule List
-
-**GET** `/api/driver/schedule/current`
-
-**Response**:
-
-```json
-[
-	{
-		"schedule_id": "string",
-		"status": "pending|accepted",
-		"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-		"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-		"price": 20.0,
-		"seat_count": 1
-	}
-]
-```
-
----
-
-### 2.5 Accept an Schedule
-
-**POST** `/api/driver/schedule/{schedule_id}/accept`
-
-**Response**:
-
-```json
-{
-	"status": "success",
-	"message": "Schedule accepted"
-}
-```
-
----
-
-### 2.6 Cancel an Schedule
-
-**POST** `/api/driver/schedule/{schedule_id}/cancel`
-
-**Request Body**:
-
-```json
-{
-	"reason": "string"
-}
-```
-
-**Response**:
-
-```json
-{
-	"status": "success",
-	"message": "Schedule cancelled"
-}
-```
-
----
-
-### 2.7 Broadcast Driver Location (Real-Time Tracking)
+### 2.2 Broadcast Driver Location (Real-Time Tracking)
 
 **POST** `/api/driver/location`
 
@@ -399,37 +209,7 @@ driver_license: string
 
 ---
 
-### 2.8 Start a Trip
-
-**POST** `/api/driver/trips/{trip_id}/start`
-
-**Response**:
-
-```json
-{
-	"status": "success",
-	"message": "Trip started"
-}
-```
-
----
-
-### 2.9 End a Trip
-
-**POST** `/api/driver/trips/{trip_id}/end`
-
-**Response**:
-
-```json
-{
-	"status": "success",
-	"message": "Trip completed"
-}
-```
-
----
-
-### 2.10 Driver View Own Published Routes
+### 2.3 Driver View Own Published Routes
 
 **POST** `/api/driver/routes`
 
@@ -470,7 +250,7 @@ driver_license: string
 
 ---
 
-### 2.11 Driver Cancel Published Route
+### 2.4 Driver Cancel Published Route
 
 **Post** `/api/driver/routes/{route_id}`
 
@@ -601,50 +381,3 @@ driver_license: string
 ```
 
 ---
-
-## **4. Schedule Module（Background management system）**
-
-### 4.1 Get Schedule List
-
-**GET** `/api/schedule`
-
-**Query Parameters**:
-
--   `role=passenger|driver`
--   `status=pending|accepted|completed|cancelled`
-
-**Response**:
-
-```json
-[
-	{
-		"schedule_id": "string",
-		"status": "pending",
-		"pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-		"dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-		"price": 20.0
-	}
-]
-```
-
----
-
-### 4.2 Get Schedule Details
-
-**GET** `/api/schedule/{schedule_id}`
-
-**Response**:
-
-```json
-{
-  "schedule_id": "string",
-  "route_id": "string",
-  "status": "pending" | "accepted" | "cancelled" | "completed",
-  "driver": { "id": "string", "name": "string" },
-  "passenger": { "id": "string", "name": "string" },
-  "pickup_point": { "lat": 123.46, "lng": 67.91, "address": "string" },
-  "dropoff_point": { "lat": 123.99, "lng": 68.01, "address": "string" },
-  "price": 20.0,
-  "created_at": "2025-08-11T10:00:00Z"
-}
-```
