@@ -51,7 +51,7 @@ export default function Login() {
             position: 'center',
           });
         }
-        else {
+        else if (result.code == '200') {
           // Save token to cookie
           if (result.data) {
             setLocalData({ key: FLEXSHARE_ACCESS_TOKEN, value: result.data });
@@ -73,6 +73,11 @@ export default function Login() {
               navigate('/passenger');
             }
           }
+        } else {
+          Toast.show({
+            content: result.message,
+            position: 'center',
+          });
         }
       },
       fail: (error) => {
