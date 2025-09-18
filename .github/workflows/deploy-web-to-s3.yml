@@ -2,7 +2,7 @@ name: Deploy web to AWS S3
 
 on:
     push:
-        branches: [flexShareWeb] # todo main
+        branches: [main]
 
 jobs:
     deploy:
@@ -24,6 +24,13 @@ jobs:
               run: |
                   npm ci
                   npm run build
+
+            - name: Check AWS Region configuration
+              run: |
+                  if [ -z "${{ secrets.AWS_REGION }}" ]; then
+                    echo "Error: AWS_REGION secret is not set"
+                    exit 1
+                  fi
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
