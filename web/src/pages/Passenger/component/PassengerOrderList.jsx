@@ -6,7 +6,6 @@ import Header from '@/components/Header';
 import RightArrow from '@/assets/right_arrow.png';
 import { listSchedules, cancelSchedulePassenger } from '@/api';
 import './PassengerOrderList.scss';
-
 export default function PassengerOrderList({ onClose }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);

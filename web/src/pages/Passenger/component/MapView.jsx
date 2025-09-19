@@ -10,28 +10,27 @@ export default function MapView({ position, start, end }) {
       setReady(true)
     }
   }, [routesLibrary])
-
   // Calculate map center based on available data
   const getMapCenter = () => {
     // Priority use current position
-    if (position && position.lat !== 0 && position.lng !== 0) {
+    if (position && typeof position.lat === 'number' && typeof position.lng === 'number' && position.lat !== 0 && position.lng !== 0) {
       return position
     }
     // If there is no current position, but there is a start point, use the start point
-    if (start && start.lat && start.lng) {
+    if (start && typeof start.lat === 'number' && typeof start.lng === 'number') {
       return { lat: start.lat, lng: start.lng }
     }
-    // Finally use default position
-    return { lat: -36.8485, lng: 174.7633 } // default position auckland
+    // no valid center available yet
+    return null
   }
-
-  if (!ready) {
-    return <div style={{ height: '400px', width: '100%', background: '#eee' }}>Loading Map...</div>
+  const center = getMapCenter()
+  if (!ready || !center) {
+    // not show map, until get valid coordinates
+    return null
   }
-
   return (
     <Map
-      defaultCenter={getMapCenter()}
+      defaultCenter={center}
       defaultZoom={13}
       mapId="1"
       style={{ height: '300px', width: '100%' }}
@@ -44,30 +43,31 @@ export default function MapView({ position, start, end }) {
       clickableIcons={false}
     >
       {/* Current location marker */}
-      <AdvancedMarker
-        position={position}
-        title="Current Location"
-      >
-        <div style={{
-          width: '20px',
-          height: '20px',
-          backgroundColor: '#4285F4', // Google blue
-          border: '2px solid #FFFFFF', // white border
-          borderRadius: '50%',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.3)', // shadow effect
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+      {position && typeof position.lat === 'number' && typeof position.lng === 'number' && position.lat !== 0 && position.lng !== 0 && (
+        <AdvancedMarker
+          position={position}
+          title="Current Location"
+        >
           <div style={{
-            width: '6px',
-            height: '6px',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '50%'
-          }} />
-        </div>
-      </AdvancedMarker>
-
+            width: '20px',
+            height: '20px',
+            backgroundColor: '#4285F4', // Google blue
+            border: '2px solid #FFFFFF', // white border
+            borderRadius: '50%',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.3)', // shadow effect
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div style={{
+              width: '6px',
+              height: '6px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '50%'
+            }} />
+          </div>
+        </AdvancedMarker>
+      )}
       {/* Start point marker (green) */}
       {start && (
         <AdvancedMarker
@@ -92,7 +92,6 @@ export default function MapView({ position, start, end }) {
           </div>
         </AdvancedMarker>
       )}
-
       {/* End point marker (blue) */}
       {end && (
         <AdvancedMarker

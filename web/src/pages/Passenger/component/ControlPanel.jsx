@@ -46,7 +46,6 @@ export default function ControlPanel({
     const address = formatted_address;
     const lat = geometry.location.lat();
     const lng = geometry.location.lng();
-
     if (type === START_POINT) {
       onPlaceSelect({ address, lat, lng }, 'start');
     } else if (type === END_POINT) {
@@ -56,31 +55,25 @@ export default function ControlPanel({
 
   const calculateRoute = async () => {
     if (!start || !end || !calculateRouteBetween) return;
-
     if (!date) {
       onSetError && onSetError('Please select departure time');
       return;
     }
-
     try {
       onSetLoading && onSetLoading(true);
       onSetError && onSetError(null);
       onSetRouteSummary && onSetRouteSummary(null);
-
       const origin = { lat: start.lat, lng: start.lng };
       const destination = { lat: end.lat, lng: end.lng };
       const { totalDistanceMeters, totalDurationSeconds, etaDate } = await calculateRouteBetween(origin, destination);
-
       const distanceKm = (totalDistanceMeters / 1000).toFixed(2) + ' km';
       const durationMin = Math.round(totalDurationSeconds / 60) + ' mins';
       const eta = etaDate.toLocaleTimeString();
-
       onSetRouteSummary && onSetRouteSummary({
         distance: distanceKm,
         duration: durationMin,
         eta,
       });
-
       const getAddressForAPI = (point) => {
         // if realAddress is a coordinate format, try to use a more friendly address name
         if (point.realAddress && point.realAddress.includes(',')) {
@@ -94,7 +87,6 @@ export default function ControlPanel({
         // otherwise use realAddress or address
         return point.realAddress || point.address;
       };
-
       const matchData = {
         start_point: {
           lat: start.lat,
@@ -109,13 +101,11 @@ export default function ControlPanel({
         departure_time: date + ':00',
         num_passengers: passengerCount
       };
-
       matchSchedule({
         data: matchData,
         success: (result) => {
           // according to the data structure returned by the interface, extract the data field
           if (result && result.data) {
-            console.log('Setting matched schedules:', result.data);
             onSetMatchedSchedules && onSetMatchedSchedules(result.data);
             // Display route on map if we have matched schedules
             if (result.data.length > 0 && displayRouteOnMap) {
@@ -129,12 +119,10 @@ export default function ControlPanel({
               }
             }
           } else {
-            console.log('No data in result, setting empty array');
             onSetMatchedSchedules && onSetMatchedSchedules([]);
           }
         },
         fail: (error) => {
-          console.error('Match schedule failed:', error);
           onSetError && onSetError('Failed to match schedule: ' + error.message);
         },
       });

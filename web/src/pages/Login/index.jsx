@@ -39,7 +39,6 @@ export default function Login() {
   // Handle form submission
   const handleSubmit = async (values) => {
     values.role = isDriver ? 'driver' : 'passenger'
-    console.log("🚀 --- values:", values)
     setLoading(true);
 
     login({
