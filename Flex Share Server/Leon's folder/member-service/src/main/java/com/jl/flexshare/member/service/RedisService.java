@@ -72,36 +72,21 @@ public class RedisService {
     public void addRoutePoint(String pointId, double longitude, double latitude) {
         redisTemplate.opsForGeo().add(GEO_ROUTE_POINT,new Point(longitude,latitude),pointId);
     }
-
-
-
-
-
     public void removeRoutePoint(Schedule schedule) throws JsonProcessingException {
 
         Long scheduleId = schedule.getSchedule_id();
 
-        // 获取对应的 Schedule 对象
-        if (schedule == null || schedule.getRoute_points() == null) {
-            return; // 无需删除
-        }
 
-        // 构造所有 GEO key 并删除
+        if (schedule == null || schedule.getRoute_points() == null) {
+            return; 
+        }
         List<GeoPoint> routePoints = schedule.getRoute_points();
         List<Object> geoKeys = new ArrayList<>();
         for (int i = 0; i < routePoints.size(); i++) {
             geoKeys.add(scheduleId + ":" + i);
         }
-
         redisTemplate.opsForGeo().remove(GEO_ROUTE_POINT, geoKeys.toArray());
     }
-
-
-
-
-
-
-
     public LinkedHashSet<String> findNearestPoints(double range, Metrics metrics, GeoPointInfo point) {
         Point center = new Point(point.getLng(), point.getLat());
         Distance radius = new Distance(range, metrics);
