@@ -6,6 +6,8 @@ import { Button, List, Modal, Toast } from 'antd-mobile';
 import { removeCountryInAddress, convertMinutesToHoursAndMinutes } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
 import { getSearchParam } from '@/utils/url';
+import { useRequest, useSize } from 'ahooks';
+import { pushGPS, getGPS } from '@/utils/gps';
 import Nav from '@/components/Nav';
 
 import './index.scss';
@@ -26,6 +28,24 @@ const GoogleMapsNavigation = () => {
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
+
+  // https://alibaba.github.io/hooks/use-request/polling
+  const { runPush, cancelPush } = useRequest(pushGPS, {
+    pollingInterval: 5000,
+    manual: true,
+  });
+
+  const { gpsData, runGet, cancelGet } = useRequest(getGPS, {
+    pollingInterval: 5000,
+    manual: true,
+  });
+
+  useEffect(() => {
+    if (urlParams && runGet && runPush) {
+      runPush();
+      runGet();
+    }
+  }, [urlParams, runPush, runGet])
 
 
   useEffect(() => {
@@ -100,6 +120,41 @@ const GoogleMapsNavigation = () => {
         setDirectionsService(service);
         setDirectionsRenderer(renderer);
 
+        // todo mock
+        const passengers = [
+          {
+            id: 1,
+            name: "a",
+            position: { lat: -36.8543791, lng: 174.7589 }
+          },
+          {
+            id: 2,
+            name: "b",
+            position: { lat: -36.8546, lng: 174.7599 }
+          },
+        ];
+
+        passengers.forEach((passenger, index) => {
+          const marker = new window.google.maps.Marker({
+            position: passenger.position,
+            map: newMap,
+            title: passenger.name,
+            icon: {
+              url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
+              scaledSize: new window.google.maps.Size(48, 48),
+            }
+          });
+          const infoWindow = new window.google.maps.InfoWindow({
+            content: `Passager ${index + 1}`
+          });
+
+          marker.addListener('click', () => {
+            infoWindow.open(newMap, marker);
+          });
+        });
+
+
+
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
@@ -113,6 +168,8 @@ const GoogleMapsNavigation = () => {
       calculateRoute();
     }
   }, [directionsService])
+
+
 
   useEffect(() => {
     let watchId;
