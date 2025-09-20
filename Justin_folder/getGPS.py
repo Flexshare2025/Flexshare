@@ -101,8 +101,8 @@ def lambda_handler(event, context):
                         entry = json.loads(val)
                         gps_list.append({
                             "userId": entry.get("userId"),
-                            "lat": entry.get("gps", {}).get("lat"),
-                            "lon": entry.get("gps", {}).get("lon"),
+                            "lat": entry.get("lat"),
+                            "lon": entry.get("lon"),
                             "timestamp": entry.get("timestamp")  # Optional field
                         })
                     except json.JSONDecodeError as je:
