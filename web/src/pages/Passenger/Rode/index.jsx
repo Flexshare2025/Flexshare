@@ -178,6 +178,10 @@ const GoogleMapsNavigation = () => {
         location: { lat: item.stops?.[0]?.lat, lng: item.stops?.[0]?.lng },
         stopover: true
       })
+      waypoints.push({
+        location: { lat: item.stops?.[1]?.lat, lng: item.stops?.[1]?.lng },
+        stopover: true
+      })
     })
     return waypoints
   };
@@ -199,7 +203,7 @@ const GoogleMapsNavigation = () => {
       origin: start,
       destination: end,
       travelMode: window.google.maps.TravelMode.DRIVING,
-      waypoints: waypoints?.length > 0 ? waypoints : undefined,
+      // waypoints: waypoints?.length > 0 ? waypoints : undefined,
     };
 
     console.log('Calculating route with request:', request);
@@ -248,7 +252,6 @@ const GoogleMapsNavigation = () => {
         <UserLocationTracker
           map={map}
           followUser={true}
-          markerSize={{ width: 48, height: 48 }}
         />
       </div>
     </>

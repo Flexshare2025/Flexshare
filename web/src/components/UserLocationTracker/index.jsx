@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 48, height: 48 }, followUser = false }) => {
+const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, height: 36 }, followUser = false }) => {
   const [userMarker, setUserMarker] = useState(null);
   const [watchId, setWatchId] = useState(null);
   const [userPosition, setUserPosition] = useState(null);

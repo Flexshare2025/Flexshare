@@ -201,6 +201,10 @@ const GoogleMapsNavigation = () => {
         location: { lat: item.stops?.[0]?.lat, lng: item.stops?.[0]?.lng },
         stopover: true
       })
+      waypoints.push({
+        location: { lat: item.stops?.[1]?.lat, lng: item.stops?.[1]?.lng },
+        stopover: true
+      })
     })
     return waypoints
   };
@@ -319,7 +323,6 @@ const GoogleMapsNavigation = () => {
         <UserLocationTracker
           map={map}
           followUser={true}
-          markerSize={{ width: 48, height: 48 }}
         />
       </div>
     </>
