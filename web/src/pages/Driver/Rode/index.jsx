@@ -183,7 +183,7 @@ const GoogleMapsNavigation = () => {
       passengers.push({
         id: i.userId,
         name: i.userId,
-        position: { lat: i.lat, lng: i.lon }
+        position: { lat: Number(i.lat), lng: Number(i.lon) }
       })
     })
 

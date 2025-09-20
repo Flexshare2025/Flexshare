@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flex-share-pwa-cache-v2'
+const CACHE_NAME = 'flex-share-pwa-cache-v1'
 const urlsToCache = ['/', '/index.html', '/manifest.json', 'car.svg', 'logo192.png', 'logo512.png']
 
 self.addEventListener('install', event => {
