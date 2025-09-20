@@ -37,8 +37,7 @@ def connect_redis():
 
 # Lambda entry point
 def lambda_handler(event, context):
-    records = event.get("Records", [])
-    logger.info("Lambda triggered. Total records received: %d", len(records))
+    logger.info("Lambda triggered.")
 
     try:
         r = connect_redis()
@@ -47,6 +46,24 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps({"error": "Redis connection failed"})
         }
+
+    # Support both SQS-style and HTTP-style events
+    if "Records" in event:
+        records = event["Records"]
+    elif "body" in event:
+        try:
+            data = json.loads(event["body"])
+            records = [{"body": json.dumps(data)}]  # Wrap as a single record
+        except json.JSONDecodeError:
+            logger.warning("Invalid JSON in HTTP body.")
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Invalid JSON format"})
+            }
+    else:
+        records = []
+
+    logger.info("Total records received: %d", len(records))
 
     for idx, rec in enumerate(records):
         logger.info("Processing record #%d", idx)
@@ -57,7 +74,6 @@ def lambda_handler(event, context):
 
             user_id = data.get("userID")
             role = data.get("role")
-            # gps = data.get("gps")  # Deprecated or unused
             lat = data.get("lat")
             lon = data.get("lon")
             schedule_id = data.get("scheduleId")
@@ -65,10 +81,7 @@ def lambda_handler(event, context):
             logger.debug("Extracted fields: userId=%s, role=%s, lat=%s, lon=%s, scheduleId=%s",
                          user_id, role, lat, lon, schedule_id)
 
-            redis_key_driver = f"{schedule_id}:driver"
-            redis_key_passenger = f"{schedule_id}:passenger:{user_id}"
-
-            # Determine which pattern to query based on role
+            # Determine which Redis key pattern to query based on role
             if role == "driver":
                 target_pattern = f"{schedule_id}:passenger:*"
             else:
@@ -103,7 +116,6 @@ def lambda_handler(event, context):
                         "error": "No data found for opposite role",
                         "userId": user_id,
                         "role": role,
-                        # "gps": gps,  # Deprecated or unused
                         "lat": lat,
                         "lon": lon,
                         "scheduleId": schedule_id
@@ -117,7 +129,6 @@ def lambda_handler(event, context):
                     "status": "success",
                     "userId": user_id,
                     "role": role,
-                    # "gps": gps,  # Deprecated or unused
                     "lat": lat,
                     "lon": lon,
                     "scheduleId": schedule_id,
