@@ -205,6 +205,7 @@ const GoogleMapsNavigation = () => {
   }
 
   useEffect(() => {
+    console.log('gpsData-1', gpsData)
     if (gpsData && map) {
       drawPosition();
     }
