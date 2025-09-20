@@ -42,6 +42,9 @@ const GoogleMapsNavigation = () => {
   const { data: gpsData, run: runGet, cancel: cancelGet } = useRequest(getGPS, {
     pollingInterval: 5000,
     manual: true,
+    onError: (err) => {
+      console.error('gpsData-err:', err);
+    }
   });
 
   const requestData = {

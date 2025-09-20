@@ -12,7 +12,7 @@ export const pushGPS = async data => {
 		return
 	}
 
-	return fetch(`${API_DOMAIN}/push`, {
+	const res = await fetch(`${API_DOMAIN}/push`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -26,18 +26,23 @@ export const pushGPS = async data => {
 			GPS: `${pos.latitude}, ${pos.longitude}`,
 		}),
 	})
+	if (!res.ok) {
+		throw new Error(`HTTP error! status: ${res.status}`)
+	}
+
+	return res.json()
 }
 
 export const getGPS = async data => {
 	const pos = await getCurrentPosition()
 
-	console.log('pos', pos)
+	console.log('getGPS-pos', pos)
 
 	if (!pos?.latitude) {
 		return
 	}
 
-	return fetch(`${API_DOMAIN}/get`, {
+	const res = await fetch(`${API_DOMAIN}/get`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -51,4 +56,9 @@ export const getGPS = async data => {
 			GPS: `${pos.latitude}, ${pos.longitude}`,
 		}),
 	})
+	if (!res.ok) {
+		throw new Error(`HTTP error! status: ${res.status}`)
+	}
+
+	return res.json()
 }
