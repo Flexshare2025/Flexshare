@@ -8,6 +8,9 @@ import RightArrow from '@/assets/right_arrow.png';
 import { getSearchParam } from '@/utils/url';
 import { useRequest, useSize } from 'ahooks';
 import { pushGPS, getGPS } from '@/utils/gps';
+import { getLocalData } from '@/utils/storage';
+import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
+
 import Nav from '@/components/Nav';
 
 import './index.scss';
@@ -22,6 +25,7 @@ const GoogleMapsNavigation = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
 
   const START_PONIT = 'start_point';
   const END_POINT = 'end_point';
@@ -30,22 +34,29 @@ const GoogleMapsNavigation = () => {
   const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
 
   // https://alibaba.github.io/hooks/use-request/polling
-  const { runPush, cancelPush } = useRequest(pushGPS, {
+  const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
     pollingInterval: 5000,
     manual: true,
   });
 
-  const { gpsData, runGet, cancelGet } = useRequest(getGPS, {
+  const { data: gpsData, run: runGet, cancel: cancelGet } = useRequest(getGPS, {
     pollingInterval: 5000,
     manual: true,
   });
+
+  const requestData = {
+    "userID": currentOrder?.user_id,
+    "auth": token,
+    "role": "driver",
+    "scheduleId": currentOrder?.schedule_id,
+  }
 
   useEffect(() => {
-    if (urlParams && runGet && runPush) {
-      runPush();
-      runGet();
+    if (urlParams) {
+      runPush(requestData);
+      runGet(requestData);
     }
-  }, [urlParams, runPush, runGet])
+  }, [urlParams])
 
 
   useEffect(() => {
@@ -121,20 +132,51 @@ const GoogleMapsNavigation = () => {
         setDirectionsRenderer(renderer);
 
         // todo mock
-        const passengers = [
-          {
-            id: 1,
-            name: "a",
-            position: { lat: -36.8543791, lng: 174.7589 }
-          },
-          {
-            id: 2,
-            name: "b",
-            position: { lat: -36.8546, lng: 174.7599 }
-          },
-        ];
+        // {
+        //     "status": "success",
+        //     "userId": "4",
+        //     "role": "driver",
+        //     "lat": null,
+        //     "lon": null,
+        //     "scheduleId": "123123456456",
+        //     "othersGPS": [
+        //         {
+        //             "userId": "3",
+        //             "lat": "43334",
+        //             "lon": "53335",
+        //             "timestamp": 1758363695
+        //         },
+        //         {
+        //             "userId": "2",
+        //             "lat": "444",
+        //             "lon": "53335",
+        //             "timestamp": 1758363690
+        //         }
+        //     ]
+        // }
+        const othersGPS = gpsData?.othersGPS;
+        const passengers = [];
+        othersGPS?.forEach(i => {
+          passengers.push({
+            id: i.userId,
+            name: i.userId,
+            position: { lat: i.lat, lng: i.lon }
+          })
+        })
+        // const passengers = [
+        //   {
+        //     id: 1,
+        //     name: "a",
+        //     position: { lat: -36.8543791, lng: 174.7589 }
+        //   },
+        //   {
+        //     id: 2,
+        //     name: "b",
+        //     position: { lat: -36.8546, lng: 174.7599 }
+        //   },
+        // ];
 
-        passengers.forEach((passenger, index) => {
+        passengers?.forEach((passenger, index) => {
           const marker = new window.google.maps.Marker({
             position: passenger.position,
             map: newMap,
@@ -153,8 +195,6 @@ const GoogleMapsNavigation = () => {
           });
         });
 
-
-
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
@@ -171,22 +211,22 @@ const GoogleMapsNavigation = () => {
 
 
 
-  useEffect(() => {
-    let watchId;
-    if (navigator.geolocation) {
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          console.log('Updated position:', pos);
+  // useEffect(() => {
+  //   let watchId;
+  //   if (navigator.geolocation) {
+  //     watchId = navigator.geolocation.watchPosition(
+  //       (pos) => {
+  //         console.log('Updated position:', pos);
 
-        },
-        (err) => setError('error: ' + err.message),
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
-      );
-    }
-    return () => {
-      if (watchId) navigator.geolocation.clearWatch(watchId);
-    };
-  }, [end, directionsService]);
+  //       },
+  //       (err) => setError('error: ' + err.message),
+  //       { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+  //     );
+  //   }
+  //   return () => {
+  //     if (watchId) navigator.geolocation.clearWatch(watchId);
+  //   };
+  // }, [end, directionsService]);
 
   const calculateWayponits = () => {
     const waypoints = []
