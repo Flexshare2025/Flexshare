@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
-import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
-import { Button, List, Modal, Toast } from 'antd-mobile';
-import { removeCountryInAddress, convertMinutesToHoursAndMinutes } from '@/utils/common';
+import { removeCountryInAddress, convertMinutesToHoursAndMinutes, isWithin10Minutes } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
 import { getSearchParam } from '@/utils/url';
-import { useRequest, useSize } from 'ahooks';
+import { useRequest } from 'ahooks';
 import { pushGPS, getGPS } from '@/utils/gps';
 import { getLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
+import UserLocationTracker from '@/components/UserLocationTracker';
 
 import Nav from '@/components/Nav';
 
@@ -55,11 +54,11 @@ const GoogleMapsNavigation = () => {
   }
 
   useEffect(() => {
-    if (urlParams) {
+    if (urlParams && isWithin10Minutes(currentOrder?.departure_time)) {
       runPush(requestData);
       runGet(requestData);
     }
-  }, [urlParams])
+  }, [urlParams, currentOrder])
 
 
   useEffect(() => {
@@ -117,9 +116,6 @@ const GoogleMapsNavigation = () => {
 
         setDirectionsService(service);
         setDirectionsRenderer(renderer);
-
-
-
 
       });
     }).catch(error => {
@@ -249,6 +245,11 @@ const GoogleMapsNavigation = () => {
           </p>
         </div>
         <div ref={mapRef} className='passenger-rode-map-container' />
+        <UserLocationTracker
+          map={map}
+          followUser={true}
+          markerSize={{ width: 48, height: 48 }}
+        />
       </div>
     </>
   );

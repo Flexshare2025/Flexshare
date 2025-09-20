@@ -102,7 +102,7 @@ export default function PassengerOrderList({ onClose }) {
               },
               {
                 key: 'detail',
-                text: 'Detail',
+                text: 'Go',
                 color: 'primary',
                 onClick: () => goDetail(order),
               },

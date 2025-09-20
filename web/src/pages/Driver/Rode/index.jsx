@@ -2,14 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import AddressSearch from '@/components/search-location';
 import { getCurrentPosition } from '@/utils/position';
-import { Button, List, Modal, Toast } from 'antd-mobile';
-import { removeCountryInAddress, convertMinutesToHoursAndMinutes } from '@/utils/common';
+import { Button, List } from 'antd-mobile';
+import { removeCountryInAddress, convertMinutesToHoursAndMinutes, isWithin10Minutes } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
 import { getSearchParam } from '@/utils/url';
-import { useRequest, useSize } from 'ahooks';
+import { useRequest } from 'ahooks';
 import { pushGPS, getGPS } from '@/utils/gps';
 import { getLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
+import UserLocationTracker from '@/components/UserLocationTracker';
 
 import Nav from '@/components/Nav';
 
@@ -56,11 +57,11 @@ const GoogleMapsNavigation = () => {
   }
 
   useEffect(() => {
-    if (urlParams) {
+    if (urlParams && isWithin10Minutes(currentOrder?.departure_time)) {
       runPush(requestData);
       runGet(requestData);
     }
-  }, [urlParams])
+  }, [urlParams, currentOrder])
 
 
   useEffect(() => {
@@ -75,11 +76,6 @@ const GoogleMapsNavigation = () => {
 
   }, [urlParams]);
 
-  console.log('currentOrder', currentOrder, start, end)
-
-
-
-  console.log('start', start, 'loading', loading, 'end', end);
 
   const handlePlaceSelect = (type, place) => {
     console.log('Selected location information:', place);
@@ -137,31 +133,6 @@ const GoogleMapsNavigation = () => {
         setDirectionsService(service);
         setDirectionsRenderer(renderer);
 
-        // todo mock
-        // {
-        //     "status": "success",
-        //     "userId": "4",
-        //     "role": "driver",
-        //     "lat": null,
-        //     "lon": null,
-        //     "scheduleId": "123123456456",
-        //     "othersGPS": [
-        //         {
-        //             "userId": "3",
-        //             "lat": "43334",
-        //             "lon": "53335",
-        //             "timestamp": 1758363695
-        //         },
-        //         {
-        //             "userId": "2",
-        //             "lat": "444",
-        //             "lon": "53335",
-        //             "timestamp": 1758363690
-        //         }
-        //     ]
-        // }
-
-
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
@@ -196,6 +167,7 @@ const GoogleMapsNavigation = () => {
           scaledSize: new window.google.maps.Size(48, 48),
         }
       });
+      newMarkers.push(marker);
       const infoWindow = new window.google.maps.InfoWindow({
         content: `Passager ${index + 1}`
       });
@@ -203,8 +175,8 @@ const GoogleMapsNavigation = () => {
       marker.addListener('click', () => {
         infoWindow.open(map, marker);
       });
-      newMarkers.push(marker);
     });
+    setMarkers(newMarkers);
   }
 
   useEffect(() => {
@@ -220,22 +192,6 @@ const GoogleMapsNavigation = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   let watchId;
-  //   if (navigator.geolocation) {
-  //     watchId = navigator.geolocation.watchPosition(
-  //       (pos) => {
-  //         console.log('Updated position:', pos);
-
-  //       },
-  //       (err) => setError('error: ' + err.message),
-  //       { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
-  //     );
-  //   }
-  //   return () => {
-  //     if (watchId) navigator.geolocation.clearWatch(watchId);
-  //   };
-  // }, [end, directionsService]);
 
   const calculateWayponits = () => {
     const waypoints = []
@@ -304,19 +260,6 @@ const GoogleMapsNavigation = () => {
     <>
       <Nav title='Current Order' />
       <div className='driver-rode-container'>
-        {/* <NoticeBar
-        content={<div className='notice-order-content'>
-          <p className='notice-order-line'>{`$${order.price.toFixed(0)} ${order.pickup_point.address} — ${order.dropoff_point.address}`}</p>
-          <div className='notice-order-action'>
-            <Space style={{ '--gap': '12px' }}>
-              <span>Accept</span>
-              <span>Close</span>
-            </Space>
-          </div>
-        </div>}
-        wrap
-        color='alert'
-      /> */}
         <div className='order-info'>
           <List header=''>
             <p className='route-item-detail'>
@@ -373,6 +316,11 @@ const GoogleMapsNavigation = () => {
           </div>
         </div>
         <div ref={mapRef} className='rode-map-container' />
+        <UserLocationTracker
+          map={map}
+          followUser={true}
+          markerSize={{ width: 48, height: 48 }}
+        />
       </div>
     </>
   );

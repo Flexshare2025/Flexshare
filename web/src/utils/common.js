@@ -71,3 +71,23 @@ export function convertMinutesToHoursAndMinutes(totalMinutes) {
 
 	return result
 }
+
+export function isWithin10Minutes(departureTime) {
+	try {
+		const departureDate = new Date(departureTime)
+		if (isNaN(departureDate.getTime())) {
+			return false
+		}
+
+		const currentDate = new Date()
+
+		const timeDiff = Math.abs(departureDate - currentDate)
+
+		const tenMinutesMs = 10 * 60 * 1000
+
+		return timeDiff <= tenMinutesMs
+	} catch (err) {
+		console.error('timeDiff', err)
+		return false
+	}
+}
