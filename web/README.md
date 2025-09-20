@@ -1,5 +1,7 @@
 ## Flex Share (Ride-sharing platform) - Front-end
 
+You can access it via the link: [https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html](https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html), or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
+
 This document is a quick get-up-and-run description of a front-end (web) project
 For more complete information check out：`Project-Overview.md`。
 

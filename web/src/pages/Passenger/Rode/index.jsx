@@ -119,7 +119,7 @@ const GoogleMapsNavigation = () => {
 
       });
     }).catch(error => {
-      console.error('Error getting current position:', error);
+      console.log('Error getting current position:', error);
     });
 
 
