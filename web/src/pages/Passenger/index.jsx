@@ -129,6 +129,7 @@ export default function App() {
             orderLists={matchedSchedules}
             passengerCount={passengerCount}
             onUpdateSchedule={handleUpdateSchedule}
+            userDestination={end}
           />
           {/* order list float icon */}
           <img
