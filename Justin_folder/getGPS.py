@@ -55,7 +55,6 @@ def lambda_handler(event, context):
 
             user_id = data.get("userID")
             role = data.get("role")
-            # gps = data.get("gps")
             lat = data.get("lat")
             lon = data.get("lon")
             schedule_id = data.get("scheduleId")
@@ -63,28 +62,32 @@ def lambda_handler(event, context):
             logger.debug("Extracted fields: userId=%s, role=%s, lat=%s, lon=%s, scheduleId=%s",
                          user_id, role, lat, lon, schedule_id)
 
-            redis_key_driver = f"{schedule_id}:driver"
-            redis_key_passenger = f"{schedule_id}:passenger:{user_id}"
+            # build keys
+            if role == "driver":
+                target_pattern = f"{schedule_id}:passenger:*"
+            else:
+                target_pattern = f"{schedule_id}:driver"
 
-            # Determine which key to query based on role
-            target_key = redis_key_passenger if role == "driver" else redis_key_driver
-            logger.info("Selected Redis key based on role '%s': %s", role, target_key)
+            logger.info("Querying Redis keys with pattern: %s", target_pattern)
 
-            existing_data = r.get(target_key)
-            logger.info("Retrieved data from Redis key '%s': %s", target_key, existing_data)
+            # get users by keys.
+            keys_to_fetch = r.keys(target_pattern)
+            logger.info("Found %d keys for opposite role", len(keys_to_fetch))
 
             gps_list = []
-            if existing_data:
-                try:
-                    entry = json.loads(existing_data)
-                    gps_list.append({
-                        "userId": entry.get("userId"),
-                        "lat": entry.get("gps", {}).get("lat"),
-                        "lon": entry.get("gps", {}).get("lon"),
-                        "timestamp": entry.get("timestamp")  # Optional
-                    })
-                except json.JSONDecodeError as je:
-                    logger.warning("Failed to decode Redis entry: %s", str(je))
+            for key in keys_to_fetch:
+                val = r.get(key)
+                if val:
+                    try:
+                        entry = json.loads(val)
+                        gps_list.append({
+                            "userId": entry.get("userId"),
+                            "lat": entry.get("gps", {}).get("lat"),
+                            "lon": entry.get("gps", {}).get("lon"),
+                            "timestamp": entry.get("timestamp")
+                        })
+                    except json.JSONDecodeError as je:
+                        logger.warning("Failed to decode Redis entry for key %s: %s", key, str(je))
 
             if not gps_list:
                 logger.warning("No GPS data found for opposite role.")
@@ -94,7 +97,6 @@ def lambda_handler(event, context):
                         "error": "No data found for opposite role",
                         "userId": user_id,
                         "role": role,
-                        # "gps": gps,
                         "lat": lat,
                         "lon": lon,
                         "scheduleId": schedule_id
@@ -108,7 +110,6 @@ def lambda_handler(event, context):
                     "status": "success",
                     "userId": user_id,
                     "role": role,
-                    # "gps": gps,
                     "lat": lat,
                     "lon": lon,
                     "scheduleId": schedule_id,
