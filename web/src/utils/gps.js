@@ -37,7 +37,7 @@ export const getGPS = async data => {
 		return
 	}
 
-	return fetch(`${API_DOMAIN}/push`, {
+	return fetch(`${API_DOMAIN}/get`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
