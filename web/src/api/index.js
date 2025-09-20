@@ -4,7 +4,8 @@ import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN = 'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/api/'
+export const API_DOMAIN =
+	'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/api/'
 
 let token = ''
 
@@ -26,6 +27,7 @@ async function addHeader(h) {
 
 	return h
 }
+// register
 export function register(config) {
 	apiFetch({
 		...config,
@@ -50,6 +52,7 @@ export function emailVerification(config) {
 	})
 }
 
+// reset password
 export function resetPassword(config) {
 	apiFetch({
 		...config,
@@ -58,6 +61,7 @@ export function resetPassword(config) {
 	})
 }
 
+// api fetch
 export async function apiFetch(config) {
 	if (config.data === undefined) {
 		config.data = {}

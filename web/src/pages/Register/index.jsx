@@ -144,7 +144,6 @@ const Register = () => {
 
   // Handle form submission
   const handleSubmit = async (values) => {
-    console.log("🚀 --- values:", values)
     // delete captcha from values
     delete values.captcha;
 

@@ -21,7 +21,6 @@ export default function App() {
   const [matchedSchedules, setMatchedSchedules] = useState([]); // store matched schedules data
   const [passengerCount, setPassengerCount] = useState(1); // store passenger count
   const [visibleOrderList, setVisibleOrderList] = useState(false); // control order list popup
-
   useEffect(() => {
     getCurrentPosition()
       .then(res => {
@@ -37,15 +36,8 @@ export default function App() {
         });
       })
       .catch(error => {
-        console.error('Error getting current position:', error);
-        const defaultPosition = { lat: -36.8485, lng: 174.7633 }; // auckland
-        setPosition(defaultPosition);
-        setStartPoint({
-          lat: defaultPosition.lat,
-          lng: defaultPosition.lng,
-          address: 'Default Location',
-          realAddress: 'Auckland, New Zealand'
-        });
+        // no default position
+        setError('get current position failed, please check your location permission or network');
       });
   }, []);
 
@@ -59,7 +51,6 @@ export default function App() {
             (results, status) => {
               if (status === 'OK' && results[0]) {
                 const realAddress = results[0].formatted_address;
-                console.log('Geocoding success:', realAddress);
                 setStartPoint(prev => ({
                   ...prev,
                   realAddress: realAddress
@@ -75,7 +66,6 @@ export default function App() {
             }
           );
         } catch (error) {
-          console.log('Geocoder error:', error);
           // if there is an error, use a more precise coordinate format as an address
           const coordinateAddress = `${start.lat.toFixed(8)}, ${start.lng.toFixed(8)}`;
           setStartPoint(prev => ({
@@ -85,7 +75,6 @@ export default function App() {
         }
       }
     };
-
     // ensure Google Maps API is fully loaded before calling
     if (window.google && window.google.maps && window.google.maps.Geocoder) {
       updateAddress();
@@ -95,7 +84,6 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [start?.lat, start?.lng]);
-
   const handlePlaceSelect = (place, type) => {
     if (type === 'start') {
       setStartPoint({
@@ -109,7 +97,6 @@ export default function App() {
       });
     }
   };
-
   // Function to update schedule data directly after booking
   const handleUpdateSchedule = (scheduleId, newAvailableSeats) => {
     setMatchedSchedules(prevSchedules =>

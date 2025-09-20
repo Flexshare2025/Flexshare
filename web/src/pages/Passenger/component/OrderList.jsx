@@ -8,10 +8,8 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
   const { calculateRouteBetween } = useContext(DirectionsContext);
   // ensure orderLists is an array
   const schedules = Array.isArray(orderLists) ? orderLists : [];
-
   // State to track loading status for each schedule
   const [loadingStates, setLoadingStates] = useState({});
-
   // handle show route
   const handleShowRoute = async (schedule) => {
     try {
@@ -20,7 +18,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
         lat: schedule.start_point.lat,
         lng: schedule.start_point.lng
       };
-
       const destination = {
         lat: schedule.end_point.lat,
         lng: schedule.end_point.lng
@@ -32,7 +29,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
           stopover: true
         }))
         : [];
-
       const routeResult = await calculateRouteBetween(origin, destination, waypoints);
       // Scroll to top immediately after route is calculated and displayed
       setTimeout(() => {
@@ -50,7 +46,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       const km = (routeResult.totalDistanceMeters / 1000).toFixed(2);
       const minutes = Math.round(routeResult.totalDurationSeconds / 60);
       const eta = routeResult.etaDate.toLocaleTimeString();
-
       // show user friendly prompt
       Modal.alert({
         title: 'Route shown',
@@ -60,9 +55,7 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
           // Route shown prompt confirmed
         },
       });
-
     } catch (error) {
-      console.error('Error showing route:', error);
     }
   };
   const renderAvatar = (avatar) => {
@@ -130,37 +123,29 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       }
       return null;
     };
-
     let nearestPoint = null;
     let minDistance = Infinity;
     let nearestPointIndex = -1;
-
     for (let i = 0; i < routePoints.length; i++) {
       const point = routePoints[i];
       const coordinates = getLatLng(point);
-
       if (!coordinates) {
         continue;
       }
-
       const distance = calculateDistanceBetweenPoints(userLat, userLng, coordinates.lat, coordinates.lng);
-
       if (distance < minDistance) {
         minDistance = distance;
         nearestPoint = point;
         nearestPointIndex = i;
       }
     }
-
     if (!nearestPoint) {
       return null;
     }
-
     // Generate point identifier (A, B, C, D, etc.)
     const getPointIdentifier = (index) => {
       return String.fromCharCode(65 + index); // 65 is ASCII for 'A'
     };
-
     // Add point information
     const pointInfo = {
       ...nearestPoint,
@@ -168,7 +153,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       position: nearestPointIndex + 1,
       totalPoints: routePoints.length
     };
-
     return {
       point: pointInfo,
       distance: minDistance
@@ -202,7 +186,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
         },
         nearest_point_distance: nearestPointInfo ? nearestPointInfo.distance.toFixed(2) : null
       };
-
       // call bookSchedule API
       const result = await bookSchedule({
         data: bookingData,
@@ -232,7 +215,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                       ✅ Your trip has been successfully booked
                     </p>
                   </div>
-
                   <div style={{ marginBottom: '8px' }}>
                     <span style={{ color: '#666', marginRight: '8px' }}>🚗</span>
                     <strong>Route:</strong>
@@ -240,7 +222,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                       {schedule.start_point?.address || 'N/A'} → {schedule.end_point?.address || 'N/A'}
                     </div>
                   </div>
-
                   <div style={{ marginBottom: '8px' }}>
                     <span style={{ color: '#666', marginRight: '8px' }}>⏰</span>
                     <strong>Departure Time:</strong>
@@ -248,7 +229,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                       {formatTime(schedule.departure_time)}
                     </span>
                   </div>
-
                   <div style={{ marginBottom: '8px' }}>
                     <span style={{ color: '#666', marginRight: '8px' }}>👥</span>
                     <strong>Passengers:</strong>
@@ -256,7 +236,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                       {passengerCount || 1}
                     </span>
                   </div>
-
                   <div style={{ marginBottom: '8px' }}>
                     <span style={{ color: '#666', marginRight: '8px' }}>📍</span>
                     <strong>Pickup Point: Point {nearestPointInfo.point.identifier}</strong>
@@ -268,7 +247,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                       {nearestPointInfo ? `${nearestPointInfo.distance.toFixed(2)} km` : 'N/A'}
                     </span>
                   </div>
-
                   <div style={{
                     backgroundColor: '#fff7e6',
                     border: '1px solid #ffd591',
@@ -295,7 +273,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
             });
           }
           else {
-            console.log('Booking failed:', result);
             // Clear loading state
             setLoadingStates(prev => ({
               ...prev,
@@ -346,7 +323,6 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       minute: '2-digit'
     });
   };
-
   const calculateDistance = (routePoints) => {
     if (!routePoints || routePoints.length < 2) return 'N/A';
     let totalDistance = 0;
@@ -365,11 +341,9 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       totalDistance += R * c;
     }
-
     // Only show distance, no route points information
     return `${totalDistance.toFixed(1)} km`;
   };
-
   return (
     <List header="Available Routes">
       {schedules && schedules.length > 0 ? (
