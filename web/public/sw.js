@@ -29,6 +29,11 @@ self.addEventListener('activate', event => {
 })
 
 self.addEventListener('fetch', event => {
+	if (event.request.method !== 'GET' && event.request.method !== 'HEAD') {
+		event.respondWith(fetch(event.request))
+		return
+	}
+
 	if (event.request.mode === 'navigate') {
 		event.respondWith(
 			fetch(event.request).catch(() => {
@@ -41,10 +46,12 @@ self.addEventListener('fetch', event => {
 	event.respondWith(
 		caches.match(event.request).then(response => {
 			const fetchPromise = fetch(event.request).then(networkResponse => {
-				caches.open(CACHE_NAME).then(cache => {
-					cache.put(event.request, networkResponse.clone())
-					return networkResponse
-				})
+				if (networkResponse.status === 200 && networkResponse.type === 'basic') {
+					caches.open(CACHE_NAME).then(cache => {
+						cache.put(event.request, networkResponse.clone())
+					})
+				}
+				return networkResponse
 			})
 
 			return response || fetchPromise
