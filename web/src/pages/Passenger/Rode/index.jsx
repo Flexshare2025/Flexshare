@@ -20,6 +20,7 @@ const GoogleMapsNavigation = () => {
   const urlParams = getSearchParam('current');
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
+  const [markers, setMarkers] = useState([]);
 
   const [routeSummary, setRouteSummary] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -135,30 +136,36 @@ const GoogleMapsNavigation = () => {
   }, [gpsData, map]);
 
   const drawPosition = () => {
+    markers.forEach(marker => marker.setMap(null));
     const othersGPS = gpsData?.othersGPS;
     console.log('othersGPS', othersGPS)
-    const data = [];
-    othersGPS?.forEach(i => {
-      data.push({
-        id: i.userId,
-        name: i.userId,
-        position: { lat: Number(i.lat), lng: Number(i.lon) }
-      })
-    })
+    if (!othersGPS || othersGPS.length === 0) {
+      setMarkers([]);
+      return;
+    }
+    const newMarkers = [];
 
-
-    data?.forEach((item, index) => {
-      new window.google.maps.Marker({
-        position: item.position,
+    othersGPS?.forEach((i) => {
+      const marker = new window.google.maps.Marker({
+        position: { lat: Number(i.lat), lng: Number(i.lon) },
         map,
-        title: item.name,
+        title: i.userId,
         icon: {
           url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
           scaledSize: new window.google.maps.Size(48, 48),
         }
       });
+      newMarkers.push(marker);
     });
+    setMarkers(newMarkers);
+
   }
+
+  useEffect(() => {
+    return () => {
+      markers.forEach(marker => marker.setMap(null));
+    };
+  }, []);
 
   useEffect(() => {
     if (start && end && directionsService) {
