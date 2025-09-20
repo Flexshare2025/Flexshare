@@ -50,7 +50,6 @@ web/
     constant.js               # constant
   public/
     manifest.json
-    sw.js
   dist/                       # Production of build
   package.json
   vite.config.js

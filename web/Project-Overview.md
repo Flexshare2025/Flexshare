@@ -77,7 +77,6 @@ web/
     constant.js               # Constants
   public/                     # Static assets & PWA files
     manifest.json
-    sw.js
   dist/                       # Production build output
   package.json
   vite.config.js
