@@ -62,7 +62,6 @@ web/
         index.jsx
         index.scss
       Driver/                 # Driver
-        InfoUpload/
         PublishRoute/
         Rode/
         index.jsx
@@ -154,13 +153,12 @@ web/
         -   Design
         -   Component hierarchy
           Driver/index.jsx (controller)
-          ├── InfoUpload/index.jsx (profile & verification)
           ├── PublishRoute/index.jsx (publish & manage routes)
           │ ├── components/RouteList/index.jsx (my routes)
           │ └── components/UserOrderList/index.jsx (passenger orders)
           └── Rode/index.jsx (in-trip page: start/end/status)
         -   Data flow
-          Complete profile → InfoUpload → Verified
+          Complete profile → Verified
           ↓
           Publish/Edit route → PublishRoute → RouteList refresh
           ↓
@@ -194,7 +192,7 @@ web/
 ### 9. Deployment & Run
 
 -   Build: `cd web && npm run build` (outputs to `web/dist`)
--   Deploy: host `dist/` on static servers (Nginx/Vercel/Netlify etc.)
+-   Deploy: host `dist/` on static servers, use github actions to upload dist file to AWS S3.
 -   Notes: bind domain to Google Maps API Key; enable HTTPS and proper caching
 
 ### 10. API Conventions

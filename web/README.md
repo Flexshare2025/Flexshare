@@ -35,7 +35,6 @@ web/
         index.jsx
         index.scss
       Driver/                 # driver
-        InfoUpload/
         PublishRoute/
         Rode/
         index.jsx

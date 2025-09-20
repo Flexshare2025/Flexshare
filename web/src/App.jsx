@@ -2,11 +2,12 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "antd-mobile";
 import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
-import DriverInfoUpload from "@/pages/Driver/InfoUpload";
+// import DriverInfoUpload from "@/pages/Driver/InfoUpload";
 import DriverPublishRoute from "@/pages/Driver/PublishRoute";
 import DriverRode from "@/pages/Driver/Rode";
 // import Driver from "@/pages/Driver";
 import Passenger from "@/pages/Passenger";
+import PassengerRode from "@/pages/Passenger/Rode";
 import NotFound from "@/pages/NotFound";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -48,18 +49,18 @@ export default function App() {
             </ProtectedRoute>
           } />
           {/* </Route> */}
-          <Route path="/driver/upload" element={
+          {/* <Route path="/driver/upload" element={
             <DriverInfoUpload />
-          } />
+          } /> */}
 
           <Route path="/passenger" element={
             <ProtectedRoute requiredRole="passenger">
               <Passenger />
             </ProtectedRoute>
           } />
-          <Route path="/passenger" element={
+          <Route path="/passenger/rode" element={
             <ProtectedRoute requiredRole="passenger">
-              <Passenger />
+              <PassengerRode />
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 import { getCurrentPosition } from '@/utils/position'
-const API_DOMAIN = 'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/gps/'
+const API_DOMAIN = 'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/gps'
 
 export const pushGPS = async data => {
 	console.log('pushGPS', data)
