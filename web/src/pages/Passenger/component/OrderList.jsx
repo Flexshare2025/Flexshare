@@ -4,7 +4,7 @@ import { DirectionsContext } from './DirectionsProvider';
 import { bookSchedule } from '@/api/index';
 import { getCurrentPosition } from '@/utils/position';
 
-export default function OrderList({ orderLists, passengerCount, onUpdateSchedule }) {
+export default function OrderList({ orderLists, passengerCount, onUpdateSchedule, userDestination }) {
   const { calculateRouteBetween } = useContext(DirectionsContext);
   // ensure orderLists is an array
   const schedules = Array.isArray(orderLists) ? orderLists : [];
@@ -168,23 +168,49 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
       }));
       // get user's current position
       const userPosition = await getCurrentPosition();
-      // find the nearest point on the route to the user's current location
-      const nearestPointInfo = findNearestPoint(
+
+      // find the nearest pickup point on the route to the user's current location
+      const nearestPickupPointInfo = findNearestPoint(
         userPosition.latitude,
         userPosition.longitude,
         schedule.route_points || []
       );
+
+      // find the nearest dropoff point on the route to the user's destination
+      const destinationCoords = userDestination || schedule.end_point;
+      const nearestDropoffPointInfo = findNearestPoint(
+        destinationCoords.lat,
+        destinationCoords.lng,
+        schedule.route_points || []
+      );
+
+      // prepare stops array with both pickup and dropoff points
+      const stops = [];
+      if (nearestPickupPointInfo) {
+        stops.push({
+          ...nearestPickupPointInfo.point,
+          type: 'pickup'
+        });
+      }
+      if (nearestDropoffPointInfo) {
+        stops.push({
+          ...nearestDropoffPointInfo.point,
+          type: 'dropoff'
+        });
+      }
+
       // prepare data to pass to the backend
       const bookingData = {
         schedule_id: schedule.schedule_id,
-        stops: nearestPointInfo ? [nearestPointInfo.point] : [],
+        stops: stops,
         departure_time: schedule.departure_time,
         num_passenger: passengerCount || 1, // default 1 seat
         user_location: {
           lat: userPosition.latitude,
           lng: userPosition.longitude
         },
-        nearest_point_distance: nearestPointInfo ? nearestPointInfo.distance.toFixed(2) : null
+        pickup_point_distance: nearestPickupPointInfo ? nearestPickupPointInfo.distance.toFixed(2) : null,
+        dropoff_point_distance: nearestDropoffPointInfo ? nearestDropoffPointInfo.distance.toFixed(2) : null
       };
       // call bookSchedule API
       const result = await bookSchedule({
@@ -238,13 +264,16 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
                   </div>
                   <div style={{ marginBottom: '8px' }}>
                     <span style={{ color: '#666', marginRight: '8px' }}>📍</span>
-                    <strong>Pickup Point: Point {nearestPointInfo.point.identifier}</strong>
+                    <strong>Pickup Point: Point {nearestPickupPointInfo?.point.identifier || 'N/A'}</strong>
+                    <span style={{ marginLeft: '8px', color: '#fa8c16', fontWeight: 'bold' }}>
+                      ({nearestPickupPointInfo ? `${nearestPickupPointInfo.distance.toFixed(2)} km` : 'N/A'} away)
+                    </span>
                   </div>
                   <div style={{ marginBottom: '8px' }}>
-                    <span style={{ color: '#666', marginRight: '8px' }}>📏</span>
-                    <strong>Distance to Pickup:</strong>
+                    <span style={{ color: '#666', marginRight: '8px' }}>🏁</span>
+                    <strong>Dropoff Point: Point {nearestDropoffPointInfo?.point.identifier || 'N/A'}</strong>
                     <span style={{ marginLeft: '8px', color: '#fa8c16', fontWeight: 'bold' }}>
-                      {nearestPointInfo ? `${nearestPointInfo.distance.toFixed(2)} km` : 'N/A'}
+                      ({nearestDropoffPointInfo ? `${nearestDropoffPointInfo.distance.toFixed(2)} km` : 'N/A'} away)
                     </span>
                   </div>
                   <div style={{
