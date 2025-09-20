@@ -81,7 +81,7 @@ export function isWithin10Minutes(departureTime) {
 
 		const currentDate = new Date()
 
-		const timeDiff = Math.abs(departureDate - currentDate)
+		const timeDiff = departureDate - currentDate
 
 		const tenMinutesMs = 10 * 60 * 1000
 
