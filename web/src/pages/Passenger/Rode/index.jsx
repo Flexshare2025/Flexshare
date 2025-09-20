@@ -26,6 +26,7 @@ const GoogleMapsNavigation = () => {
   const [error, setError] = useState(null);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
+  const [map, setMap] = useState(null);
 
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
@@ -103,6 +104,8 @@ const GoogleMapsNavigation = () => {
           }
         });
 
+        setMap(newMap)
+
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
           map: newMap,
@@ -112,36 +115,7 @@ const GoogleMapsNavigation = () => {
         setDirectionsRenderer(renderer);
 
 
-        const othersGPS = gpsData?.othersGPS;
-        console.log('othersGPS', othersGPS)
-        const passengers = [];
-        othersGPS?.forEach(i => {
-          passengers.push({
-            id: i.userId,
-            name: i.userId,
-            position: { lat: i.lat, lng: i.lon }
-          })
-        })
 
-
-        passengers?.forEach((passenger, index) => {
-          const marker = new window.google.maps.Marker({
-            position: passenger.position,
-            map: newMap,
-            title: passenger.name,
-            icon: {
-              url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
-              scaledSize: new window.google.maps.Size(48, 48),
-            }
-          });
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: `Passager ${index + 1}`
-          });
-
-          marker.addListener('click', () => {
-            infoWindow.open(newMap, marker);
-          });
-        });
 
       });
     }).catch(error => {
@@ -150,6 +124,38 @@ const GoogleMapsNavigation = () => {
 
 
   }, [apiKey]);
+
+  useEffect(() => {
+    if (gpsData && map) {
+      drawPosition();
+    }
+  }, [gpsData, map]);
+
+  const drawPosition = () => {
+    const othersGPS = gpsData?.othersGPS;
+    console.log('othersGPS', othersGPS)
+    const data = [];
+    othersGPS?.forEach(i => {
+      data.push({
+        id: i.userId,
+        name: i.userId,
+        position: { lat: i.lat, lng: i.lon }
+      })
+    })
+
+
+    data?.forEach((item, index) => {
+      new window.google.maps.Marker({
+        position: item.position,
+        map,
+        title: item.name,
+        icon: {
+          url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
+          scaledSize: new window.google.maps.Size(48, 48),
+        }
+      });
+    });
+  }
 
   useEffect(() => {
     if (start && end && directionsService) {
