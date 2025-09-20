@@ -113,6 +113,7 @@ const GoogleMapsNavigation = () => {
 
 
         const othersGPS = gpsData?.othersGPS;
+        console.log('othersGPS', othersGPS)
         const passengers = [];
         othersGPS?.forEach(i => {
           passengers.push({
@@ -223,7 +224,7 @@ const GoogleMapsNavigation = () => {
   return (
     <>
       <Nav title='Current Order' />
-      <div className='driver-rode-container'>
+      <div className='passenger-rode-container'>
         <div className='order-info'>
           <p className='route-item-detail'>
             <span className='address'> {removeCountryInAddress(currentOrder.start_point.address)}</span>
@@ -231,7 +232,7 @@ const GoogleMapsNavigation = () => {
             <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
           </p>
         </div>
-        <div ref={mapRef} className='rode-map-container' />
+        <div ref={mapRef} className='passenger-rode-map-container' />
       </div>
     </>
   );

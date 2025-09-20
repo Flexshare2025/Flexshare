@@ -1,19 +1,19 @@
-.driver-rode-container {
+.passenger-rode-container {
 	width: 100%;
 	height: 100%;
 	box-sizing: border-box;
-	.driver-rode-search-container {
+	.passenger-rode-search-container {
 		padding: 2px 12px 10px 12px;
 	}
-	.driver-rode-search-item {
+	.passenger-rode-search-item {
 		margin-top: 10px;
 	}
-	.driver-rode-action-bar {
+	.passenger-rode-action-bar {
 		display: flex;
 		height: 50px;
 		margin-top: 10px;
 	}
-	.driver-route-summary {
+	.passenger-route-summary {
 		margin-left: 16px;
 		font-size: 14px;
 		width: calc(100% - 100px);
@@ -37,13 +37,13 @@
 			box-sizing: border-box;
 		}
 	}
-	.driver-rode-navigate-button {
+	.passenger-rode-navigate-button {
 		height: 40px;
 		font-size: 18px;
 	}
-	.rode-map-container {
+	.passenger-rode-map-container {
 		width: 100%;
-		height: 45%;
+		height: 80%;
 	}
 	.notice-order-content {
 		width: calc(100vw - 50px);

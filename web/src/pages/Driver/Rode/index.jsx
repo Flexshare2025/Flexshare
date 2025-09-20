@@ -155,6 +155,7 @@ const GoogleMapsNavigation = () => {
         //     ]
         // }
         const othersGPS = gpsData?.othersGPS;
+        console.log('othersGPS', othersGPS)
         const passengers = [];
         othersGPS?.forEach(i => {
           passengers.push({
