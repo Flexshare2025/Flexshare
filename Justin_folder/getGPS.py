@@ -16,6 +16,7 @@ except KeyError as e:
     logger.error("Missing environment variable: %s", str(e))
     raise
 
+# Connect to Redis
 def connect_redis():
     try:
         logger.info("Attempting Redis connection to %s:%d", REDIS_HOST, REDIS_PORT)
@@ -34,6 +35,7 @@ def connect_redis():
         logger.exception("Redis connection failed.")
         raise
 
+# Lambda entry point
 def lambda_handler(event, context):
     records = event.get("Records", [])
     logger.info("Lambda triggered. Total records received: %d", len(records))
@@ -55,6 +57,7 @@ def lambda_handler(event, context):
 
             user_id = data.get("userID")
             role = data.get("role")
+            # gps = data.get("gps")  # Deprecated or unused
             lat = data.get("lat")
             lon = data.get("lon")
             schedule_id = data.get("scheduleId")
@@ -62,7 +65,10 @@ def lambda_handler(event, context):
             logger.debug("Extracted fields: userId=%s, role=%s, lat=%s, lon=%s, scheduleId=%s",
                          user_id, role, lat, lon, schedule_id)
 
-            # build keys
+            redis_key_driver = f"{schedule_id}:driver"
+            redis_key_passenger = f"{schedule_id}:passenger:{user_id}"
+
+            # Determine which pattern to query based on role
             if role == "driver":
                 target_pattern = f"{schedule_id}:passenger:*"
             else:
@@ -70,7 +76,7 @@ def lambda_handler(event, context):
 
             logger.info("Querying Redis keys with pattern: %s", target_pattern)
 
-            # get users by keys.
+            # Fetch all matching keys
             keys_to_fetch = r.keys(target_pattern)
             logger.info("Found %d keys for opposite role", len(keys_to_fetch))
 
@@ -84,7 +90,7 @@ def lambda_handler(event, context):
                             "userId": entry.get("userId"),
                             "lat": entry.get("gps", {}).get("lat"),
                             "lon": entry.get("gps", {}).get("lon"),
-                            "timestamp": entry.get("timestamp")
+                            "timestamp": entry.get("timestamp")  # Optional field
                         })
                     except json.JSONDecodeError as je:
                         logger.warning("Failed to decode Redis entry for key %s: %s", key, str(je))
@@ -97,6 +103,7 @@ def lambda_handler(event, context):
                         "error": "No data found for opposite role",
                         "userId": user_id,
                         "role": role,
+                        # "gps": gps,  # Deprecated or unused
                         "lat": lat,
                         "lon": lon,
                         "scheduleId": schedule_id
@@ -110,6 +117,7 @@ def lambda_handler(event, context):
                     "status": "success",
                     "userId": user_id,
                     "role": role,
+                    # "gps": gps,  # Deprecated or unused
                     "lat": lat,
                     "lon": lon,
                     "scheduleId": schedule_id,
