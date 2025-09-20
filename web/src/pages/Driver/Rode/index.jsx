@@ -20,7 +20,7 @@ const GoogleMapsNavigation = () => {
   const urlParams = getSearchParam('current');
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
-
+  const [map, setMap] = useState(null);
   const [routeSummary, setRouteSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -123,6 +123,8 @@ const GoogleMapsNavigation = () => {
           }
         });
 
+        setMap(newMap)
+
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
           map: newMap,
@@ -154,47 +156,7 @@ const GoogleMapsNavigation = () => {
         //         }
         //     ]
         // }
-        const othersGPS = gpsData?.othersGPS;
-        console.log('othersGPS', othersGPS)
-        const passengers = [];
-        othersGPS?.forEach(i => {
-          passengers.push({
-            id: i.userId,
-            name: i.userId,
-            position: { lat: i.lat, lng: i.lon }
-          })
-        })
-        // const passengers = [
-        //   {
-        //     id: 1,
-        //     name: "a",
-        //     position: { lat: -36.8543791, lng: 174.7589 }
-        //   },
-        //   {
-        //     id: 2,
-        //     name: "b",
-        //     position: { lat: -36.8546, lng: 174.7599 }
-        //   },
-        // ];
 
-        passengers?.forEach((passenger, index) => {
-          const marker = new window.google.maps.Marker({
-            position: passenger.position,
-            map: newMap,
-            title: passenger.name,
-            icon: {
-              url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
-              scaledSize: new window.google.maps.Size(48, 48),
-            }
-          });
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: `Passager ${index + 1}`
-          });
-
-          marker.addListener('click', () => {
-            infoWindow.open(newMap, marker);
-          });
-        });
 
       });
     }).catch(error => {
@@ -210,7 +172,43 @@ const GoogleMapsNavigation = () => {
     }
   }, [directionsService])
 
+  const drawPosition = () => {
+    const othersGPS = gpsData?.othersGPS;
+    console.log('othersGPS', othersGPS)
+    const passengers = [];
+    othersGPS?.forEach(i => {
+      passengers.push({
+        id: i.userId,
+        name: i.userId,
+        position: { lat: i.lat, lng: i.lon }
+      })
+    })
 
+    passengers?.forEach((passenger, index) => {
+      const marker = new window.google.maps.Marker({
+        position: passenger.position,
+        map: map,
+        title: passenger.name,
+        icon: {
+          url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
+          scaledSize: new window.google.maps.Size(48, 48),
+        }
+      });
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `Passager ${index + 1}`
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(map, marker);
+      });
+    });
+  }
+
+  useEffect(() => {
+    if (gpsData && map) {
+      drawPosition();
+    }
+  }, [gpsData, map]);
 
   // useEffect(() => {
   //   let watchId;
