@@ -25,10 +25,10 @@ export default function App() {
   const [visibleCloseRight, setVisibleCloseRight] = useState(false)
   const [routeSummary, setRouteSummary] = useState(null);
   const mapRef = useRef(null);
+  const mapInstance = useRef(null);
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [points, setPoints] = useState([])
-  const [map, setMap] = useState(null);
 
   useEffect(() => {
     const loader = new Loader({
@@ -36,8 +36,6 @@ export default function App() {
       version: "weekly",
       libraries: ["places"]
     });
-
-    let mapInstance = null;
 
     getCurrentPosition().then(res => {
       console.log('Current position:', res);
@@ -51,40 +49,36 @@ export default function App() {
         address: 'Current Location' // todo
       });
       loader.load().then(() => {
-        if (!mapRef.current) return;
-        if (!map) {
-          mapInstance = new window.google.maps.Map(mapRef.current, {
-            zoom: 15,
-            center: initialLocation,
-            mapTypeId: 'roadmap',
-            gestureHandling: 'greedy',
-            options: {
-              zoomControl: false,
-              streetViewControl: false,
-              mapTypeControl: false,
-              scaleControl: false,
-              rotateControl: false,
-              clickableIcons: false,
-            }
-          });
+        mapInstance.current = new window.google.maps.Map(mapRef.current, {
+          zoom: 15,
+          center: initialLocation,
+          mapTypeId: 'roadmap',
+          gestureHandling: 'greedy',
+          options: {
+            zoomControl: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            rotateControl: false,
+            clickableIcons: false,
+          }
+        });
 
-          setMap(mapInstance);
+        const service = new window.google.maps.DirectionsService();
+        const renderer = new window.google.maps.DirectionsRenderer({
+          map: mapInstance.current,
+        });
 
-          const service = new window.google.maps.DirectionsService();
-          const renderer = new window.google.maps.DirectionsRenderer({
-            map: mapInstance,
-          });
+        setDirectionsService(service);
+        setDirectionsRenderer(renderer);
 
-          setDirectionsService(service);
-          setDirectionsRenderer(renderer);
-        }
       });
     }).catch(error => {
       console.log('Error getting current position:', error);
     });
     return () => {
-      if (mapInstance) {
-        mapInstance = null;
+      if (mapInstance.current) {
+        mapInstance.current = null;
       }
     };
   }, [apiKey]);
