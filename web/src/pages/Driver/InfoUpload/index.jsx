@@ -23,8 +23,7 @@ export default function App() {
   const [driver_license_image, setVDriverLicenseImage] = useState([])
   const onFinish = (values) => {
     console.log('Form values:', values);
-    // todo submit to backend
-    navigate('/driver/publish');
+    navigate('/driver');
   }
 
   return (
