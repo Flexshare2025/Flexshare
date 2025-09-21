@@ -18,6 +18,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Debug repo structure
+      run: |
+        echo "Current working directory: $(pwd)"
+        echo "Listing repository recursively..."
+        ls -R
+
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
@@ -25,23 +31,41 @@ jobs:
         chmod 600 ~/.ssh/aws.pem
         ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
+    - name: Setup JDK (for Maven build)
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+        cache: maven
+
     - name: Build member-service JAR
       run: |
-        cd "Group-Work-for-COMPX527/Flex Share Server/Leon's folder"
+        # cd pom
+        cd "Flex Share Server/Leon's folder"
         mvn -pl member-service -am clean package -DskipTests
 
     - name: Copy JAR to EC2
       run: |
-        JAR_PATH=$(find "Group-Work-for-COMPX527/Flex Share Server/Leon's folder/member-service/target" -name "*.jar" ! -name "original-*.jar" | head -n 1)
+
+        JAR_PATH=$(find "Flex Share Server/Leon's folder/member-service/target" -name "*.jar" ! -name "original-*.jar" | head -n 1)
+        if [ -z "$JAR_PATH" ]; then
+          echo "ERROR: JAR file not found!"
+          ls -la "Flex Share Server/Leon's folder/member-service/target/"
+          exit 1
+        fi
+        echo "Uploading JAR: $JAR_PATH"
         scp -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no "$JAR_PATH" $EC2_USER@$EC2_HOST:/home/ubuntu/app/member-service.jar
 
-    - name: Deploy to EC2
+    - name: Deploy on EC2
       run: |
         ssh -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+          set -e
+          mkdir -p /home/ubuntu/app
           echo "Stopping old Spring Boot process..."
           pkill -f 'java -jar' || echo "No process found"
 
-          echo "Starting new member-service..."
+          echo "Starting member-service..."
           cd /home/ubuntu/app
           nohup java -jar member-service.jar > app.log 2>&1 &
+          echo "Deployment finished."
         EOF
