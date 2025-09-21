@@ -20,9 +20,9 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -408,10 +408,12 @@ public class ScheduleController {
         List<Object> result = redisService.getRedisTemplate().opsForList().range(scheduleId, 0, -1);
         LinkedHashSet<Object> records = new LinkedHashSet<>(result);
         for (Object o : records) {
+            Schedule schedule = getGlobalSchedule(o.toString());
+            schedule=filterInvalidSchedule(schedule);
             if (!checkUserValid)
-                schedules.add(getGlobalSchedule(o.toString()));
+                schedules.add(schedule);
             else {
-                Schedule schedule = getGlobalSchedule(o.toString());
+
                 List<String> passengerIDs = schedule.getPassengerIDs();
                 if (passengerIDs!=null && passengerIDs.contains(userId)) {
                     schedules.add(getGlobalSchedule(o.toString()));

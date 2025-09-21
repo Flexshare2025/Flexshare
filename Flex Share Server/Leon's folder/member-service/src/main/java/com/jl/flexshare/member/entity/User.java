@@ -9,8 +9,9 @@ import com.jl.flexshare.member.validation.SignUpGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
+
+import jakarta.validation.constraints.Email;
 
 @Data
 @TableName("users")
