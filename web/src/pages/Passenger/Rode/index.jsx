@@ -33,13 +33,13 @@ const GoogleMapsNavigation = (props) => {
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
     pollingInterval: 5000,
-    // manual: true,
+    manual: true,
     ready: isWithin10Minutes(currentOrder?.departure_time),
   });
 
   const { data: gpsData, run: runGet, cancel: cancelGet } = useRequest(getGPS, {
     pollingInterval: 5000,
-    // manual: true,
+    manual: true,
     ready: isWithin10Minutes(currentOrder?.departure_time),
     onError: (err) => {
       console.error('gpsData-err:', err);
@@ -53,13 +53,13 @@ const GoogleMapsNavigation = (props) => {
     "scheduleId": currentOrder?.schedule_id,
   }
 
-  // useEffect(() => {
-  //   // if (isWithin10Minutes(currentOrder?.departure_time)) {
-  //   console.log('Starting polling...');
-  //   runPush(requestData);
-  //   runGet(requestData);
-  //   // }
-  // }, [currentOrder])
+  useEffect(() => {
+    // if (isWithin10Minutes(currentOrder?.departure_time)) {
+    console.log('Starting polling...');
+    runPush(requestData);
+    runGet(requestData);
+    // }
+  }, [currentOrder])
 
 
   useEffect(() => {
