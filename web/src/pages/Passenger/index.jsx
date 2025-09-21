@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { Popup } from 'antd-mobile';
 import { getCurrentPosition } from '@/utils/position'
 import DirectionsProvider from './component/DirectionsProvider';
@@ -10,6 +11,7 @@ import OrderIcon from '@/assets/order_icon.png';
 import './index.scss';
 
 export default function App() {
+  const KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
@@ -107,37 +109,39 @@ export default function App() {
   };
   return (
     <div style={{ width: '100%', height: '100vh' }}>
-      <DirectionsProvider>
-        <MapView position={position} start={start} end={end} />
-        <ControlPanel
-          onPlaceSelect={handlePlaceSelect}
-          start={start}
-          end={end}
-          loading={loading}
-          routeSummary={routeSummary}
-          error={error}
-          onSetLoading={setLoading}
-          onSetRouteSummary={setRouteSummary}
-          onSetError={setError}
-          onSetMatchedSchedules={setMatchedSchedules}
-          onPassengerCountChange={setPassengerCount}
-        />
-        <OrderList
-          orderLists={matchedSchedules}
-          passengerCount={passengerCount}
-          onUpdateSchedule={handleUpdateSchedule}
-          userDestination={end}
-        />
-        {/* order list float icon */}
-        <img
-          onClick={() => {
-            setVisibleOrderList(true)
-          }}
-          className='passenger-float-icon'
-          src={OrderIcon}
-          alt="order list"
-        />
-      </DirectionsProvider>
+      <APIProvider apiKey={KEY}>
+        <DirectionsProvider>
+          <MapView position={position} start={start} end={end} />
+          <ControlPanel
+            onPlaceSelect={handlePlaceSelect}
+            start={start}
+            end={end}
+            loading={loading}
+            routeSummary={routeSummary}
+            error={error}
+            onSetLoading={setLoading}
+            onSetRouteSummary={setRouteSummary}
+            onSetError={setError}
+            onSetMatchedSchedules={setMatchedSchedules}
+            onPassengerCountChange={setPassengerCount}
+          />
+          <OrderList
+            orderLists={matchedSchedules}
+            passengerCount={passengerCount}
+            onUpdateSchedule={handleUpdateSchedule}
+            userDestination={end}
+          />
+          {/* order list float icon */}
+          <img
+            onClick={() => {
+              setVisibleOrderList(true)
+            }}
+            className='passenger-float-icon'
+            src={OrderIcon}
+            alt="order list"
+          />
+        </DirectionsProvider>
+      </APIProvider>
 
       {/* order list popup */}
       <Popup
