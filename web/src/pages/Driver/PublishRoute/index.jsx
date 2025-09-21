@@ -25,7 +25,6 @@ export default function App() {
   const [visibleCloseRight, setVisibleCloseRight] = useState(false)
   const [routeSummary, setRouteSummary] = useState(null);
   const mapRef = useRef(null);
-  const mapInstance = useRef(null);
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [points, setPoints] = useState([])
@@ -49,7 +48,7 @@ export default function App() {
         address: 'Current Location' // todo
       });
       loader.load().then(() => {
-        mapInstance.current = new window.google.maps.Map(mapRef.current, {
+        const newMap = new window.google.maps.Map(mapRef.current, {
           zoom: 15,
           center: initialLocation,
           mapTypeId: 'roadmap',
@@ -66,7 +65,7 @@ export default function App() {
 
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
-          map: mapInstance.current,
+          map: newMap,
         });
 
         setDirectionsService(service);
@@ -76,11 +75,6 @@ export default function App() {
     }).catch(error => {
       console.log('Error getting current position:', error);
     });
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current = null;
-      }
-    };
   }, [apiKey]);
 
   const handlePlaceSelect = (type, place) => {

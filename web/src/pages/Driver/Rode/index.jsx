@@ -18,7 +18,6 @@ import './index.scss';
 
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
-  const mapInstance = useRef(null);
   const urlParams = getSearchParam('current');
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
@@ -109,7 +108,7 @@ const GoogleMapsNavigation = () => {
       };
 
       loader.load().then(() => {
-        mapInstance.current = new window.google.maps.Map(mapRef.current, {
+        const newMap = new window.google.maps.Map(mapRef.current, {
           zoom: 15,
           center: initialLocation,
           mapTypeId: 'roadmap',
@@ -124,11 +123,11 @@ const GoogleMapsNavigation = () => {
           }
         });
 
-        setMap(mapInstance.current)
+        setMap(newMap)
 
         const service = new window.google.maps.DirectionsService();
         const renderer = new window.google.maps.DirectionsRenderer({
-          map: mapInstance.current,
+          map: newMap,
         });
 
         setDirectionsService(service);
@@ -139,11 +138,7 @@ const GoogleMapsNavigation = () => {
       console.error('Error getting current position:', error);
     });
 
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current = null;
-      }
-    };
+
   }, [apiKey]);
 
   useEffect(() => {
