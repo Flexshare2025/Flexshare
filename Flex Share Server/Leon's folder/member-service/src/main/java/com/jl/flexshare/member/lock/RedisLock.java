@@ -8,9 +8,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RedisLock {
-    String key();              // 锁的唯一标识
-    long expire() default 60;  // 锁过期时间（秒）
-    long waitTime() default 3000; // 最多等待时间（毫秒）
+    String key();              // Redis lock key name.
+    long expire() default 60;  // Redis lock key expire time.
+    long waitTime() default 3000; //  Duration of waiting time.
 }
 
 
