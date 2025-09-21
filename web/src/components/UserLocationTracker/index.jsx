@@ -54,7 +54,7 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
       },
       (err) => {
         setError(`error: ${err.message}`);
-        console.error("error:", err);
+        console.log("getCurrentPosition-error:", err);
       },
       {
         enableHighAccuracy: true,
