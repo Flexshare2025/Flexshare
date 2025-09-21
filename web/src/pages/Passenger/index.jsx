@@ -8,6 +8,7 @@ import ControlPanel from './component/ControlPanel';
 import OrderList from './component/OrderList';
 import PassengerOrderList from './component/PassengerOrderList';
 import OrderIcon from '@/assets/order_icon.png';
+import Rode from '@/pages/Passenger/Rode';
 import './index.scss';
 
 export default function App() {
@@ -21,6 +22,8 @@ export default function App() {
   const [matchedSchedules, setMatchedSchedules] = useState([]); // store matched schedules data
   const [passengerCount, setPassengerCount] = useState(1); // store passenger count
   const [visibleOrderList, setVisibleOrderList] = useState(false); // control order list popup
+  const [visible2, setVisible2] = useState(false)
+  const [currentOrder, setCurrentOrder] = useState(null);
   useEffect(() => {
     getCurrentPosition()
       .then(res => {
@@ -153,7 +156,27 @@ export default function App() {
         }}
       >
         <div className='passenger-order-popup-content' style={{ height: '100vh', overflowY: 'scroll' }}>
-          <PassengerOrderList onClose={() => setVisibleOrderList(false)} />
+          <PassengerOrderList
+            onClose={() => setVisibleOrderList(false)}
+            setOrder={d => setCurrentOrder(d)}
+            setVisible2={() => {
+              setVisible2(true);
+              setVisibleOrderList(false);
+            }}
+          />
+        </div>
+      </Popup>
+      <Popup
+        position='right'
+        visible={visible2}
+        destroyOnClose
+        forceRender
+        onClose={() => {
+          setVisible2(false)
+        }}
+      >
+        <div className='abc' style={{ height: '100vh', width: '100vw', overflowY: 'scroll' }}>
+          <Rode currentOrder={currentOrder} onClose={() => setVisible2(false)} />
         </div>
       </Popup>
     </div>

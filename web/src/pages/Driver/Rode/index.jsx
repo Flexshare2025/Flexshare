@@ -5,20 +5,18 @@ import { getCurrentPosition } from '@/utils/position';
 import { Button, List } from 'antd-mobile';
 import { removeCountryInAddress, convertMinutesToHoursAndMinutes, isWithin10Minutes } from '@/utils/common';
 import RightArrow from '@/assets/right_arrow.png';
-import { getSearchParam } from '@/utils/url';
 import { useRequest } from 'ahooks';
 import { pushGPS, getGPS } from '@/utils/gps';
 import { getLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 import UserLocationTracker from '@/components/UserLocationTracker';
 
-import Nav from '@/components/Nav';
+import Header from '@/components/Header';
 
 import './index.scss';
 
-const GoogleMapsNavigation = () => {
+const GoogleMapsNavigation = (props) => {
   const mapRef = useRef(null);
-  const urlParams = getSearchParam('current');
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [map, setMap] = useState(null);
@@ -33,7 +31,7 @@ const GoogleMapsNavigation = () => {
   const END_POINT = 'end_point';
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
-  const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
+  const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
 
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
@@ -57,24 +55,26 @@ const GoogleMapsNavigation = () => {
   }
 
   useEffect(() => {
-    if (urlParams && isWithin10Minutes(currentOrder?.departure_time)) {
+    if (isWithin10Minutes(currentOrder?.departure_time)) {
       runPush(requestData);
       runGet(requestData);
     }
-  }, [urlParams, currentOrder])
+  }, [currentOrder])
 
 
   useEffect(() => {
-    const data = urlParams ? JSON.parse(urlParams) : null;
-    if (data.start_point) {
-      setStartPoint(data.start_point)
+    const data = props.currentOrder || {};
+    if (props.currentOrder) {
+      setCurrentOrder(data)
+      if (data.start_point) {
+        setStartPoint(data.start_point)
+      }
+      if (data.end_point) {
+        setEndPoint(data.end_point)
+      }
     }
-    if (data.end_point) {
-      setEndPoint(data.end_point)
-    }
-    setCurrentOrder(data)
 
-  }, [urlParams]);
+  }, [props.currentOrder]);
 
 
   const handlePlaceSelect = (type, place) => {
@@ -145,7 +145,7 @@ const GoogleMapsNavigation = () => {
     if (start && end && directionsService) {
       calculateRoute();
     }
-  }, [directionsService])
+  }, [directionsService, props.currentOrder]);
 
   const drawPosition = () => {
     const othersGPS = gpsData?.othersGPS;
@@ -262,21 +262,20 @@ const GoogleMapsNavigation = () => {
 
   return (
     <>
-      <Nav title='Current Order' />
+      <Header title='Current Order' onBack={props.onClose} />
       <div className='driver-rode-container'>
         <div className='order-info'>
           <List header=''>
             <p className='route-item-detail'>
-              <span className='address'> {removeCountryInAddress(currentOrder.start_point.address)}</span>
+              <span className='address'> {removeCountryInAddress(currentOrder?.start_point?.address)}</span>
               <img className='rode-icon' src={RightArrow} alt="" />
-              <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
+              <span className='address'>{removeCountryInAddress(currentOrder?.end_point?.address)}</span>
             </p>
             {Object.values(currentOrder?.passengerSchedules || {})?.map((order, index) => (
               <List.Item
                 key={order.schedule_id}
               >
                 <p className="route-item">
-                  {/* <span className='seat-item'>Order{index + 1}: </span> */}
                   <span>{order.departure_time}</span>
                   <span className='seat-item'>({order.num_passenger} people)</span>
                 </p>

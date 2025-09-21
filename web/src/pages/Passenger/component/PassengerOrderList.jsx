@@ -5,12 +5,10 @@ import Loading from '@/components/Loading';
 import Header from '@/components/Header';
 import RightArrow from '@/assets/right_arrow.png';
 import { listSchedules, cancelSchedulePassenger } from '@/api';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import './PassengerOrderList.scss';
-export default function PassengerOrderList({ onClose }) {
+export default function PassengerOrderList({ onClose, setOrder, setVisible2 }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   //avoid duplicate loading
   const hasLoaded = useRef(false);
   function getPassengerOrders() {
@@ -82,7 +80,8 @@ export default function PassengerOrderList({ onClose }) {
   const isCancel = i => i === 'cancel' || i === 'invalid' || i === 'timeout';
   const goDetail = (currentOrder) => {
     if (currentOrder) {
-      navigate(`/passenger/rode?current=${JSON.stringify(currentOrder)}`);
+      setOrder(currentOrder);
+      setVisible2(true);
     }
   }
   return (

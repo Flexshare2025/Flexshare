@@ -9,6 +9,7 @@ import { formatDateTime } from '@/utils/common';
 import RouteList from './components/RouteList';
 import OrderIcon from '@/assets/order_icon.png';
 import { publishSchedule } from '@/api/index.js';
+import Rode from '@/pages/Driver/Rode';
 
 import './index.scss';
 
@@ -28,6 +29,9 @@ export default function App() {
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [points, setPoints] = useState([])
+  const [visible2, setVisible2] = useState(false)
+  const [currentOrder, setCurrentOrder] = useState(null);
+
 
   useEffect(() => {
     const loader = new Loader({
@@ -210,9 +214,6 @@ export default function App() {
         })
       }
     })
-
-
-
   }
 
   return (
@@ -320,7 +321,23 @@ export default function App() {
       >
         <div className='driver-list-popup-content' style={{ height: '100vh', overflowY: 'scroll' }}
         >
-          <RouteList onClose={() => setVisibleCloseRight(false)} />
+          <RouteList onClose={() => setVisibleCloseRight(false)} setOrder={d => setCurrentOrder(d)} setVisible2={() => {
+            setVisible2(true);
+            setVisibleCloseRight(false);
+          }} />
+        </div>
+      </Popup>
+      <Popup
+        position='right'
+        visible={visible2}
+        destroyOnClose
+        forceRender
+        onClose={() => {
+          setVisible2(false)
+        }}
+      >
+        <div className='abc' style={{ height: '100vh', width: '100vw', overflowY: 'scroll' }}>
+          <Rode currentOrder={currentOrder} onClose={() => setVisible2(false)} />
         </div>
       </Popup>
     </>

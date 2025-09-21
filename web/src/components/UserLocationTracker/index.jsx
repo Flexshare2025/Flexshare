@@ -1,21 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getCurrentPosition } from '@/utils/position';
 
-const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, height: 36 }, followUser = false }) => {
+const UserLocationTracker = ({
+  map,
+  zIndex = 1000,
+  markerSize = { width: 36, height: 36 },
+  followUser = false
+}) => {
   const [userMarker, setUserMarker] = useState(null);
   const [watchId, setWatchId] = useState(null);
-  const [userPosition, setUserPosition] = useState(null);
   const [error, setError] = useState(null);
 
   const updateUserMarker = useCallback((position) => {
-    if (!map) return;
+    if (!map || !window.google) return;
 
     const newPosition = {
       lat: position.lat,
       lng: position.lng
     };
-
-    setUserPosition(newPosition);
 
     if (userMarker) {
       userMarker.setPosition(newPosition);
@@ -36,39 +38,44 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
     if (followUser) {
       map.setCenter(newPosition);
     }
-  }, [map, userMarker, markerSize, zIndex, followUser]);
+  }, [map, userMarker, markerSize.width, markerSize.height, zIndex, followUser]);
 
   useEffect(() => {
     if (!map || !window.google) return;
 
     if (!navigator.geolocation) {
-      setError("cannot support geolocation");
+      setError("Geolocation is not supported by your browser");
       return;
     }
 
-    getCurrentPosition().then(res => {
-      console.log('Current position-222:', res);
-      const initialLocation = {
-        lat: res.latitude,
-        lng: res.longitude
-      };
-      updateUserMarker(initialLocation);
-    }).catch(err => {
-      setError(`error: ${err.message}`);
-      console.log("Current position error:", err);
-    });
+    let currentWatchId = null;
 
-    const id = navigator.geolocation.watchPosition(
+    const fetchInitialPosition = async () => {
+      try {
+        const res = await getCurrentPosition();
+        const initialLocation = {
+          lat: res.latitude,
+          lng: res.longitude
+        };
+        updateUserMarker(initialLocation);
+      } catch (err) {
+        setError(`Error getting initial position: ${err.message}`);
+        console.error("Initial position error:", err);
+      }
+    };
+
+    fetchInitialPosition();
+
+    currentWatchId = navigator.geolocation.watchPosition(
       (position) => {
-        console.log('Position updated:', position);
         updateUserMarker({
           lat: position.coords.latitude,
           lng: position.coords.longitude
         });
       },
       (err) => {
-        setError(`error: ${err.message}`);
-        console.error("error:", err);
+        setError(`Error tracking position: ${err.message}`);
+        console.error("Position tracking error:", err);
       },
       {
         enableHighAccuracy: true,
@@ -77,18 +84,18 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
       }
     );
 
-    setWatchId(id);
+    setWatchId(currentWatchId);
 
     return () => {
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
+      if (currentWatchId) {
+        navigator.geolocation.clearWatch(currentWatchId);
       }
       if (userMarker) {
         userMarker.setMap(null);
         setUserMarker(null);
       }
     };
-  }, [map]);
+  }, [map, updateUserMarker]);
 
   return null;
 };
