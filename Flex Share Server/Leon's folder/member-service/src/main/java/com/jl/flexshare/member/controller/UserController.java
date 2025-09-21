@@ -1,5 +1,5 @@
 package com.jl.flexshare.member.controller;
-import com.alibaba.druid.sql.visitor.functions.If;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jl.flexshare.member.result.ErrorType;
 import com.jl.flexshare.member.result.Result;
@@ -11,6 +11,8 @@ import com.jl.flexshare.member.service.UserService;
 import com.jl.flexshare.member.validation.EmailVerificationGroup;
 import com.jl.flexshare.member.validation.LoginGroup;
 import com.jl.flexshare.member.validation.SignUpGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,10 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletResponse;
@@ -30,10 +29,11 @@ import jakarta.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -49,99 +49,112 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Result> register(@Validated({SignUpGroup.class}) @RequestBody User user) {
-
+        logger.info("Received registration request for email: {}", user.getEmail());
 
         boolean ifValid = redisService.checkVerification(user.getEmail(), user.getMail_verification());
-        if(!ifValid){
-            return ResponseEntity.ok(
-                    Result.error(
-                            ResultError.info(
-                                    ErrorType.Not_valid_verification)));
+        if (!ifValid) {
+            logger.warn("Email verification failed for: {}", user.getEmail());
+            return ResponseEntity.ok(Result.error(ResultError.info(ErrorType.Not_valid_verification)));
         }
 
         QueryWrapper<User> query = new QueryWrapper<>();
-        query.eq("email",user.getEmail());
-        User qy = userService.getOne(query);
-        if(qy != null) {
-            return
-                    ResponseEntity.ok(Result.error(ResultError.info(ErrorType.User_exist)));
+        query.eq("email", user.getEmail());
+        User existingUser = userService.getOne(query);
+        if (existingUser != null) {
+            logger.warn("User already exists with email: {}", user.getEmail());
+            return ResponseEntity.ok(Result.error(ResultError.info(ErrorType.User_exist)));
         }
 
-        //encoding password
         user.setPassword(encoder.encode(user.getPassword()));
-        System.out.println(user.getPassword());
-        boolean res = userService.save(user);
-        Result result =res?
-                Result.success()
-                :Result.error(ResultError.info(ErrorType.Sign_up_failed));
+        logger.debug("Encoded password for user: {}", user.getEmail());
+
+        boolean saved = userService.save(user);
+        if (saved) {
+            logger.info("User registered successfully: {}", user.getEmail());
+        } else {
+            logger.error("User registration failed: {}", user.getEmail());
+        }
+
+        Result result = saved ? Result.success() : Result.error(ResultError.info(ErrorType.Sign_up_failed));
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@Validated({LoginGroup.class}) @RequestBody User user, HttpServletRequest request, ServletResponse response) {
-        boolean res = userService.loginMember(user);
+    public ResponseEntity<Result> login(@Validated({LoginGroup.class}) @RequestBody User user, HttpServletRequest request, ServletResponse response) {
+        logger.info("Login attempt for email: {}", user.getEmail());
+
+        boolean success = userService.loginMember(user);
         user.setPassword(encoder.encode(user.getPassword()));
-        System.out.println(user.getPassword());
-        Result result =res?
-                Result.success()
-                :Result.error(ResultError.info(ErrorType.Login_failed));
+        logger.debug("Encoded password for login: {}", user.getEmail());
 
-        //generate unique authToken
+        Result result = success ? Result.success() : Result.error(ResultError.info(ErrorType.Login_failed));
+        if (!success) {
+            logger.warn("Login failed for email: {}", user.getEmail());
+        }
+
         UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
 
-        //set token into current context;
         SecurityContextHolder.getContext().setAuthentication(authToken);
         request.getSession(true).setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
-                , SecurityContextHolder.getContext());
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
 
         HttpSession session = request.getSession(true);
         result.setData(session.getId());
         String userId = userService.getUserId(user).toString();
         String sessionId = session.getId();
 
-        singleLogin(sessionId,userId,user.getRole());
+        logger.info("Login successful. Session ID: {}, User ID: {}", sessionId, userId);
+        singleLogin(sessionId, userId, user.getRole());
+
         return ResponseEntity.ok(result);
     }
 
-    private void singleLogin(String sessionId, String userId, User.Role role){
-        String userLoginValue =userId+":"+role;
+    private void singleLogin(String sessionId, String userId, User.Role role) {
+        String userLoginValue = userId + ":" + role;
+        logger.debug("Setting single login token for user: {}", userLoginValue);
         setLoginToken(sessionId, userLoginValue);
     }
 
-    private void setLoginToken(String sessionId, String userLoginValue){
-        redisService.set_temp(sessionId,userLoginValue,1, TimeUnit.DAYS);
-        redisService.set_temp(userLoginValue,sessionId,1, TimeUnit.DAYS);
+    private void setLoginToken(String sessionId, String userLoginValue) {
+        logger.debug("Storing login tokens in Redis for session: {}", sessionId);
+        redisService.set_temp(sessionId, userLoginValue, 1, TimeUnit.DAYS);
+        redisService.set_temp(userLoginValue, sessionId, 1, TimeUnit.DAYS);
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<Result> resetPassword(@RequestBody User user){
+    public ResponseEntity<Result> resetPassword(@RequestBody User user) {
+        logger.info("Password reset requested for email: {}", user.getEmail());
+
         boolean ifValid = redisService.checkVerification(user.getEmail(), user.getMail_verification());
-        if(!ifValid) {
-            return ResponseEntity.ok(
-                    Result.error(
-                            ResultError.info(
-                                    ErrorType.Not_valid_verification)));
+        if (!ifValid) {
+            logger.warn("Email verification failed during password reset for: {}", user.getEmail());
+            return ResponseEntity.ok(Result.error(ResultError.info(ErrorType.Not_valid_verification)));
         }
+
         user.setPassword(encoder.encode(user.getPassword()));
         userService.resetPassword(user);
+        logger.info("Password reset successful for email: {}", user.getEmail());
+
         return ResponseEntity.ok(Result.success());
     }
 
-
     @PostMapping("/mail-verification")
-    public ResponseEntity getMailVerification(@Validated({EmailVerificationGroup.class})@RequestBody User user, HttpServletRequest request ) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<Result> getMailVerification(@Validated({EmailVerificationGroup.class}) @RequestBody User user, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String email = user.getEmail();
+        logger.info("Sending email verification code to: {}", email);
+
         String code = redisService.setEmailVerification(email);
-        mailService.send(email,"Verification-Code",code);
+        mailService.send(email, "Verification-Code", code);
+
+        logger.info("Verification code sent successfully to: {}", email);
         return ResponseEntity.ok(Result.success());
     }
 
     @PostMapping("/test")
-    public ResponseEntity test() {
-        System.out.println("test");
+    public ResponseEntity<Result> test() {
+        logger.info("Test endpoint called");
         return ResponseEntity.ok(Result.success(Result.success("test")));
     }
 }
-
