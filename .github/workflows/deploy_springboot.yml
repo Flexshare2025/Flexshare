@@ -18,8 +18,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Build JAR
-      run: mvn -B -DskipTests clean package
+    - name: Setup JDK (for Maven build)
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
+
+    - name: Build JAR using the nested pom
+      run: |
+        POM_PATH="Group-Work-for-COMPX527/Flex Share Server/Leon's folder/pom.xml"
+        echo "Building with POM: $POM_PATH"
+        # use -f to point to the nested pom
+        mvn -B -f "$POM_PATH" -DskipTests clean package
 
     - name: Setup SSH key
       run: |
@@ -28,16 +39,30 @@ jobs:
         chmod 600 ~/.ssh/aws.pem
         ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
-    - name: Copy JAR to EC2
+    - name: Find built JAR and copy to EC2
       run: |
-        scp -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no target/*.jar $EC2_USER@$EC2_HOST:/home/ubuntu/app/member-service.jar
+        JAR_PATH=$(ls "Group-Work-for-COMPX527/Flex Share Server/Leon's folder/target/"*.jar 2>/dev/null | grep -v 'original' | head -n 1 || true)
+        if [ -z "$JAR_PATH" ]; then
+          echo "ERROR: No JAR found at the expected target path."
+          echo "ls output:"
+          ls -la "Group-Work-for-COMPX527/Flex Share Server/Leon's folder/target/" || true
+          exit 1
+        fi
+        echo "Found JAR: $JAR_PATH"
+        scp -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no "$JAR_PATH" $EC2_USER@$EC2_HOST:/home/ubuntu/app/member-service.jar
 
-    - name: Restart Spring Boot service
+    - name: Restart Spring Boot on EC2
       run: |
         ssh -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-          echo "Killing old Spring Boot process..."
-          pkill -f 'java -jar' || echo "No process found"
+          set -e
+          mkdir -p /home/ubuntu/app
+          echo "Stopping old process (if any)..."
+          pkill -f 'java -jar' || true
 
-          echo "Starting new Spring Boot process..."
+
+          # sudo apt update && sudo apt install -y default-jre
+
+          echo "Starting member-service..."
           nohup java -jar /home/ubuntu/app/member-service.jar > /home/ubuntu/app/app.log 2>&1 &
+          echo "Started."
         EOF
