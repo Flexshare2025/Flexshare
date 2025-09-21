@@ -56,7 +56,6 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
       console.log("getCurrentPosition-error:", err);
     });
 
-    navigator.geolocation
 
     const id = navigator.geolocation.watchPosition(
       (position) => {
