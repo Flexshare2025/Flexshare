@@ -47,7 +47,7 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
     }
 
     getCurrentPosition().then(res => {
-      console.log('Current position:', res);
+      console.log('Current position-222:', res);
       const initialLocation = {
         lat: res.latitude,
         lng: res.longitude
@@ -88,7 +88,7 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
         setUserMarker(null);
       }
     };
-  }, [map, updateUserMarker]);
+  }, [map]);
 
   return null;
 };
