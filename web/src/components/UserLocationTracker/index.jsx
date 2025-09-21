@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getCurrentPosition } from '@/utils/position';
 
 const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, height: 36 }, followUser = false }) => {
   const [userMarker, setUserMarker] = useState(null);
@@ -45,23 +46,17 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        updateUserMarker({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      },
-      (err) => {
-        setError(`error: ${err.message}`);
-        console.log("getCurrentPosition-error:", err);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
+    getCurrentPosition.then((position) => {
+      updateUserMarker({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      });
+    }).catch((err) => {
+      setError(`error: ${err.message}`);
+      console.log("getCurrentPosition-error:", err);
+    });
+
+    navigator.geolocation
 
     const id = navigator.geolocation.watchPosition(
       (position) => {
