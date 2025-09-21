@@ -1,0 +1,26 @@
+{
+	"short_name": "FlexShare",
+	"name": "FlexShare",
+	"icons": [
+		{
+			"src": "car.svg",
+			"sizes": "64x64 32x32 24x24 16x16",
+			"type": "image/svg+xml"
+		},
+		{
+			"src": "logo192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "logo512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	],
+	"start_url": "/flexshare/app/index.html",
+	"display": "standalone",
+	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
+	"scope": "/flexshare/app/index.html"
+}

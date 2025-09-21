@@ -1,0 +1,62 @@
+.register-page {
+	min-height: 100vh;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.register-content {
+	padding: 20px;
+}
+
+.register-header {
+	text-align: center;
+	margin-bottom: 24px;
+	padding-top: 20px;
+}
+
+.register-header h2 {
+	color: #fff;
+	font-size: 28px;
+	font-weight: 600;
+	margin: 0 0 8px 0;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-header p {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 16px;
+	margin: 0;
+}
+
+/* Form container */
+.adm-form {
+	background: #fff;
+	border-radius: 16px;
+	padding: 24px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Role selector active color uses primary color from theme */
+.role-selector .adm-selector-item.adm-selector-item-active {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #fff;
+}
+
+/* Submit button uses primary gradient to match header */
+.submit-btn {
+	border-radius: 12px;
+	height: 48px;
+	font-weight: 600;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border: none;
+	box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+	transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:active {
+	transform: translateY(0);
+}
