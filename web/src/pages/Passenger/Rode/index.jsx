@@ -170,20 +170,9 @@ const GoogleMapsNavigation = () => {
   }, [directionsService])
 
 
-  const calculateWayponits = () => {
-    const waypoints = []
+  const calculateStops = () => {
     const v = Object.values(currentOrder?.passengerSchedules || {});
-    v.map((item) => {
-      waypoints.push({
-        location: { lat: item.stops?.[0]?.lat, lng: item.stops?.[0]?.lng },
-        stopover: true
-      })
-      waypoints.push({
-        location: { lat: item.stops?.[1]?.lat, lng: item.stops?.[1]?.lng },
-        stopover: true
-      })
-    })
-    return waypoints
+    return v?.[0]?.stops || [];
   };
 
   const calculateRoute = () => {
@@ -196,14 +185,12 @@ const GoogleMapsNavigation = () => {
     setLoading(true);
     setError(null);
     setRouteSummary(null);
-    const waypoints = calculateWayponits();
-    console.log('waypoints22', waypoints)
+    const stops = calculateStops();
 
     const request = {
-      origin: start,
-      destination: end,
+      origin: stops[0],
+      destination: stops[1],
       travelMode: window.google.maps.TravelMode.DRIVING,
-      // waypoints: waypoints?.length > 0 ? waypoints : undefined,
     };
 
     console.log('Calculating route with request:', request);
