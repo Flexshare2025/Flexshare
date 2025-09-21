@@ -11,18 +11,21 @@ import { pushGPS, getGPS } from '@/utils/gps';
 import { getLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 import UserLocationTracker from '@/components/UserLocationTracker';
-
 import Nav from '@/components/Nav';
 
 import './index.scss';
 
+let globalMap = null;
+let globalDirectionsService = null;
+let globalDirectionsRenderer = null;
+
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
-  const mapInstance = useRef(null);
   const urlParams = getSearchParam('current');
+
+  const [map, setMap] = useState(null);
   const [directionsService, setDirectionsService] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
-  const [map, setMap] = useState(null);
   const [routeSummary, setRouteSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,7 +39,6 @@ const GoogleMapsNavigation = () => {
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
 
-  // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
     pollingInterval: 5000,
     manual: true,
@@ -62,36 +64,26 @@ const GoogleMapsNavigation = () => {
       runPush(requestData);
       runGet(requestData);
     }
-  }, [urlParams, currentOrder])
-
+  }, [urlParams, currentOrder]);
 
   useEffect(() => {
     const data = urlParams ? JSON.parse(urlParams) : null;
-    if (data.start_point) {
-      setStartPoint(data.start_point)
-    }
-    if (data.end_point) {
-      setEndPoint(data.end_point)
-    }
-    setCurrentOrder(data)
-
+    if (data?.start_point) setStartPoint(data.start_point);
+    if (data?.end_point) setEndPoint(data.end_point);
+    setCurrentOrder(data);
   }, [urlParams]);
 
-
   const handlePlaceSelect = (type, place) => {
-    console.log('Selected location information:', place);
     const { formatted_address, geometry } = place;
-
     const address = formatted_address;
     const lat = geometry.location.lat();
     const lng = geometry.location.lng();
-    console.log('Address:', address, 'Latitude:', lat, 'Longitude:', lng);
+
     if (type === START_PONIT) {
       setStartPoint({ address, lat, lng });
     } else if (type === END_POINT) {
       setEndPoint({ address, lat, lng });
     }
-
   }
 
   useEffect(() => {
@@ -102,66 +94,58 @@ const GoogleMapsNavigation = () => {
     });
 
     getCurrentPosition().then(res => {
-      console.log('Current position:', res);
-      const initialLocation = {
-        lat: res.latitude,
-        lng: res.longitude
-      };
+      const initialLocation = { lat: res.latitude, lng: res.longitude };
 
       loader.load().then(() => {
-        mapInstance.current = new window.google.maps.Map(mapRef.current, {
-          zoom: 15,
-          center: initialLocation,
-          mapTypeId: 'roadmap',
-          gestureHandling: 'greedy',
-          options: {
-            zoomControl: false,
-            streetViewControl: false,
-            mapTypeControl: false,
-            scaleControl: false,
-            rotateControl: false,
-            clickableIcons: false,
-          }
-        });
+        if (!mapRef.current) return;
 
-        setMap(mapInstance.current)
+        if (!globalMap) {
+          globalMap = new window.google.maps.Map(mapRef.current, {
+            zoom: 15,
+            center: initialLocation,
+            mapTypeId: 'roadmap',
+            gestureHandling: 'greedy',
+            disableDefaultUI: true,
+          });
+        } else {
+          globalMap.setCenter(initialLocation);
+        }
 
-        const service = new window.google.maps.DirectionsService();
-        const renderer = new window.google.maps.DirectionsRenderer({
-          map: mapInstance.current,
-        });
+        setMap(globalMap);
 
-        setDirectionsService(service);
-        setDirectionsRenderer(renderer);
+        if (!globalDirectionsService) {
+          globalDirectionsService = new window.google.maps.DirectionsService();
+        }
+        if (!globalDirectionsRenderer) {
+          globalDirectionsRenderer = new window.google.maps.DirectionsRenderer({ map: globalMap });
+        } else {
+          globalDirectionsRenderer.setMap(globalMap);
+        }
 
+        setDirectionsService(globalDirectionsService);
+        setDirectionsRenderer(globalDirectionsRenderer);
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
     });
-
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current = null;
-      }
-    };
   }, [apiKey]);
 
   useEffect(() => {
     if (start && end && directionsService) {
       calculateRoute();
     }
-  }, [directionsService])
+  }, [directionsService]);
 
   const drawPosition = () => {
+    markers.forEach(m => m.setMap(null));
+
     const othersGPS = gpsData?.othersGPS;
-    console.log('othersGPS', othersGPS)
     if (!othersGPS || othersGPS.length === 0) {
       setMarkers([]);
       return;
     }
+
     const newMarkers = [];
-
-
     othersGPS?.forEach((i, index) => {
       const marker = new window.google.maps.Marker({
         position: { lat: Number(i.lat), lng: Number(i.lon) },
@@ -173,6 +157,7 @@ const GoogleMapsNavigation = () => {
         }
       });
       newMarkers.push(marker);
+
       const infoWindow = new window.google.maps.InfoWindow({
         content: `Passager ${index + 1}`
       });
@@ -185,37 +170,28 @@ const GoogleMapsNavigation = () => {
   }
 
   useEffect(() => {
-    console.log('gpsData-1', gpsData)
     if (gpsData && map) {
       drawPosition();
     }
   }, [gpsData, map]);
 
-  useEffect(() => {
-    return () => {
-      markers.forEach(marker => marker.setMap(null));
-    };
-  }, []);
-
-
   const calculateWayponits = () => {
-    const waypoints = []
+    const waypoints = [];
     const v = Object.values(currentOrder?.passengerSchedules || {});
-    v.map((item) => {
+    v.forEach((item) => {
       waypoints.push({
         location: { lat: item.stops?.[0]?.lat, lng: item.stops?.[0]?.lng },
         stopover: true
-      })
+      });
       waypoints.push({
         location: { lat: item.stops?.[1]?.lat, lng: item.stops?.[1]?.lng },
         stopover: true
-      })
-    })
-    return waypoints
+      });
+    });
+    return waypoints;
   };
 
   const calculateRoute = () => {
-    console.log('Calculating route with start:', start, 'end:', end);
     if (!start || !end || !directionsService) {
       setError('Please enter both start and end locations');
       return;
@@ -225,7 +201,6 @@ const GoogleMapsNavigation = () => {
     setError(null);
     setRouteSummary(null);
     const waypoints = calculateWayponits();
-    console.log('waypoints22', waypoints)
 
     const request = {
       origin: start,
@@ -234,16 +209,12 @@ const GoogleMapsNavigation = () => {
       waypoints: waypoints?.length > 0 ? waypoints : undefined,
     };
 
-    console.log('Calculating route with request:', request);
-
-
     directionsService.route(request, (response, status) => {
       setLoading(false);
 
       if (status === 'OK') {
-        directionsRenderer.setDirections(response);
+        directionsRenderer?.setDirections(response);
         const route = response.routes[0];
-        console.log('route ', route)
         if (route && route.legs && route.legs.length > 0) {
           let totalDistanceMeters = 0;
           let totalDurationSeconds = 0;
@@ -277,11 +248,8 @@ const GoogleMapsNavigation = () => {
               <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
             </p>
             {Object.values(currentOrder?.passengerSchedules || {})?.map((order, index) => (
-              <List.Item
-                key={order.schedule_id}
-              >
+              <List.Item key={order.schedule_id}>
                 <p className="route-item">
-                  {/* <span className='seat-item'>Order{index + 1}: </span> */}
                   <span>{order.departure_time}</span>
                   <span className='seat-item'>({order.num_passenger} people)</span>
                 </p>
@@ -325,10 +293,7 @@ const GoogleMapsNavigation = () => {
           </div>
         </div>
         <div ref={mapRef} className='rode-map-container' />
-        <UserLocationTracker
-          map={map}
-          followUser={true}
-        />
+        <UserLocationTracker map={map} followUser={true} />
       </div>
     </>
   );
