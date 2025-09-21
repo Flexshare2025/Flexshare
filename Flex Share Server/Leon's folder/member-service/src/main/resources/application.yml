@@ -1,16 +1,22 @@
-server:
-  port: 10001
-
 spring:
   application:
     name: member-service-provider
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: org.gjt.mm.mysql.Driver
-    url: jdbc:mysql://54.237.25.193:3306/member?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: app_member
-    password: dfsjiiknh1212475$^%#12SDGDS
 
-#mybatis:
-#  mapperLocations: classpath:mapper/*.xml #后面 mapper 文件的位置
-#  type-aliases-package: com.hspedu.springcloud.entity # 实体类的包路径
+  config:
+    import:
+      - optional:aws-secretsmanager:flexshare-service-config
+
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        instance-profile: true
+
+server:
+  port: 10001
+  servlet:
+    session:
+      cookie:
+        secure: false
+        same-site: none

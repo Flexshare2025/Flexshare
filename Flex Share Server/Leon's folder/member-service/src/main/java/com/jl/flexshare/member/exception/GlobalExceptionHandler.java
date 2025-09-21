@@ -29,8 +29,19 @@ public class GlobalExceptionHandler {
                             return map;
                         }
                 ).collect(Collectors.toList());
-        Result<ExceptionWrapper> result = Result.error(ResultError.error(ErrorType.Validation_failed), new ExceptionWrapper(exceptionMsg));
+        Result<ExceptionWrapper> result = Result.error(ResultError.info(ErrorType.Validation_failed), new ExceptionWrapper(exceptionMsg));
         return ResponseEntity.badRequest().body(result);
+    }
+
+    /**
+     * Handle other exceptions.
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Result> handleGeneralException(Exception ex) {
+        Result<?> result = Result.error(ResultError.info(ErrorType.Unknown_error), ex.getMessage());
+        return ResponseEntity.ok(result);
     }
 
 }
