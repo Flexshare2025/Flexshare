@@ -15,6 +15,9 @@ import Nav from '@/components/Nav';
 
 import './index.scss';
 
+let globalMap = null;
+let globalDirectionsService = null;
+let globalDirectionsRenderer = null;
 
 const GoogleMapsNavigation = () => {
   const mapRef = useRef(null);
@@ -30,18 +33,18 @@ const GoogleMapsNavigation = () => {
   const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
   const [markers, setMarkers] = useState([]);
 
-  const START_POINT = 'start_point';
+  const START_PONIT = 'start_point';
   const END_POINT = 'end_point';
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(urlParams ? JSON.parse(urlParams) : null);
 
-  const { run: runPush } = useRequest(pushGPS, {
+  const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
     pollingInterval: 5000,
     manual: true,
   });
 
-  const { data: gpsData, run: runGet } = useRequest(getGPS, {
+  const { data: gpsData, run: runGet, cancel: cancelGet } = useRequest(getGPS, {
     pollingInterval: 5000,
     manual: true,
     onError: (err) => {
@@ -76,7 +79,7 @@ const GoogleMapsNavigation = () => {
     const lat = geometry.location.lat();
     const lng = geometry.location.lng();
 
-    if (type === START_POINT) {
+    if (type === START_PONIT) {
       setStartPoint({ address, lat, lng });
     } else if (type === END_POINT) {
       setEndPoint({ address, lat, lng });
@@ -96,32 +99,35 @@ const GoogleMapsNavigation = () => {
       loader.load().then(() => {
         if (!mapRef.current) return;
 
-        const newMap = new window.google.maps.Map(mapRef.current, {
-          zoom: 15,
-          center: initialLocation,
-          mapTypeId: 'roadmap',
-          gestureHandling: 'greedy',
-          disableDefaultUI: true,
-        });
+        if (!globalMap) {
+          globalMap = new window.google.maps.Map(mapRef.current, {
+            zoom: 15,
+            center: initialLocation,
+            mapTypeId: 'roadmap',
+            gestureHandling: 'greedy',
+            disableDefaultUI: true,
+          });
+        } else {
+          globalMap.setCenter(initialLocation);
+        }
 
-        const newDirectionsService = new window.google.maps.DirectionsService();
-        const newDirectionsRenderer = new window.google.maps.DirectionsRenderer({
-          map: newMap,
-        });
+        setMap(globalMap);
 
-        setMap(newMap);
-        setDirectionsService(newDirectionsService);
-        setDirectionsRenderer(newDirectionsRenderer);
+        if (!globalDirectionsService) {
+          globalDirectionsService = new window.google.maps.DirectionsService();
+        }
+        if (!globalDirectionsRenderer) {
+          globalDirectionsRenderer = new window.google.maps.DirectionsRenderer({ map: globalMap });
+        } else {
+          globalDirectionsRenderer.setMap(globalMap);
+        }
+
+        setDirectionsService(globalDirectionsService);
+        setDirectionsRenderer(globalDirectionsRenderer);
       });
     }).catch(error => {
       console.error('Error getting current position:', error);
     });
-
-    return () => {
-      if (directionsRenderer) {
-        directionsRenderer.setMap(null);
-      }
-    };
   }, [apiKey]);
 
   useEffect(() => {
@@ -143,7 +149,7 @@ const GoogleMapsNavigation = () => {
     othersGPS?.forEach((i, index) => {
       const marker = new window.google.maps.Marker({
         position: { lat: Number(i.lat), lng: Number(i.lon) },
-        map: globalMap,
+        map,
         title: i.userId,
         icon: {
           url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
@@ -153,11 +159,11 @@ const GoogleMapsNavigation = () => {
       newMarkers.push(marker);
 
       const infoWindow = new window.google.maps.InfoWindow({
-        content: `Passenger ${index + 1}`
+        content: `Passager ${index + 1}`
       });
 
       marker.addListener('click', () => {
-        infoWindow.open(globalMap, marker);
+        infoWindow.open(map, marker);
       });
     });
     setMarkers(newMarkers);
@@ -169,7 +175,7 @@ const GoogleMapsNavigation = () => {
     }
   }, [gpsData, map]);
 
-  const calculateWaypoints = () => {
+  const calculateWayponits = () => {
     const waypoints = [];
     const v = Object.values(currentOrder?.passengerSchedules || {});
     v.forEach((item) => {
@@ -194,7 +200,7 @@ const GoogleMapsNavigation = () => {
     setLoading(true);
     setError(null);
     setRouteSummary(null);
-    const waypoints = calculateWaypoints();
+    const waypoints = calculateWayponits();
 
     const request = {
       origin: start,
@@ -237,11 +243,11 @@ const GoogleMapsNavigation = () => {
         <div className='order-info'>
           <List header=''>
             <p className='route-item-detail'>
-              <span className='address'>{removeCountryInAddress(currentOrder.start_point.address)}</span>
+              <span className='address'> {removeCountryInAddress(currentOrder.start_point.address)}</span>
               <img className='rode-icon' src={RightArrow} alt="" />
               <span className='address'>{removeCountryInAddress(currentOrder.end_point.address)}</span>
             </p>
-            {Object.values(currentOrder?.passengerSchedules || {})?.map((order) => (
+            {Object.values(currentOrder?.passengerSchedules || {})?.map((order, index) => (
               <List.Item key={order.schedule_id}>
                 <p className="route-item">
                   <span>{order.departure_time}</span>
@@ -253,7 +259,7 @@ const GoogleMapsNavigation = () => {
         </div>
         <div className='driver-rode-search-container'>
           <AddressSearch
-            onPlaceSelect={v => handlePlaceSelect(START_POINT, v)}
+            onPlaceSelect={v => handlePlaceSelect(START_PONIT, v)}
             placeholder="Pickup location"
             defaultValue={start ? start.address : ''}
           />
