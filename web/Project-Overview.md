@@ -32,7 +32,6 @@ This document consolidates the front-end project overview and technical guide. I
 -   Front-end: `web/` (Vite + React)
     -   Google Maps integrations (Maps/Places/Directions)
     -   Passenger and Driver core flows
--   Other materials: `Proposal/`, `API.md`, `README.md`
 
 See architecture sketches: `Proposal/Project_Architecture.png` and `ProjectArchitecture.drawio`
 
@@ -198,5 +197,3 @@ web/
 
 -   Auth: obtain token after login, persist via `web/src/utils/storage.js`
 -   Errors: unified shape `{ code, message, data }`; branch by `code`
-
-For more API details, refer to `API.md` and the actual backend definitions
