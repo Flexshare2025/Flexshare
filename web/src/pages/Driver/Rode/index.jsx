@@ -63,14 +63,14 @@ const GoogleMapsNavigation = (props) => {
 
 
   useEffect(() => {
-    const data = props.currentOrder || {};
+    console.log('currentOrder changed', props.currentOrder)
     if (props.currentOrder) {
-      setCurrentOrder(data)
-      if (data.start_point) {
-        setStartPoint(data.start_point)
+      setCurrentOrder(props.currentOrder);
+      if (props.currentOrder.start_point) {
+        setStartPoint(props.currentOrder.start_point)
       }
-      if (data.end_point) {
-        setEndPoint(data.end_point)
+      if (props.currentOrder.end_point) {
+        setEndPoint(props.currentOrder.end_point)
       }
     }
 
@@ -78,13 +78,11 @@ const GoogleMapsNavigation = (props) => {
 
 
   const handlePlaceSelect = (type, place) => {
-    console.log('Selected location information:', place);
     const { formatted_address, geometry } = place;
 
     const address = formatted_address;
     const lat = geometry.location.lat();
     const lng = geometry.location.lng();
-    console.log('Address:', address, 'Latitude:', lat, 'Longitude:', lng);
     if (type === START_PONIT) {
       setStartPoint({ address, lat, lng });
     } else if (type === END_POINT) {
@@ -101,7 +99,6 @@ const GoogleMapsNavigation = (props) => {
     });
 
     getCurrentPosition().then(res => {
-      console.log('Current position:', res);
       const initialLocation = {
         lat: res.latitude,
         lng: res.longitude
@@ -145,7 +142,7 @@ const GoogleMapsNavigation = (props) => {
     if (start && end && directionsService) {
       calculateRoute();
     }
-  }, [directionsService, props.currentOrder]);
+  }, [start, end, directionsService, props.currentOrder]);
 
   const drawPosition = () => {
     const othersGPS = gpsData?.othersGPS;
@@ -210,7 +207,6 @@ const GoogleMapsNavigation = (props) => {
   };
 
   const calculateRoute = () => {
-    console.log('Calculating route with start:', start, 'end:', end);
     if (!start || !end || !directionsService) {
       setError('Please enter both start and end locations');
       return;

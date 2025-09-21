@@ -167,7 +167,7 @@ const GoogleMapsNavigation = (props) => {
     if (start && end && directionsService) {
       calculateRoute();
     }
-  }, [directionsService, props.currentOrder])
+  }, [start, end, directionsService, props.currentOrder])
 
 
   const calculateStops = () => {
