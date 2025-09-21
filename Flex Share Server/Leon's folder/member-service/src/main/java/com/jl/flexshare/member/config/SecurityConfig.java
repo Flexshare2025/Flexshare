@@ -1,6 +1,7 @@
 package com.jl.flexshare.member.config;
 
 import com.jl.flexshare.member.component.LoginAuthenticationEntryPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,10 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final LoginAuthenticationEntryPoint authenticationEntryPoint;
+
+
+    @Value("${cors_enable_front_end}")
+    private String frontEndUrl;
 
     public SecurityConfig(LoginAuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -46,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("https://9whrslv2k8.execute-api.us-east-1.amazonaws.com"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(frontEndUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

@@ -277,6 +277,10 @@ public class ScheduleController {
 
         Schedule driverSchedule = getGlobalSchedule(String.valueOf(passengerSchedule.getSchedule_id()));
 
+        driverSchedule=filterInvalidSchedule(driverSchedule);
+        if (!driverSchedule.getStatus().equals("pending"))
+            return ResponseEntity.ok(Result.error(ResultError.info(ErrorType.Duplicate_schedule)));
+
 
         List<String> passengers = driverSchedule.getPassengerIDs();
         if (passengers!=null&&passengers.contains(userId))

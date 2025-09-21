@@ -17,6 +17,7 @@ public enum ErrorType {
     Seat_not_enough,
     Departure_time_too_late,
     Duplicate_schedule,
+    Invalid_schedule,
     Modify_due_schedule,
 
     /* Server Busy */

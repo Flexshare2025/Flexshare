@@ -32,6 +32,8 @@ public class ResultError {
                 return new ResultError("4102"," Duplicate login detected. Please log in again. If this issue occurs frequently, please check your account security.");
             case Duplicate_schedule:
                 return new ResultError("4103","Can't book same schedule again.");
+            case Invalid_schedule:
+                return new ResultError("4105","Failed: schedule is invalid.");
             case Modify_due_schedule:
                 return new ResultError("4104","Can only modify pending schedule");
             case Schedule_too_hot:
