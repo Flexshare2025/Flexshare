@@ -48,8 +48,6 @@ public class ScheduleController {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private ScheduleController selfProxy;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -388,10 +386,12 @@ public class ScheduleController {
         ArrayList<Schedule> schedules = new ArrayList<>();
         for (String scheduleId : nearestPoints) {
             Schedule schedule = getGlobalSchedule(scheduleId);
-            if (null != schedule) {
+            schedule=filterInvalidSchedule(schedule);
+            if (null != schedule && schedule.getStatus().equals("pending")) {
                 schedules.add(schedule);
             }
         }
+
         return schedules;
     }
 
@@ -516,4 +516,46 @@ public class ScheduleController {
             }
         }
     }
+
+    /**
+     * In case redis expire event not work sometimes, check and update schedule in the lazy way.
+     * @param schedule
+     * @return
+     */
+    public Schedule filterInvalidSchedule(Schedule schedule) throws JsonProcessingException {
+        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime zoneTimeNow = now.atZone(ZoneId.of("Pacific/Auckland"));
+        ZonedDateTime departureZoneTime = schedule.getDeparture_time().atZone(ZoneId.of("Pacific/Auckland"));
+
+        String status = schedule.getStatus();
+
+        //check if current schedule out of starttime
+        if(departureZoneTime.isAfter(zoneTimeNow)){
+           return schedule;
+        }
+
+        boolean bOutOfDate=false;
+
+        //check if is started or out of date (1 day after departure is out of date)
+        if (departureZoneTime.plusDays(1).isBefore(zoneTimeNow))
+            bOutOfDate=true;
+        if (bOutOfDate){
+            if (status.equals("timeout")||status.equals("cancel"))
+                return schedule;
+            else{
+                schedule.setStatus("timeout");
+                updateSchedule(schedule,false);
+            }
+        }
+
+        if (status.equals("started")||status.equals("cancel"))
+            return schedule;
+        else{
+            schedule.setStatus("started");
+            updateSchedule(schedule,true);
+            redisService.removeRoutePoint(schedule);
+        }
+        return schedule;
+    }
+
 }
