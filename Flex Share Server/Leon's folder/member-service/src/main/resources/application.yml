@@ -3,7 +3,8 @@ spring:
     name: member-service-provider
 
   config:
-    import: aws-secretsmanager:flexshare-service-config
+    import:
+      - optional:aws-secretsmanager:flexshare-service-config
 
   cloud:
     aws:
