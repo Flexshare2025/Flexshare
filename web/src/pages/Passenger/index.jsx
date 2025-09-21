@@ -133,6 +133,7 @@ export default function App() {
             passengerCount={passengerCount}
             onUpdateSchedule={handleUpdateSchedule}
             userDestination={end}
+            userPosition={position}
           />
           {/* order list float icon */}
           <img

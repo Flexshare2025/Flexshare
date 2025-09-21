@@ -2,9 +2,8 @@ import { useContext, useState } from 'react';
 import { Image, List, Button, Modal } from 'antd-mobile';
 import { DirectionsContext } from './DirectionsProvider';
 import { bookSchedule } from '@/api/index';
-import { getCurrentPosition } from '@/utils/position';
 
-export default function OrderList({ orderLists, passengerCount, onUpdateSchedule, userDestination }) {
+export default function OrderList({ orderLists, passengerCount, onUpdateSchedule, userDestination, userPosition }) {
   const { calculateRouteBetween } = useContext(DirectionsContext);
   // ensure orderLists is an array
   const schedules = Array.isArray(orderLists) ? orderLists : [];
@@ -166,13 +165,15 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
         ...prev,
         [schedule.schedule_id]: true
       }));
-      // get user's current position
-      const userPosition = await getCurrentPosition();
+      // use user position from props (already calculated in parent component)
+      if (!userPosition || !userPosition.lat || !userPosition.lng) {
+        throw new Error('User position not available');
+      }
 
       // find the nearest pickup point on the route to the user's current location
       const nearestPickupPointInfo = findNearestPoint(
-        userPosition.latitude,
-        userPosition.longitude,
+        userPosition.lat,
+        userPosition.lng,
         schedule.route_points || []
       );
 
@@ -206,8 +207,8 @@ export default function OrderList({ orderLists, passengerCount, onUpdateSchedule
         departure_time: schedule.departure_time,
         num_passenger: passengerCount || 1, // default 1 seat
         user_location: {
-          lat: userPosition.latitude,
-          lng: userPosition.longitude
+          lat: userPosition.lat,
+          lng: userPosition.lng
         },
         pickup_point_distance: nearestPickupPointInfo ? nearestPickupPointInfo.distance.toFixed(2) : null,
         dropoff_point_distance: nearestDropoffPointInfo ? nearestDropoffPointInfo.distance.toFixed(2) : null
