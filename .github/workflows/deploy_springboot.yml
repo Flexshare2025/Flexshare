@@ -18,6 +18,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Build JAR
+      run: mvn -B -DskipTests clean package
+
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
@@ -25,22 +28,16 @@ jobs:
         chmod 600 ~/.ssh/aws.pem
         ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
-    - name: Deploy to EC2
+    - name: Copy JAR to EC2
+      run: |
+        scp -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no target/*.jar $EC2_USER@$EC2_HOST:/home/ubuntu/app/member-service.jar
+
+    - name: Restart Spring Boot service
       run: |
         ssh -i ~/.ssh/aws.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
           echo "Killing old Spring Boot process..."
           pkill -f 'java -jar' || echo "No process found"
 
-          echo "Pulling latest code..."
-          cd /home/ubuntu/app
-          git pull origin flexShareServer
-
-          echo "Building member-service module..."
-          cd wholeproject
-          mvn -pl member-service -am clean package -DskipTests
-
-          echo "Starting member-service..."
-          cd member-service
-          JAR_NAME=$(ls target/*.jar | grep -v 'original' | head -n 1)
-          nohup java -jar "$JAR_NAME" > app.log 2>&1 &
+          echo "Starting new Spring Boot process..."
+          nohup java -jar /home/ubuntu/app/member-service.jar > /home/ubuntu/app/app.log 2>&1 &
         EOF
