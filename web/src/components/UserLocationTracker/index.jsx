@@ -46,19 +46,21 @@ const UserLocationTracker = ({ map, zIndex = 1000, markerSize = { width: 36, hei
       return;
     }
 
-    getCurrentPosition.then((position) => {
-      updateUserMarker({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      });
-    }).catch((err) => {
+    getCurrentPosition().then(res => {
+      console.log('Current position:', res);
+      const initialLocation = {
+        lat: res.latitude,
+        lng: res.longitude
+      };
+      updateUserMarker(initialLocation);
+    }).catch(err => {
       setError(`error: ${err.message}`);
-      console.log("getCurrentPosition-error:", err);
+      console.log("Current position error:", err);
     });
-
 
     const id = navigator.geolocation.watchPosition(
       (position) => {
+        console.log('Position updated:', position);
         updateUserMarker({
           lat: position.coords.latitude,
           lng: position.coords.longitude
