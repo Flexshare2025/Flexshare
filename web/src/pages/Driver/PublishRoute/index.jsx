@@ -41,7 +41,6 @@ export default function App() {
     });
 
     getCurrentPosition().then(res => {
-      console.log('Current position:', res);
       const initialLocation = {
         lat: res.latitude,
         lng: res.longitude
@@ -77,18 +76,15 @@ export default function App() {
 
       });
     }).catch(error => {
-      console.log('Error getting current position:', error);
     });
   }, [apiKey]);
 
   const handlePlaceSelect = (type, place) => {
-    console.log('Selected location information:', place);
     const { formatted_address, geometry } = place;
 
     const address = formatted_address;
     const lat = geometry.location.lat();
     const lng = geometry.location.lng();
-    console.log('Address:', address, 'Latitude:', lat, 'Longitude:', lng);
     if (type === START_PONIT) {
       setStartPoint({ address, lat, lng });
     } else if (type === END_POINT) {
@@ -99,15 +95,9 @@ export default function App() {
 
   const GenerateRoute = () => {
     if (!startPoint || !endPoint || !date || !passengerCount) {
-      console.error('Please fill in all required fields.');
       return;
     }
-    console.log('Start Point:', startPoint);
-    console.log('End Point:', endPoint);
-    console.log('Leave Time:', date);
-    console.log('Passenger Count:', passengerCount);
 
-    console.log('Calculating route with start:', startPoint, 'end:', endPoint);
     if (!startPoint || !endPoint || !directionsService) {
       return;
     }
@@ -121,7 +111,6 @@ export default function App() {
       travelMode: window.google.maps.TravelMode.DRIVING,
     };
 
-    console.log('Calculating route with request:', request);
 
 
     directionsService.route(request, (response, status) => {
@@ -139,7 +128,6 @@ export default function App() {
 
 
           const currentPoints = generateRoutePoints(route.overview_polyline, route.legs[0].distance.text);
-          console.log('currentPoints', currentPoints);
 
           setPoints(currentPoints)
           // Convert route points to waypoints
@@ -150,7 +138,6 @@ export default function App() {
             }))
             : [];
 
-          console.log('currentPoints', currentPoints, 'waypoints', waypoints)
           directionsService.route({
             origin: startPoint,
             destination: endPoint,
@@ -171,13 +158,8 @@ export default function App() {
 
   const publishRoute = () => {
     if (!startPoint || !endPoint || !date || !passengerCount) {
-      console.error('Please fill in all required fields.');
       return;
     }
-    console.log('Start Point:', startPoint);
-    console.log('End Point:', endPoint);
-    console.log('Leave Time:', date);
-    console.log('Passenger Count:', passengerCount);
 
     setLoading(true);
     publishSchedule({
@@ -190,7 +172,6 @@ export default function App() {
         "available_seats": passengerCount,
       },
       success: res => {
-        console.log('res', res);
         setLoading(false);
         if (res.code === '200') {
           Toast.show({

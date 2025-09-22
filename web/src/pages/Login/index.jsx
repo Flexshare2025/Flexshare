@@ -83,7 +83,6 @@ export default function Login() {
         }
       },
       fail: (error) => {
-        console.error('❌ Login failed:', error);
         Toast.show({
           content: `Login failed: ${error}`,
           position: 'center',

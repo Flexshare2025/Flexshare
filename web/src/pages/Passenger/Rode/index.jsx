@@ -35,16 +35,13 @@ const GoogleMapsNavigation = (props) => {
 
   useEffect(() => {
     if (map && !initialPositionFetched.current) {
-      console.log('Getting initial position for user marker...');
       initialPositionFetched.current = true;
       getCurrentPosition().then(res => {
-        console.log('Got initial position:', res);
         setSharedLocation({
           lat: res.latitude,
           lng: res.longitude
         });
       }).catch(err => {
-        console.error('Failed to get initial position:', err);
         initialPositionFetched.current = false;
       });
     }
@@ -62,7 +59,6 @@ const GoogleMapsNavigation = (props) => {
     manual: true,
     ready: isWithin10Minutes(currentOrder?.departure_time),
     onError: (err) => {
-      console.error('gpsData-err:', err);
     }
   });
 
@@ -75,7 +71,6 @@ const GoogleMapsNavigation = (props) => {
     };
 
     if (isWithin10Minutes(currentOrder?.departure_time) && map && token) {
-      console.log('Starting polling after map initialization...');
       const timer = setTimeout(() => {
         runPush(requestData);
         runGet(requestData);
@@ -83,7 +78,6 @@ const GoogleMapsNavigation = (props) => {
 
       return () => clearTimeout(timer);
     } else if (!isWithin10Minutes(currentOrder?.departure_time)) {
-      console.log('Not within 10 minutes, canceling polling...');
       cancelPush();
       cancelGet();
     }
@@ -91,26 +85,20 @@ const GoogleMapsNavigation = (props) => {
 
   useEffect(() => {
     if (gpsData && gpsData.othersGPS) {
-      console.log('GPS data received:', gpsData);
-      console.log('Current user ID:', currentOrder?.user_id);
 
       const currentUserGPS = gpsData.othersGPS?.[0];
       if (currentUserGPS) {
-        console.log('Found current user GPS:', currentUserGPS);
         setSharedLocation({
           lat: Number(currentUserGPS.lat),
           lng: Number(currentUserGPS.lon)
         });
       } else {
-        console.log('Current user GPS not found in othersGPS, trying to get current position...');
         getCurrentPosition().then(res => {
-          console.log('Got current position as fallback:', res);
           setSharedLocation({
             lat: res.latitude,
             lng: res.longitude
           });
         }).catch(err => {
-          console.error('Failed to get current position:', err);
         });
       }
     }
@@ -131,10 +119,6 @@ const GoogleMapsNavigation = (props) => {
 
   }, [props.currentOrder]);
 
-  console.log('currentOrder', currentOrder, start, end)
-
-  console.log('start', start, 'loading', loading, 'end', end);
-
   useEffect(() => {
     const loader = new Loader({
       apiKey,
@@ -143,7 +127,6 @@ const GoogleMapsNavigation = (props) => {
     });
 
     getCurrentPosition().then(res => {
-      console.log('Current position:', res);
       const initialLocation = {
         lat: res.latitude,
         lng: res.longitude
@@ -177,7 +160,6 @@ const GoogleMapsNavigation = (props) => {
 
       });
     }).catch(error => {
-      console.log('Error getting current position:', error);
     });
 
 
@@ -189,7 +171,6 @@ const GoogleMapsNavigation = (props) => {
     isUpdatingMarkers.current = true;
     markers.forEach(marker => marker.setMap(null));
     const othersGPS = gpsData?.othersGPS;
-    console.log('othersGPS', othersGPS)
     if (!othersGPS || othersGPS.length === 0) {
       setMarkers([]);
       isUpdatingMarkers.current = false;
@@ -228,7 +209,6 @@ const GoogleMapsNavigation = (props) => {
   }, [currentOrder]);
 
   const calculateRoute = useCallback(() => {
-    console.log('Calculating route with start:', start, 'end:', end);
     if (!start || !end || !directionsService) {
       setError('Please enter both start and end locations');
       return;
@@ -244,17 +224,13 @@ const GoogleMapsNavigation = (props) => {
       destination: stops[1],
       travelMode: window.google.maps.TravelMode.DRIVING,
     };
-
-    console.log('Calculating route with request:', request);
-
-
     directionsService.route(request, (response, status) => {
       setLoading(false);
 
       if (status === 'OK') {
         directionsRenderer.setDirections(response);
         const route = response.routes[0];
-        console.log('route ', route)
+
         if (route && route.legs && route.legs.length > 0) {
           let totalDistanceMeters = 0;
           let totalDurationSeconds = 0;
