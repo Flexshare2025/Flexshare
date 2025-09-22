@@ -22,7 +22,7 @@ const GoogleMapsNavigation = (props) => {
   const [map, setMap] = useState(null);
   const [routeSummary, setRouteSummary] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [_error, setError] = useState(null);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
   const [markers, setMarkers] = useState([]);
@@ -32,16 +32,34 @@ const GoogleMapsNavigation = (props) => {
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
+  const [sharedLocation, setSharedLocation] = useState(null);
+
+  useEffect(() => {
+    if (map && !sharedLocation) {
+      console.log('Getting initial position for user marker...');
+      getCurrentPosition().then(res => {
+        console.log('Got initial position:', res);
+        setSharedLocation({
+          lat: res.latitude,
+          lng: res.longitude
+        });
+      }).catch(err => {
+        console.error('Failed to get initial position:', err);
+      });
+    }
+  }, [map, sharedLocation]);
 
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
     pollingInterval: 5000,
     manual: true,
+    ready: isWithin10Minutes(currentOrder?.departure_time),
   });
 
   const { data: gpsData, run: runGet, cancel: cancelGet } = useRequest(getGPS, {
     pollingInterval: 5000,
     manual: true,
+    ready: isWithin10Minutes(currentOrder?.departure_time),
     onError: (err) => {
       console.error('gpsData-err:', err);
     }
@@ -55,12 +73,47 @@ const GoogleMapsNavigation = (props) => {
   }
 
   useEffect(() => {
-    if (isWithin10Minutes(currentOrder?.departure_time)) {
-      runPush(requestData);
-      runGet(requestData);
-    }
-  }, [currentOrder])
+    if (isWithin10Minutes(currentOrder?.departure_time) && map && token) {
+      console.log('Starting polling after map initialization...');
+      const timer = setTimeout(() => {
+        runPush(requestData);
+        runGet(requestData);
+      }, 500);
 
+      return () => clearTimeout(timer);
+    } else if (!isWithin10Minutes(currentOrder?.departure_time)) {
+      console.log('Not within 10 minutes, canceling polling...');
+      cancelPush();
+      cancelGet();
+    }
+  }, [currentOrder, map, token])
+
+  useEffect(() => {
+    if (gpsData && gpsData.othersGPS) {
+      console.log('GPS data received:', gpsData);
+      console.log('Current user ID:', currentOrder?.user_id);
+
+      const currentUserGPS = gpsData.othersGPS.find(gps => gps.userId === currentOrder?.user_id);
+      if (currentUserGPS) {
+        console.log('Found current user GPS:', currentUserGPS);
+        setSharedLocation({
+          lat: Number(currentUserGPS.lat),
+          lng: Number(currentUserGPS.lon)
+        });
+      } else {
+        console.log('Current user GPS not found in othersGPS, trying to get current position...');
+        getCurrentPosition().then(res => {
+          console.log('Got current position as fallback:', res);
+          setSharedLocation({
+            lat: res.latitude,
+            lng: res.longitude
+          });
+        }).catch(err => {
+          console.error('Failed to get current position:', err);
+        });
+      }
+    }
+  }, [gpsData, currentOrder?.user_id])
 
   useEffect(() => {
     console.log('currentOrder changed', props.currentOrder)
@@ -186,6 +239,8 @@ const GoogleMapsNavigation = (props) => {
   useEffect(() => {
     return () => {
       markers.forEach(marker => marker.setMap(null));
+      cancelPush();
+      cancelGet();
     };
   }, []);
 
@@ -267,7 +322,7 @@ const GoogleMapsNavigation = (props) => {
               <img className='rode-icon' src={RightArrow} alt="" />
               <span className='address'>{removeCountryInAddress(currentOrder?.end_point?.address)}</span>
             </p>
-            {Object.values(currentOrder?.passengerSchedules || {})?.map((order, index) => (
+            {Object.values(currentOrder?.passengerSchedules || {})?.map((order, _index) => (
               <List.Item
                 key={order.schedule_id}
               >
@@ -318,6 +373,8 @@ const GoogleMapsNavigation = (props) => {
         <UserLocationTracker
           map={map}
           followUser={true}
+          useSharedLocation={true}
+          sharedLocation={sharedLocation}
         />
       </div>
     </>

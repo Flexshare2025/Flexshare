@@ -5,23 +5,33 @@ const UserLocationTracker = ({
   map,
   zIndex = 1000,
   markerSize = { width: 36, height: 36 },
-  followUser = false
+  followUser = false,
+  useSharedLocation = false,
+  sharedLocation = null
 }) => {
   const [userMarker, setUserMarker] = useState(null);
-  const [watchId, setWatchId] = useState(null);
-  const [error, setError] = useState(null);
+  const [_watchId, setWatchId] = useState(null);
+  const [_error, setError] = useState(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState(0);
 
   const updateUserMarker = useCallback((position) => {
-    if (!map || !window.google) return;
+    if (!map || !window.google) {
+      console.log('UserLocationTracker: Map or Google Maps not ready');
+      return;
+    }
 
     const newPosition = {
       lat: position.lat,
       lng: position.lng
     };
 
+    console.log('UserLocationTracker: Updating marker position:', newPosition);
+
     if (userMarker) {
       userMarker.setPosition(newPosition);
+      console.log('UserLocationTracker: Updated existing marker');
     } else {
+      console.log('UserLocationTracker: Creating new marker');
       const marker = new window.google.maps.Marker({
         position: newPosition,
         map: map,
@@ -33,15 +43,37 @@ const UserLocationTracker = ({
         zIndex: zIndex
       });
       setUserMarker(marker);
+      console.log('UserLocationTracker: Marker created successfully');
     }
 
     if (followUser) {
       map.setCenter(newPosition);
+      console.log('UserLocationTracker: Map center updated');
     }
   }, [map, userMarker, markerSize.width, markerSize.height, zIndex, followUser]);
 
   useEffect(() => {
-    if (!map || !window.google) return;
+    console.log('UserLocationTracker: Shared location effect triggered', {
+      useSharedLocation,
+      sharedLocation,
+      map: !!map,
+      lastUpdateTime
+    });
+
+    if (useSharedLocation && sharedLocation && map) {
+      const now = Date.now();
+      if (now - lastUpdateTime > 2000) {
+        console.log('UserLocationTracker: Updating marker with shared location');
+        updateUserMarker(sharedLocation);
+        setLastUpdateTime(now);
+      } else {
+        console.log('UserLocationTracker: Skipping update due to debounce');
+      }
+    }
+  }, [useSharedLocation, sharedLocation, map, updateUserMarker, lastUpdateTime]);
+
+  useEffect(() => {
+    if (useSharedLocation || !map || !window.google) return;
 
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
@@ -78,9 +110,9 @@ const UserLocationTracker = ({
         console.error("Position tracking error:", err);
       },
       {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000
+        enableHighAccuracy: false,
+        maximumAge: 10000,
+        timeout: 10000
       }
     );
 
@@ -95,7 +127,7 @@ const UserLocationTracker = ({
         setUserMarker(null);
       }
     };
-  }, [map, updateUserMarker]);
+  }, [map, updateUserMarker, useSharedLocation, userMarker]);
 
   return null;
 };
