@@ -131,7 +131,6 @@ const Register = () => {
   // Handle email verification
   const handleSendVerificationCode = async () => {
     const email = form.getFieldValue('email');
-    console.log("🚀 --- email:", email)
     if (!email) {
       Toast.show({
         content: 'Please enter your email address first',
@@ -227,8 +226,7 @@ const Register = () => {
     register({
       data: encryptedData,
       success: (result) => {
-        console.log('Registration success:', result);
-        if (result.code == '4004') {
+        if (result.code == '4004' || result.code == '4006') {
           Toast.show({
             content: result.msg,
             position: 'center',
@@ -244,7 +242,6 @@ const Register = () => {
         }
       },
       fail: (error) => {
-        console.error('Registration failed:', error);
         Toast.show({
           content: `Registration failed: ${error}`,
           position: 'center',
