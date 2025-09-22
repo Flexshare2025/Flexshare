@@ -77,7 +77,7 @@ export default function Login() {
           }
         } else {
           Toast.show({
-            content: result.msg,
+            content: result.msg || result.message || 'Login failed',
             position: 'center',
           });
         }
