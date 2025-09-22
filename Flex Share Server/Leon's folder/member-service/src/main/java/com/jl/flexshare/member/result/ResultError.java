@@ -15,7 +15,7 @@ public class ResultError {
             case Sign_up_failed:
                 return new ResultError("4001","Signup failed");
             case Login_failed:
-                return new ResultError("4002","Login failed");
+                return new ResultError("4002","Login failed, user not exist or wrong password");
             case Validation_failed:
                 return new ResultError("4003","Validation failed");
             case User_exist:
