@@ -71,6 +71,7 @@ export default function App({ onClose, setOrder, setVisible2 }) {
   }
 
   const isPending = i => i === 'pending';
+  const isStarted = i => i === 'started';
 
   const goDetail = (currentOrder) => {
     if (currentOrder) {
@@ -105,6 +106,13 @@ export default function App({ onClose, setOrder, setVisible2 }) {
                     color: 'primary',
                     onClick: () => goDetail(order),
                   },
+                ] : isStarted(order.status) ? [
+                  {
+                    key: 'detail',
+                    text: 'Detail',
+                    color: 'primary',
+                    onClick: () => goDetail(order),
+                  },
                 ] : []}
               >
                 <List.Item key={order.schedule_id} className={`${isPending(order.status) ? '' : 'disabled'}`}>
@@ -117,6 +125,9 @@ export default function App({ onClose, setOrder, setVisible2 }) {
                       <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>
                       <img className='rode-icon' src={RightArrow} alt="" />
                       <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
+                    </p>
+                    <p className='order-status'>
+                      Status: {order.status === 'pending' ? 'Pending' : order.status === 'cancel' ? 'Cancelled' : order.status === 'started' ? 'Started' : order.status === 'timeout' ? 'Timeout' : order.status}
                     </p>
                   </div>
                   <UserOrderList data={Object.values(order.passengerSchedules || {})} />
