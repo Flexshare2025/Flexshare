@@ -392,7 +392,9 @@ public class ScheduleController {
             Schedule schedule = getGlobalSchedule(scheduleId);
             schedule=filterInvalidSchedule(schedule);
             if (null != schedule && schedule.getStatus().equals("pending")) {
-                schedules.add(schedule);
+                if (schedule.getAvailable_seats()>0)
+                    schedules.add(schedule);
+
             }
         }
 
