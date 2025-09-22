@@ -1,19 +1,46 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "antd-mobile";
-import enUS from 'antd-mobile/es/locales/en-US'
+import enUS from 'antd-mobile/es/locales/en-US';
 import Login from "@/pages/Login";
-import Driver from "@/pages/Driver";
-import Customer from "@/pages/Customer";
+import DriverPublishRoute from "@/pages/Driver/PublishRoute";
+import Passenger from "@/pages/Passenger";
 import NotFound from "@/pages/NotFound";
-export default function App() {
+import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
+export default function App() {
   return (
-    <ConfigProvider locale={enUS}>
+    <ConfigProvider
+      locale={enUS}
+      theme={{
+        '--adm-color-primary': '#667eea',
+        '--adm-color-primary-hover': '#5a6fd8',
+        '--adm-color-primary-pressed': '#4c5ec0',
+        '--adm-border-radius': '12px',
+        '--adm-color-text': '#333',
+      }}
+    >
       <HashRouter>
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/driver" element={<Driver />} />
-          <Route path="/customer" element={<Customer />} />
+          <Route path="/login/:role" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          <Route path="/driver" element={
+            <ProtectedRoute requiredRole="driver">
+              <DriverPublishRoute />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/passenger" element={
+            <ProtectedRoute requiredRole="passenger">
+              <Passenger />
+            </ProtectedRoute>
+          } />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
