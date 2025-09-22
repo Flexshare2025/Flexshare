@@ -22,7 +22,6 @@ export default function App() {
   const [vehicle_photo, setVehiclePhoto] = useState([])
   const [driver_license_image, setVDriverLicenseImage] = useState([])
   const onFinish = (values) => {
-    console.log('Form values:', values);
     navigate('/driver');
   }
 

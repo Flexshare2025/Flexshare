@@ -14,10 +14,6 @@ export default function App(props) {
   if (!list || list.length === 0) {
     return null
   }
-
-  console.log('list', list)
-
-
   return (
     <div className='route-list-container'>
       <List header=''>

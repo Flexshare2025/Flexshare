@@ -92,7 +92,6 @@ export async function apiFetch(config) {
 			// status: 401
 			if (res.status === 401 || res.status === 403) {
 				setLocalData({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
-				console.log('trigger-login-401')
 				// goLogin()
 				return res.json()
 			}
@@ -108,7 +107,6 @@ export async function apiFetch(config) {
 			}
 		})
 		.catch(err => {
-			console.log('fetch-err', err)
 			config.done && config.done()
 			config.fail && config.fail(API_FAILED)
 		})

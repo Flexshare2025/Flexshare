@@ -37,16 +37,13 @@ const GoogleMapsNavigation = (props) => {
 
   useEffect(() => {
     if (map && !initialPositionFetched.current) {
-      console.log('Getting initial position for user marker...');
       initialPositionFetched.current = true;
       getCurrentPosition().then(res => {
-        console.log('Got initial position:', res);
         setSharedLocation({
           lat: res.latitude,
           lng: res.longitude
         });
       }).catch(err => {
-        console.error('Failed to get initial position:', err);
         initialPositionFetched.current = false;
       });
     }
@@ -64,7 +61,6 @@ const GoogleMapsNavigation = (props) => {
     manual: true,
     ready: isWithin10Minutes(currentOrder?.departure_time),
     onError: (err) => {
-      console.error('gpsData-err:', err);
     }
   });
 
@@ -77,7 +73,6 @@ const GoogleMapsNavigation = (props) => {
 
   useEffect(() => {
     if (isWithin10Minutes(currentOrder?.departure_time) && map && token) {
-      console.log('Starting polling after map initialization...');
       const timer = setTimeout(() => {
         runPush(requestData);
         runGet(requestData);
@@ -85,7 +80,6 @@ const GoogleMapsNavigation = (props) => {
 
       return () => clearTimeout(timer);
     } else if (!isWithin10Minutes(currentOrder?.departure_time)) {
-      console.log('Not within 10 minutes, canceling polling...');
       cancelPush();
       cancelGet();
     }
@@ -93,33 +87,26 @@ const GoogleMapsNavigation = (props) => {
 
   useEffect(() => {
     if (gpsData && gpsData.othersGPS) {
-      console.log('GPS data received:', gpsData);
-      console.log('Current user ID:', currentOrder?.user_id);
 
       const currentUserGPS = gpsData.othersGPS?.[0];
       if (currentUserGPS && currentUserGPS.lat && currentUserGPS.lon) {
-        console.log('Found current user GPS:', currentUserGPS);
         setSharedLocation({
           lat: Number(currentUserGPS.lat),
           lng: Number(currentUserGPS.lon)
         });
       } else {
-        console.log('Current user GPS not found in othersGPS, trying to get current position...');
         getCurrentPosition().then(res => {
-          console.log('Got current position as fallback:', res);
           setSharedLocation({
             lat: res.latitude,
             lng: res.longitude
           });
         }).catch(err => {
-          console.error('Failed to get current position:', err);
         });
       }
     }
   }, [gpsData, currentOrder?.user_id])
 
   useEffect(() => {
-    console.log('currentOrder changed', props.currentOrder)
     if (props.currentOrder) {
       setCurrentOrder(props.currentOrder);
       if (props.currentOrder.start_point) {
@@ -188,7 +175,6 @@ const GoogleMapsNavigation = (props) => {
 
       });
     }).catch(error => {
-      console.error('Error getting current position:', error);
     });
 
 
@@ -202,7 +188,6 @@ const GoogleMapsNavigation = (props) => {
 
   const drawPosition = () => {
     const othersGPS = gpsData?.othersGPS;
-    console.log('othersGPS', othersGPS)
     if (!othersGPS || othersGPS.length === 0) {
       setMarkers([]);
       return;
@@ -211,7 +196,6 @@ const GoogleMapsNavigation = (props) => {
 
 
     othersGPS?.forEach((i, index) => {
-      console.log('Creating marker for user:', i.userId, 'type:', typeof i.userId);
       const marker = new window.google.maps.Marker({
         position: { lat: Number(i.lat), lng: Number(i.lon) },
         map,
@@ -234,7 +218,6 @@ const GoogleMapsNavigation = (props) => {
   }
 
   useEffect(() => {
-    console.log('gpsData-1', gpsData)
     if (gpsData && map) {
       drawPosition();
     }
@@ -275,7 +258,6 @@ const GoogleMapsNavigation = (props) => {
     setError(null);
     setRouteSummary(null);
     const waypoints = calculateWayponits();
-    console.log('waypoints22', waypoints)
 
     const request = {
       origin: start,
@@ -284,7 +266,6 @@ const GoogleMapsNavigation = (props) => {
       waypoints: waypoints?.length > 0 ? waypoints : undefined,
     };
 
-    console.log('Calculating route with request:', request);
 
 
     directionsService.route(request, (response, status) => {
@@ -293,7 +274,7 @@ const GoogleMapsNavigation = (props) => {
       if (status === 'OK') {
         directionsRenderer.setDirections(response);
         const route = response.routes[0];
-        console.log('route ', route)
+
         if (route && route.legs && route.legs.length > 0) {
           let totalDistanceMeters = 0;
           let totalDurationSeconds = 0;

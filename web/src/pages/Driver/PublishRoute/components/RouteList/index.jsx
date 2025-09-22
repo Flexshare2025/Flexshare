@@ -21,9 +21,7 @@ export default function App({ onClose, setOrder, setVisible2 }) {
       },
       success: res => {
         setLoading(false)
-        console.log('viewPublishRoutes-res', res)
         const data = res.data;
-        console.log('viewPublishRoutes-data', data)
         setList(data);
       },
       fail: () => {
@@ -48,7 +46,6 @@ export default function App({ onClose, setOrder, setVisible2 }) {
         cancelPublishRoutes({
           data: { schedule_id: order.schedule_id },
           success: res => {
-            console.log('cancelOrder--res', res)
             if (res.code == '200') {
               getPublishRoutes();
               Toast.show({
@@ -63,7 +60,6 @@ export default function App({ onClose, setOrder, setVisible2 }) {
             }
           },
           fail: err => {
-            console.log('cancelOrder--err', err)
             Toast.show({
               content: err.msg,
               duration: 500,
