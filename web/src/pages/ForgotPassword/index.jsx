@@ -3,6 +3,7 @@ import { Form, Input, Button, Toast, Divider, Space } from 'antd-mobile';
 import { EMAIL_REG, PW_REG } from '@/constant';
 import { emailVerification, resetPassword } from '@/api/index.js';
 import { useNavigate } from 'react-router-dom';
+import { encryptUserData } from '@/utils/crypto';
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -47,7 +48,7 @@ export default function ForgotPassword() {
   const handleReset = async (values) => {
     setLoading(true);
     resetPassword({
-      data: values,
+      data: encryptUserData(values),
       success: (result) => {
         if (result.code && String(result.code) != '200') {
           Toast.show({ content: result.msg || 'Reset failed', position: 'center' });
