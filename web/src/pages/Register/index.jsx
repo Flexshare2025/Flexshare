@@ -27,20 +27,77 @@ function generateCaptcha() {
 function drawCaptcha(canvas, code) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, 100, 40);
-  ctx.fillStyle = '#f4f4f4';
-  ctx.fillRect(0, 0, 100, 40);
-  ctx.font = '24px Arial';
-  ctx.fillStyle = '#333';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(code, 18, 22);
-  // add some noise lines
-  for (let i = 0; i < 3; i++) {
-    ctx.strokeStyle = '#bbb';
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  // background with subtle gradient
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  gradient.addColorStop(0, '#f6f7f9');
+  gradient.addColorStop(1, '#e9ebef');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  // random noise dots
+  for (let i = 0; i < 30; i++) {
+    ctx.fillStyle = randomColor(150, 220);
+    ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
+  }
+
+  // interference bezier curves
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = randomColor(40, 120); // darker lines
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(Math.random() * 100, Math.random() * 40);
-    ctx.lineTo(Math.random() * 100, Math.random() * 40);
+    ctx.moveTo(Math.random() * width, Math.random() * height);
+    ctx.bezierCurveTo(
+      Math.random() * width,
+      Math.random() * height,
+      Math.random() * width,
+      Math.random() * height,
+      Math.random() * width,
+      Math.random() * height
+    );
     ctx.stroke();
+  }
+
+  // draw characters with random rotation/size/color
+  ctx.textBaseline = 'middle';
+  const charStep = width / (code.length + 1);
+  for (let i = 0; i < code.length; i++) {
+    const fontSize = 20 + Math.floor(Math.random() * 10); // 20-30
+    const angle = Math.random() * 0.6 - 0.3; // -0.3 ~ 0.3 rad
+    const x = (i + 1) * charStep + (Math.random() * 4 - 2);
+    const y = height / 2 + (Math.random() * 6 - 3);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = randomColor(50, 160);
+    ctx.shadowColor = 'rgba(0,0,0,0.15)';
+    ctx.shadowBlur = 1;
+    ctx.fillText(code[i], -fontSize / 2.5, 0);
+    ctx.restore();
+  }
+
+  // wavy overlay line
+  ctx.strokeStyle = 'rgba(60,80,120,0.7)'; // darker and less transparent
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  const amplitude = 3 + Math.random() * 2;
+  const frequency = 0.15 + Math.random() * 0.1;
+  for (let x = 0; x < width; x += 2) {
+    const y = height / 2 + Math.sin(x * frequency) * amplitude;
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  function randomColor(min = 0, max = 255) {
+    const r = Math.floor(min + Math.random() * (max - min));
+    const g = Math.floor(min + Math.random() * (max - min));
+    const b = Math.floor(min + Math.random() * (max - min));
+    return `rgb(${r},${g},${b})`;
   }
 }
 const Register = () => {
