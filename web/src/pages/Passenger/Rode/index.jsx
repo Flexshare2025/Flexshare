@@ -192,19 +192,18 @@ const GoogleMapsNavigation = (props) => {
     }
     const newMarkers = [];
 
-    othersGPS?.[0]?.forEach((i) => {
-      console.log('Creating marker for user:', i.userId, 'type:', typeof i.userId);
-      const marker = new window.google.maps.Marker({
-        position: { lat: Number(i.lat), lng: Number(i.lon) },
-        map,
-        title: String(i.userId || 'Unknown User'),
-        icon: {
-          url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
-          scaledSize: new window.google.maps.Size(48, 48),
-        }
-      });
-      newMarkers.push(marker);
+    const current = othersGPS?.[0];
+
+    const marker = new window.google.maps.Marker({
+      position: { lat: Number(current.lat), lng: Number(current.lon) },
+      map,
+      title: String(current.userId || 'Unknown User'),
+      icon: {
+        url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
+        scaledSize: new window.google.maps.Size(48, 48),
+      }
     });
+    newMarkers.push(marker);
     setMarkers(newMarkers);
 
   }, [markers, gpsData, map])
