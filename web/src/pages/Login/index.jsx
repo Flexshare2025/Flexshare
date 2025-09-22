@@ -13,6 +13,7 @@ import { EMAIL_REG } from '@/constant';
 import { login } from '@/api/index.js';
 import { setLocalData } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
+import { encryptUserData } from '@/utils/crypto';
 import './index.css';
 
 export default function Login() {
@@ -40,9 +41,11 @@ export default function Login() {
   const handleSubmit = async (values) => {
     values.role = isDriver ? 'driver' : 'passenger'
     setLoading(true);
+    // encrypt the password
+    const encryptedData = encryptUserData(values);
 
     login({
-      data: values,
+      data: encryptedData,
       success: (result) => {
         if (result.code == '4002') {
           Toast.show({

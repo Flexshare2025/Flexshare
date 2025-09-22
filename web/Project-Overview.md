@@ -137,11 +137,23 @@ web/
             └── DirectionsProvider.jsx (directions service)
             └── Provides route calculation for MapView and OrderList
         -   Data flow
-        User input → ControlPanel → Match routes → OrderList → Booking confirm
-        ↓
-    Geolocation → MapView → Map display → Route rendering
-    ↓
-    Order management → PassengerOrderList → Status update
+
+```mermaid
+flowchart LR
+    A[User input] --> B[Match routes]
+    B --> C[ScheduledList]
+    C --> D[Booking confirm]
+
+    E[Geolocation] --> F[MapView]
+    F --> G[Map display]
+    G --> H[Route rendering]
+
+    I[Scheduled management] --> J[PassengerScheduledList]
+    J --> K[Status update]
+
+    D -.-> I
+    H -.-> I
+```
 
 -- Driver:
 
@@ -156,13 +168,25 @@ web/
           │ └── components/UserOrderList/index.jsx (passenger orders)
           └── Rode/index.jsx (in-trip page: start/end/status)
         -   Data flow
-          Complete profile → Verified
-          ↓
-          Publish/Edit route → PublishRoute → RouteList refresh
-          ↓
-          Handle orders → UserOrderList accept/decline → Update seats/order status
-          ↓
-          Start/Run/End trip → Rode → Push status & final settlement (planned)
+
+```mermaid
+flowchart LR
+    A[Complete profile] --> B[Verified]
+    B --> C[Publish/Edit route]
+    C --> D[PublishRoute]
+    D --> E[RouteList refresh]
+
+    E --> F[Handle orders]
+    F --> G[UserOrderList accept/decline]
+    G --> H[Update seats/order status]
+
+    H --> I[Start/Run/End trip]
+    I --> J[Rode]
+    J --> K["Push status & final settlement - planned"]
+
+    D -.-> I
+    H -.-> I
+```
 
 ### 7. Development Workflow & Conventions
 
