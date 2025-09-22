@@ -78,7 +78,7 @@ npm install
     in `web/.env.local` New and Configured：
 
 ```bash
-VITE_GOOGLE_MAPS_API_KEY=你的GoogleMapsAPIKey
+VITE_GOOGLE_MAPS_API_KEY= GoogleMapsAPIKey
 ```
 
 4. Run locally
