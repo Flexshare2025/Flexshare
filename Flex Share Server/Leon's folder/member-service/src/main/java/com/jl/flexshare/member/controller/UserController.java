@@ -102,7 +102,10 @@ public class UserController {
 
         HttpSession session = request.getSession(true);
         result.setData(session.getId());
-        String userId = userService.getUserId(user).toString();
+        Long userId1 = userService.getUserId(user);
+        if (userId1==null)
+            return ResponseEntity.ok(Result.error(ResultError.info(ErrorType.Login_failed)));
+        String userId =userId1.toString();
         String sessionId = session.getId();
 
         logger.info("Login successful. Session ID: {}, User ID: {}", sessionId, userId);
