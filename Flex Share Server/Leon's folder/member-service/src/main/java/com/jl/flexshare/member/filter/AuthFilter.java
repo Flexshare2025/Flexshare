@@ -46,7 +46,7 @@ public class AuthFilter implements Filter{
         || req.getRequestURI().equals("/users/register")
         || req.getRequestURI().equals("/users/mail-verification")
         || req.getRequestURI().equals("/users/reset-password")
-        || req.getRequestURI().equals("/health/get"))
+        || req.getRequestURI().equals("/health/check"))
             filterChain.doFilter(request, response);
         else
         {
