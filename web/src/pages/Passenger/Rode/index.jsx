@@ -192,11 +192,12 @@ const GoogleMapsNavigation = (props) => {
     }
     const newMarkers = [];
 
-    othersGPS?.forEach((i) => {
+    othersGPS?.[0]?.forEach((i) => {
+      console.log('Creating marker for user:', i.userId, 'type:', typeof i.userId);
       const marker = new window.google.maps.Marker({
         position: { lat: Number(i.lat), lng: Number(i.lon) },
         map,
-        title: i.userId,
+        title: String(i.userId || 'Unknown User'),
         icon: {
           url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
           scaledSize: new window.google.maps.Size(48, 48),
