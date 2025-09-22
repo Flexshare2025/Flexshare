@@ -31,6 +31,7 @@ const GoogleMapsNavigation = (props) => {
   const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
   const [sharedLocation, setSharedLocation] = useState(null);
   const initialPositionFetched = useRef(false);
+  const isUpdatingMarkers = useRef(false);
 
   useEffect(() => {
     if (map && !initialPositionFetched.current) {
@@ -183,28 +184,35 @@ const GoogleMapsNavigation = (props) => {
   }, [apiKey]);
 
   const drawPosition = useCallback(() => {
+    if (isUpdatingMarkers.current) return;
+
+    isUpdatingMarkers.current = true;
     markers.forEach(marker => marker.setMap(null));
     const othersGPS = gpsData?.othersGPS;
     console.log('othersGPS', othersGPS)
     if (!othersGPS || othersGPS.length === 0) {
       setMarkers([]);
+      isUpdatingMarkers.current = false;
       return;
     }
     const newMarkers = [];
 
     const current = othersGPS?.[0];
 
-    const marker = new window.google.maps.Marker({
-      position: { lat: Number(current.lat), lng: Number(current.lon) },
-      map,
-      title: String(current.userId || 'Unknown User'),
-      icon: {
-        url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
-        scaledSize: new window.google.maps.Size(48, 48),
-      }
-    });
-    newMarkers.push(marker);
+    if (current && current.lat && current.lon) {
+      const marker = new window.google.maps.Marker({
+        position: { lat: Number(current.lat), lng: Number(current.lon) },
+        map,
+        title: String(current.userId || 'Unknown User'),
+        icon: {
+          url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
+          scaledSize: new window.google.maps.Size(48, 48),
+        }
+      });
+      newMarkers.push(marker);
+    }
     setMarkers(newMarkers);
+    isUpdatingMarkers.current = false;
 
   }, [markers, gpsData, map])
 

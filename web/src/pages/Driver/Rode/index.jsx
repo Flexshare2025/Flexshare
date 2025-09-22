@@ -96,8 +96,8 @@ const GoogleMapsNavigation = (props) => {
       console.log('GPS data received:', gpsData);
       console.log('Current user ID:', currentOrder?.user_id);
 
-      const currentUserGPS = gpsData.othersGPS;
-      if (currentUserGPS) {
+      const currentUserGPS = gpsData.othersGPS?.[0];
+      if (currentUserGPS && currentUserGPS.lat && currentUserGPS.lon) {
         console.log('Found current user GPS:', currentUserGPS);
         setSharedLocation({
           lat: Number(currentUserGPS.lat),
