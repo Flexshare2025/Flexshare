@@ -12,6 +12,7 @@ import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
 import { useNavigate } from 'react-router-dom';
 import { register, emailVerification } from '@/api/index.js';
 import { EMAIL_REG, PW_REG } from '@/constant';
+import { encryptUserData } from '@/utils/crypto';
 import './index.css';
 // generate a random 4-character captcha code
 function generateCaptcha() {
@@ -162,9 +163,12 @@ const Register = () => {
       ...values,
       role: Array.isArray(values.role) ? (values.role[0] || '') : values.role,
     };
+
+    // encrypt the password
+    const encryptedData = encryptUserData(normalizedValues);
     setLoading(true);
     register({
-      data: normalizedValues,
+      data: encryptedData,
       success: (result) => {
         console.log('Registration success:', result);
         if (result.code == '4004') {
