@@ -87,7 +87,7 @@ const GoogleMapsNavigation = (props) => {
       cancelPush();
       cancelGet();
     }
-  }, [currentOrder, map, token, runPush, runGet, cancelPush, cancelGet])
+  }, [currentOrder, map, token])
 
   useEffect(() => {
     if (gpsData && gpsData.othersGPS) {
@@ -220,7 +220,7 @@ const GoogleMapsNavigation = (props) => {
     if (gpsData && map) {
       drawPosition();
     }
-  }, [gpsData, map, drawPosition]);
+  }, [gpsData, map]);
 
   const calculateStops = useCallback(() => {
     const v = Object.values(currentOrder?.passengerSchedules || {});
@@ -282,13 +282,13 @@ const GoogleMapsNavigation = (props) => {
       cancelPush();
       cancelGet();
     };
-  }, [markers, cancelPush, cancelGet]);
+  }, []);
 
   useEffect(() => {
     if (start && end && directionsService) {
       calculateRoute();
     }
-  }, [start, end, directionsService, props.currentOrder, calculateRoute])
+  }, [start, end, directionsService, props.currentOrder])
 
   return (
     <>
