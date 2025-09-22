@@ -126,7 +126,7 @@ export default function App({ onClose, setOrder, setVisible2 }) {
                       <img className='rode-icon' src={RightArrow} alt="" />
                       <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
                     </p>
-                    <p className='order-status'>
+                    <p className='route-order-status'>
                       Status: {order.status === 'pending' ? 'Pending' : order.status === 'cancel' ? 'Cancelled' : order.status === 'started' ? 'Started' : order.status === 'timeout' ? 'Timeout' : order.status}
                     </p>
                   </div>
