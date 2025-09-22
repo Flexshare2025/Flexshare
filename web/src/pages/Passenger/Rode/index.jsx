@@ -30,10 +30,12 @@ const GoogleMapsNavigation = (props) => {
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
   const [sharedLocation, setSharedLocation] = useState(null);
+  const initialPositionFetched = useRef(false);
 
   useEffect(() => {
-    if (map && !sharedLocation) {
+    if (map && !initialPositionFetched.current) {
       console.log('Getting initial position for user marker...');
+      initialPositionFetched.current = true;
       getCurrentPosition().then(res => {
         console.log('Got initial position:', res);
         setSharedLocation({
@@ -42,9 +44,10 @@ const GoogleMapsNavigation = (props) => {
         });
       }).catch(err => {
         console.error('Failed to get initial position:', err);
+        initialPositionFetched.current = false;
       });
     }
-  }, [map, sharedLocation]);
+  }, [map]);
 
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
@@ -62,7 +65,6 @@ const GoogleMapsNavigation = (props) => {
     }
   });
 
-  // 启动GPS轮询的独立effect
   useEffect(() => {
     const requestData = {
       "userID": currentOrder?.user_id,
@@ -269,7 +271,6 @@ const GoogleMapsNavigation = (props) => {
   useEffect(() => {
     return () => {
       markers.forEach(marker => marker.setMap(null));
-      // 清理GPS轮询
       cancelPush();
       cancelGet();
     };

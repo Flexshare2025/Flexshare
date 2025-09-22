@@ -33,10 +33,12 @@ const GoogleMapsNavigation = (props) => {
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
   const [sharedLocation, setSharedLocation] = useState(null);
+  const initialPositionFetched = useRef(false);
 
   useEffect(() => {
-    if (map && !sharedLocation) {
+    if (map && !initialPositionFetched.current) {
       console.log('Getting initial position for user marker...');
+      initialPositionFetched.current = true;
       getCurrentPosition().then(res => {
         console.log('Got initial position:', res);
         setSharedLocation({
@@ -45,9 +47,10 @@ const GoogleMapsNavigation = (props) => {
         });
       }).catch(err => {
         console.error('Failed to get initial position:', err);
+        initialPositionFetched.current = false;
       });
     }
-  }, [map, sharedLocation]);
+  }, [map]);
 
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
@@ -322,7 +325,7 @@ const GoogleMapsNavigation = (props) => {
               <img className='rode-icon' src={RightArrow} alt="" />
               <span className='address'>{removeCountryInAddress(currentOrder?.end_point?.address)}</span>
             </p>
-            {Object.values(currentOrder?.passengerSchedules || {})?.map((order, _index) => (
+            {Object.values(currentOrder?.passengerSchedules || {})?.map((order) => (
               <List.Item
                 key={order.schedule_id}
               >
