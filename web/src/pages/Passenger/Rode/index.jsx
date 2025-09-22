@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import { getCurrentPosition } from '@/utils/position';
 import { removeCountryInAddress, convertMinutesToHoursAndMinutes, isWithin10Minutes } from '@/utils/common';
@@ -19,9 +19,9 @@ const GoogleMapsNavigation = (props) => {
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [markers, setMarkers] = useState([]);
 
-  const [routeSummary, setRouteSummary] = useState(null);
+  const [_routeSummary, setRouteSummary] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [_error, setError] = useState(null);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
   const [map, setMap] = useState(null);
@@ -29,6 +29,26 @@ const GoogleMapsNavigation = (props) => {
   const [start, setStartPoint] = useState(null);
   const [end, setEndPoint] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(props.currentOrder || {});
+  const [sharedLocation, setSharedLocation] = useState(null);
+  const initialPositionFetched = useRef(false);
+  const isUpdatingMarkers = useRef(false);
+
+  useEffect(() => {
+    if (map && !initialPositionFetched.current) {
+      console.log('Getting initial position for user marker...');
+      initialPositionFetched.current = true;
+      getCurrentPosition().then(res => {
+        console.log('Got initial position:', res);
+        setSharedLocation({
+          lat: res.latitude,
+          lng: res.longitude
+        });
+      }).catch(err => {
+        console.error('Failed to get initial position:', err);
+        initialPositionFetched.current = false;
+      });
+    }
+  }, [map]);
 
   // https://alibaba.github.io/hooks/use-request/polling
   const { run: runPush, cancel: cancelPush } = useRequest(pushGPS, {
@@ -46,20 +66,55 @@ const GoogleMapsNavigation = (props) => {
     }
   });
 
-  const requestData = {
-    "userID": currentOrder?.user_id,
-    "auth": token,
-    "role": "passenger",
-    "scheduleId": currentOrder?.schedule_id,
-  }
+  useEffect(() => {
+    const requestData = {
+      "userID": currentOrder?.user_id,
+      "auth": token,
+      "role": "passenger",
+      "scheduleId": currentOrder?.schedule_id,
+    };
+
+    if (isWithin10Minutes(currentOrder?.departure_time) && map && token) {
+      console.log('Starting polling after map initialization...');
+      const timer = setTimeout(() => {
+        runPush(requestData);
+        runGet(requestData);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    } else if (!isWithin10Minutes(currentOrder?.departure_time)) {
+      console.log('Not within 10 minutes, canceling polling...');
+      cancelPush();
+      cancelGet();
+    }
+  }, [currentOrder, map, token])
 
   useEffect(() => {
-    // if (isWithin10Minutes(currentOrder?.departure_time)) {
-    console.log('Starting polling...');
-    runPush(requestData);
-    runGet(requestData);
-    // }
-  }, [currentOrder])
+    if (gpsData && gpsData.othersGPS) {
+      console.log('GPS data received:', gpsData);
+      console.log('Current user ID:', currentOrder?.user_id);
+
+      const currentUserGPS = gpsData.othersGPS?.[0];
+      if (currentUserGPS) {
+        console.log('Found current user GPS:', currentUserGPS);
+        setSharedLocation({
+          lat: Number(currentUserGPS.lat),
+          lng: Number(currentUserGPS.lon)
+        });
+      } else {
+        console.log('Current user GPS not found in othersGPS, trying to get current position...');
+        getCurrentPosition().then(res => {
+          console.log('Got current position as fallback:', res);
+          setSharedLocation({
+            lat: res.latitude,
+            lng: res.longitude
+          });
+        }).catch(err => {
+          console.error('Failed to get current position:', err);
+        });
+      }
+    }
+  }, [gpsData, currentOrder?.user_id])
 
 
   useEffect(() => {
@@ -128,57 +183,51 @@ const GoogleMapsNavigation = (props) => {
 
   }, [apiKey]);
 
-  useEffect(() => {
-    if (gpsData && map) {
-      drawPosition();
-    }
-  }, [gpsData, map]);
+  const drawPosition = useCallback(() => {
+    if (isUpdatingMarkers.current) return;
 
-  const drawPosition = () => {
+    isUpdatingMarkers.current = true;
     markers.forEach(marker => marker.setMap(null));
     const othersGPS = gpsData?.othersGPS;
     console.log('othersGPS', othersGPS)
     if (!othersGPS || othersGPS.length === 0) {
       setMarkers([]);
+      isUpdatingMarkers.current = false;
       return;
     }
     const newMarkers = [];
 
-    othersGPS?.forEach((i) => {
+    const current = othersGPS?.[0];
+
+    if (current && current.lat && current.lon) {
       const marker = new window.google.maps.Marker({
-        position: { lat: Number(i.lat), lng: Number(i.lon) },
+        position: { lat: Number(current.lat), lng: Number(current.lon) },
         map,
-        title: i.userId,
+        title: String(current.userId || 'Unknown User'),
         icon: {
           url: 'https://527flexshare.s3.us-east-1.amazonaws.com/position0.gif',
           scaledSize: new window.google.maps.Size(48, 48),
         }
       });
       newMarkers.push(marker);
-    });
-    setMarkers(newMarkers);
-
-  }
-
-  useEffect(() => {
-    return () => {
-      markers.forEach(marker => marker.setMap(null));
-    };
-  }, []);
-
-  useEffect(() => {
-    if (start && end && directionsService) {
-      calculateRoute();
     }
-  }, [start, end, directionsService, props.currentOrder])
+    setMarkers(newMarkers);
+    isUpdatingMarkers.current = false;
 
+  }, [markers, gpsData, map])
 
-  const calculateStops = () => {
+  useEffect(() => {
+    if (gpsData && map) {
+      drawPosition();
+    }
+  }, [gpsData, map]);
+
+  const calculateStops = useCallback(() => {
     const v = Object.values(currentOrder?.passengerSchedules || {});
     return v?.[0]?.stops || [];
-  };
+  }, [currentOrder]);
 
-  const calculateRoute = () => {
+  const calculateRoute = useCallback(() => {
     console.log('Calculating route with start:', start, 'end:', end);
     if (!start || !end || !directionsService) {
       setError('Please enter both start and end locations');
@@ -225,7 +274,21 @@ const GoogleMapsNavigation = (props) => {
         setError(`Could not retrieve directions: ${status}`);
       }
     });
-  };
+  }, [start, end, directionsService, directionsRenderer, calculateStops]);
+
+  useEffect(() => {
+    return () => {
+      markers.forEach(marker => marker.setMap(null));
+      cancelPush();
+      cancelGet();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (start && end && directionsService) {
+      calculateRoute();
+    }
+  }, [start, end, directionsService, props.currentOrder])
 
   return (
     <>
@@ -242,6 +305,8 @@ const GoogleMapsNavigation = (props) => {
         <UserLocationTracker
           map={map}
           followUser={true}
+          useSharedLocation={true}
+          sharedLocation={sharedLocation}
         />
       </div>
     </>
