@@ -3,4 +3,4 @@ Setup Instructions
 Project structure
 Development Roadmap
 Maintainer
-Jack Lee
+Leon Liang
