@@ -1,11 +1,11 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { getLocalData } from '@/utils/storage';
+import { getCookie } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const location = useLocation();
-  const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
+  const token = getCookie(FLEXSHARE_ACCESS_TOKEN);
 
   // Check if user is authenticated
   if (!token) {

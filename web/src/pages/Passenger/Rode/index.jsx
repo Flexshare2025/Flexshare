@@ -5,7 +5,7 @@ import { removeCountryInAddress, convertMinutesToHoursAndMinutes, isWithin10Minu
 import RightArrow from '@/assets/right_arrow.png';
 import { useRequest } from 'ahooks';
 import { pushGPS, getGPS } from '@/utils/gps';
-import { getLocalData } from '@/utils/storage';
+import { getCookie } from '@/utils/storage';
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant';
 import UserLocationTracker from '@/components/UserLocationTracker';
 
@@ -23,7 +23,7 @@ const GoogleMapsNavigation = (props) => {
   const [loading, setLoading] = useState(false);
   const [_error, setError] = useState(null);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const token = getLocalData(FLEXSHARE_ACCESS_TOKEN);
+  const token = getCookie(FLEXSHARE_ACCESS_TOKEN);
   const [map, setMap] = useState(null);
 
   const [start, setStartPoint] = useState(null);

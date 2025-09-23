@@ -1,12 +1,7 @@
 export function getLocalData(key) {
 	try {
 		const data = localStorage.getItem(key)
-		if (
-			data === undefined ||
-			data === 'undefined' ||
-			data === 'null' ||
-			data === null
-		)
+		if (data === undefined || data === 'undefined' || data === 'null' || data === null)
 			return ''
 		return data
 	} catch (error) {
