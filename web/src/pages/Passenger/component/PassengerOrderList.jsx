@@ -87,7 +87,6 @@ export default function PassengerOrderList({ onClose, setOrder, setVisible2 }) {
   return (
     <div className='passenger-order-list-container'>
       <Header title="My Orders" onBack={onClose} />
-
       <List >
         {list.map(order => order && (
           <SwipeAction

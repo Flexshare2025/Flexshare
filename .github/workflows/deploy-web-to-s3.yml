@@ -2,7 +2,7 @@ name: Deploy web to AWS S3
 
 on:
     push:
-        branches: [main]
+        branches: [flexShareWeb]
 
 jobs:
     deploy:
