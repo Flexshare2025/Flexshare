@@ -98,7 +98,7 @@ web/
 
     1. User enters account/password → validate inputs
     2. Submit login (POST `/api/users/login` example)
-    3. On success: `storage.setToken(token)`, `storage.setUser(user)` → redirect to protected page
+    3. On success: `cookie.setToken(token)`, `storage.setUser(user)` → redirect to protected page
     4. On failure: show error (invalid account or password)
 
 -   Sign-up flow
@@ -110,7 +110,7 @@ web/
 
 -   Protected routes (auth guard)
 
-    -   Before entering restricted pages, check `storage.getToken()`
+    -   Before entering restricted pages, check `cookie.getToken()`
     -   No token → redirect to `/login`
     -   Has token → render children
 
@@ -207,7 +207,7 @@ flowchart LR
 -   Driver flow:
     1. `PublishRoute` publishes/edits routes → `RouteList` refresh
     2. `UserOrderList` accepts/declines orders → update order status and seats
-    3. `Rode` updates trip status (start/end)
+    3. `Rode` updates trip status (start/end) and real-time location
 -   State & storage: local `useState/useEffect` + props; `utils/storage.js` for token/user
 -   Response shape: `{ code, message, data }`
 
