@@ -162,7 +162,7 @@ jobs:
                   aws s3 sync ./web/dist s3://${{ secrets.AWS_S3_BUCKET }} --delete
 ```
 
-Then in S3 bucket can see the files.
+Then you can see the files in S3 bucket.
 
 ![S3](./s3.jpeg)
 
