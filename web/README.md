@@ -3,7 +3,7 @@
 You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
 
 This document is a quick get-up-and-run description of a front-end (web) project
-For more complete information check out：`Project-Overview.md`.
+For more complete information check out：[Project-Overview.md](./Project-Overview.md).
 
 ### 1、Environmental requirements
 
@@ -168,7 +168,7 @@ Then in S3 bucket can see the files.
 
 ### 7. Documentation
 
--   Front-end Project Overview and Technical Guide：`Project-Overview.md`
+-   Front-end Project Overview and Technical Guide：[Project-Overview.md](./Project-Overview.md)
 
 ### 8. Frequently Asked Questions
 
