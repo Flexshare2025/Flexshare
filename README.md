@@ -1,6 +1,18 @@
 # Flexshare
 ## Introduction of total
 
+FlexShare is a ride-sharing platform designed specifically for the New Zealand context, where car ownership is extremely common and vehicle occupancy is often very low. Statistics show that most trips are made with only one or two people per car, which leads to higher fuel consumption and unnecessary carbon emissions. FlexShare introduces a “third option” between public transport and taxi services: it allows everyday drivers to publish their routes and share available seats, while passengers can join and leave along the way. This improves vehicle utilization, reduces emissions, and offers a more economical travel choice.
+
+From a technical perspective, FlexShare is built with a cloud-ready, distributed backend and a modern web front-end. The backend leverages Spring Boot 3.0 with Java 17, combining MySQL for persistent relational data and Redis for high-concurrency operations such as distributed locks, session management, and GEO-based location matching. The system follows a stateless architecture, integrated with AWS Load Balancer for scalability and reliability. CI/CD pipelines are managed with GitHub Actions, ensuring continuous validation and deployment.
+
+Together, the system design and product vision position FlexShare as an efficient and sustainable mobility service:
+
+For users, it provides a simple way to publish or join rides, supported by secure authentication and real-time matching.
+
+For communities, it increases transport efficiency, lowers costs, and contributes to carbon reduction.
+
+For operations, it is architected for growth, with modular services, robust concurrency control, and a deployment pipeline fit for production.
+
 ## Driver End Demo  
 [![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/0.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
 
