@@ -7,7 +7,7 @@
 
 This project is a **Spring Boot 3.0** application developed as the backend server for the FlexShare system.
 
-FlexShare is designed as a **"private bus" service** that provides a reliable, safe, and efficient way for users to share transport routes.
+FlexShare is designed as a "private bus" service that provides a reliable, safe, and efficient way for users to share transport routes, with a distributed, cloud-ready backend that supports scalability and high availability.
 
 ### Goals
 
@@ -17,6 +17,7 @@ The backend server is designed with the following overall goals:
 **Ensure a distributed, non-state (stateless) architecture** so the system can scale easily in a cloud environment.
 **Support transaction management** and data storage using both SQL (**MySQL**) and NoSQL (**Redis**) databases.
 **Prepare for future payment and billing features** (not yet implemented).
+**Centralized Configuration Based on Cloud Services.
 
 ### Architecture Highlights
 
