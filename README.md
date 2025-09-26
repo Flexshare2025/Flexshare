@@ -159,20 +159,20 @@ This project uses **GitHub Actions** for automated deployment.
 A workflow is configured to run automatically on every push to the repository. This workflow builds the project, runs tests, and ensures the code is always validated before deployment.
 
 ---
-## Flex Share (Ride-sharing platform) - Front-end
+# Flex Share (Ride-sharing platform) - Front-end
 
 You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
 
 This document is a quick get-up-and-run description of a front-end (web) project
 For more complete information check out：[Project-Overview.md](./Project-Overview.md).
 
-### 1、Environmental requirements
+## 1、Environmental requirements
 
 -   Node.js >= 18（recommend LTS）
 -   npm >= 9 or pnpm/yarn
 -   Google Maps API Key（Enable Maps JavaScript API、Places API、Directions API）
 
-### 2、Directory structure (front end)
+## 2、Directory structure (front end)
 
 ```
 web/
@@ -220,7 +220,7 @@ web/
   README.md
 ```
 
-### 3、Front-end (web) start
+## 3、Front-end (web) start
 
 1. Enter the directory
 
@@ -256,7 +256,7 @@ npm run build
 
 Build products in `web/dist/`.
 
-### 4、Brief description of key functions (front-end)
+## 4、Brief description of key functions (front-end)
 
 -   Passenger Page
     -   Use Google Maps to display your current location and route planner
@@ -265,14 +265,14 @@ Build products in `web/dist/`.
     -   Posting routes, managing orders and seating capacity
     -   Login/Register/Retrieve Password: Basic Authentication Process and Protected Routing
 
-### 5、Development contract
+## 5、Development contract
 
 -   Code style: follows the ESLint/Prettier configuration within the project
 -   Component naming: Big Hump, Folders & Entries `index.jsx`/`index.scss`
 -   State management: with the component's internal `useState/useEffect`
 -   API calls: unified under `web/src/api/`.
 
-### 6、Automated deployment
+## 6、Automated deployment
 
 -   Use Github Actions to deploy web to AWS S3.
 
@@ -327,18 +327,18 @@ Then you can see the files in S3 bucket.
 
 ![S3](./s3.jpeg)
 
-### 7. Documentation
+## 7. Documentation
 
 -   Front-end Project Overview and Technical Guide：[Project-Overview.md](./Project-Overview.md)
 
-### 8. Frequently Asked Questions
+## 8. Frequently Asked Questions
 
 -   The map is not displayed/blank:
     -   check `VITE_GOOGLE_MAPS_API_KEY`
     -   Confirm that the relevant Google Maps APIs are enabled
     -   Whether or not browser location permissions are allowed
 
-### 9. Resources
+## 9. Resources
 
 1. IconFont：<https://www.iconfont.cn/>
 2. React Hooks（ahooks/use-request）：<https://ahooks.js.org/hooks/use-request/index>
