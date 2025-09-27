@@ -14,13 +14,27 @@ For communities, it increases transport efficiency, lowers costs, and contribute
 
 For operations, it is architected for growth, with modular services, robust concurrency control, and a deployment pipeline fit for production.
 
+You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./web/QrCode.png)
+
 ## Driver End Demo Video(Youtube)
 
-[![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/3.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
+<iframe width="398" height="864"
+        src="https://www.youtube.com/embed/QHrtSEZEEe8"
+        title="flexshare driver"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+</iframe>
 
 ## Passenger End Demo Video(Youtube)
 
-[![Passenger App Demo](https://img.youtube.com/vi/aGSRnuGI79M/2.jpg)](https://www.youtube.com/shorts/aGSRnuGI79M)
+<iframe width="398" height="864"
+        src="https://www.youtube.com/embed/aGSRnuGI79M"
+        title="flexshare passenger"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+</iframe>
 
 # FlexShare Backend
 
@@ -179,11 +193,6 @@ A workflow is configured to run automatically on every push to the repository. T
 ---
 
 # Flex Share (Ride-sharing platform) - Front-end
-
-You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
-
-This document is a quick get-up-and-run description of a front-end (web) project
-For more complete information check out：[Project-Overview.md](./Project-Overview.md).
 
 ## 1、Environmental requirements
 
