@@ -65,7 +65,7 @@ To improve **concurrency** and **reliability**:
 
 * **Health Check:** Integrated API endpoint for **AWS Load Balancer** health checks.
 * **CORS Filter:** Implemented a Cross-Origin Resource Sharing filter to protect APIs.
-* **Authentication:** Email login with verification ensures safe access.
+* **Authentication:** Email login with verification ensures safe access, single-point loggin, session expire and auto update.
 
 ---
 
