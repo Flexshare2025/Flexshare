@@ -178,7 +178,7 @@ A workflow is configured to run automatically on every push to the repository. T
 
 ---
 
-# Flex Share (Ride-sharing platform) - Front-end
+# Flex Share - Front-end
 
 You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
 
