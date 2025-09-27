@@ -1,4 +1,5 @@
 # Flexshare
+
 ## Introduction of total
 
 FlexShare is a ride-sharing platform designed specifically for the New Zealand context, where car ownership is extremely common and vehicle occupancy is often very low. Statistics show that most trips are made with only one or two people per car, which leads to higher fuel consumption and unnecessary carbon emissions. FlexShare introduces a “third option” between public transport and taxi services: it allows everyday drivers to publish their routes and share available seats, while passengers can join and leave along the way. This improves vehicle utilization, reduces emissions, and offers a more economical travel choice.
@@ -14,11 +15,12 @@ For communities, it increases transport efficiency, lowers costs, and contribute
 For operations, it is architected for growth, with modular services, robust concurrency control, and a deployment pipeline fit for production.
 
 ## Driver End Demo Video(Youtube)
-[![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/0.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
+
+[![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/3.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
 
 ## Passenger End Demo Video(Youtube)
-[![Passenger App Demo](https://img.youtube.com/vi/aGSRnuGI79M/0.jpg)](https://www.youtube.com/shorts/aGSRnuGI79M)
 
+[![Passenger App Demo](https://img.youtube.com/vi/aGSRnuGI79M/2.jpg)](https://www.youtube.com/shorts/aGSRnuGI79M)
 
 # FlexShare Backend
 
@@ -29,6 +31,7 @@ This project is a **Spring Boot 3.0** application developed as the backend serve
 FlexShare is designed as a "private bus" service that provides a reliable, safe, and efficient way for users to share transport routes, with a distributed, cloud-ready backend that supports scalability and high availability.
 
 ## Framework Diagram
+
 <img width="1503" height="1005" alt="Flexshare Architecture" src="https://github.com/user-attachments/assets/06eff430-6751-4a56-ba56-53db7d01db8b" />
 
 ### Goals
@@ -39,34 +42,33 @@ The backend server is designed with the following overall goals:
 **Ensure a distributed, non-state (stateless) architecture** so the system can scale easily in a cloud environment.
 **Support transaction management** and data storage using both SQL (**MySQL**) and NoSQL (**Redis**) databases.
 **Prepare for future payment and billing features** (not yet implemented).
-**Centralized Configuration Based on Cloud Services.
+\*\*Centralized Configuration Based on Cloud Services.
 
 ### Architecture Highlights
 
 The design employs a **stateless architecture** for service distribution. We combine **MySQL** for relational data (e.g., user profiles, schedules) and **Redis** for fast, high-concurrency operations.
 
 To improve **concurrency** and **reliability**:
-* A **distributed session mechanism** is built with Redis to allow **Single Sign-On (SSO)**.
-* A **distributed lock** is implemented using Redis to prevent data conflicts when multiple users update schedules simultaneously.
-* A **GEO data structure** is utilized for quickly matching route points with user locations.
-* The system is integrated with an **AWS Load Balancer** via a health check API.
-* **GitHub Actions** are used for Continuous Integration and Deployment (CI/CD).
 
-
+-   A **distributed session mechanism** is built with Redis to allow **Single Sign-On (SSO)**.
+-   A **distributed lock** is implemented using Redis to prevent data conflicts when multiple users update schedules simultaneously.
+-   A **GEO data structure** is utilized for quickly matching route points with user locations.
+-   The system is integrated with an **AWS Load Balancer** via a health check API.
+-   **GitHub Actions** are used for Continuous Integration and Deployment (CI/CD).
 
 ---
 
 ## Technologies Used
 
-| Category | Technology | Version | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Backend** | Java | 17 | Core programming language |
-| **Framework** | Spring Boot | 3.0 | Application framework |
-| **Build** | Maven | 3.8+ | Dependency management and build automation |
-| **Database (SQL)** | MySQL | 8.0+ | Persistent storage for relational data |
-| **Database (NoSQL)** | Redis | 6.0+ | Caching, session management, distributed locks, GEO data |
-| **Deployment** | AWS Load Balancer | - | Health check integration |
-| **CI/CD** | GitHub Actions | - | Automated build and testing |
+| Category             | Technology        | Version | Purpose                                                  |
+| :------------------- | :---------------- | :------ | :------------------------------------------------------- |
+| **Backend**          | Java              | 17      | Core programming language                                |
+| **Framework**        | Spring Boot       | 3.0     | Application framework                                    |
+| **Build**            | Maven             | 3.8+    | Dependency management and build automation               |
+| **Database (SQL)**   | MySQL             | 8.0+    | Persistent storage for relational data                   |
+| **Database (NoSQL)** | Redis             | 6.0+    | Caching, session management, distributed locks, GEO data |
+| **Deployment**       | AWS Load Balancer | -       | Health check integration                                 |
+| **CI/CD**            | GitHub Actions    | -       | Automated build and testing                              |
 
 ---
 
@@ -74,20 +76,20 @@ To improve **concurrency** and **reliability**:
 
 ### 1. User Module
 
-* **User Creation:** Built with MyBatis Plus and MySQL. Registration includes **email verification** for security.
-* **User Authorization & Login:** Features a robust, distributed session design based on Redis key-value storage, supporting **Single Sign-On (SSO)**.
-* **Security:** User data (passwords) is secured with **salted encryption**.
+-   **User Creation:** Built with MyBatis Plus and MySQL. Registration includes **email verification** for security.
+-   **User Authorization & Login:** Features a robust, distributed session design based on Redis key-value storage, supporting **Single Sign-On (SSO)**.
+-   **Security:** User data (passwords) is secured with **salted encryption**.
 
 ### 2. Schedule Module
 
-* **Concurrency Control:** Uses a **distributed lock** (Redis-based) to prevent race conditions during schedule creation, subscription, and update.
-* **Geo-based Scheduling:** Implemented with Redis's efficient **GEO data structure** for splitting and quickly matching route points by location.
+-   **Concurrency Control:** Uses a **distributed lock** (Redis-based) to prevent race conditions during schedule creation, subscription, and update.
+-   **Geo-based Scheduling:** Implemented with Redis's efficient **GEO data structure** for splitting and quickly matching route points by location.
 
 ### 3. System & Security
 
-* **Health Check:** Integrated API endpoint for **AWS Load Balancer** health checks.
-* **CORS Filter:** Implemented a Cross-Origin Resource Sharing filter to protect APIs.
-* **Authentication:** Email login with verification ensures safe access.
+-   **Health Check:** Integrated API endpoint for **AWS Load Balancer** health checks.
+-   **CORS Filter:** Implemented a Cross-Origin Resource Sharing filter to protect APIs.
+-   **Authentication:** Email login with verification ensures safe access.
 
 ---
 
@@ -121,7 +123,7 @@ flexshare-backend/
 │       └── MemberTest.java      \# Unit/Integration tests
 └── target/ (build output)
 
-````
+```
 
 ---
 
@@ -130,10 +132,11 @@ flexshare-backend/
 ### Prerequisites
 
 You must have the following installed and running:
-* **Java 17+**
-* **Maven 3.8+**
-* **MySQL 8.0+**
-* **Redis 6.0+**
+
+-   **Java 17+**
+-   **Maven 3.8+**
+-   **MySQL 8.0+**
+-   **Redis 6.0+**
 
 ### Steps
 
@@ -145,18 +148,21 @@ You must have the following installed and running:
     ```
 
 2.  **Database Setup:**
-    * Start your MySQL and Redis servers.
-    * Update the `src/main/resources/application.yml` file with your database connection details (MySQL and Redis).
-    * Initialize your MySQL database using the schema in `src/main/resources/mysql.sql`.
+
+    -   Start your MySQL and Redis servers.
+    -   Update the `src/main/resources/application.yml` file with your database connection details (MySQL and Redis).
+    -   Initialize your MySQL database using the schema in `src/main/resources/mysql.sql`.
 
 3.  **Run the Application:**
 
     **Option A: Run directly with Maven**
+
     ```bash
     mvn spring-boot:run
     ```
 
     **Option B: Build and run the JAR file**
+
     ```bash
     mvn clean package
     java -jar target/member-service-1.0-SNAPSHOT.jar
@@ -171,6 +177,7 @@ This project uses **GitHub Actions** for automated deployment.
 A workflow is configured to run automatically on every push to the repository. This workflow builds the project, runs tests, and ensures the code is always validated before deployment.
 
 ---
+
 # Flex Share (Ride-sharing platform) - Front-end
 
 You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./QrCode.png)
@@ -337,11 +344,11 @@ jobs:
 
 Then you can see the files in S3 bucket.
 
-![S3](./s3.jpeg)
+![S3](./web/s3.jpeg)
 
 ## 7. Documentation
 
--   Front-end Project Overview and Technical Guide：[Project-Overview.md](./Project-Overview.md)
+-   Front-end Project Overview and Technical Guide：[Project-Overview.md](./web/Project-Overview.md)
 
 ## 8. Frequently Asked Questions
 
