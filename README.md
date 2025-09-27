@@ -157,8 +157,8 @@ You must have the following installed and running:
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/your-repo/flexshare-backend.git](https://github.com/your-repo/flexshare-backend.git)
-    cd flexshare-backend
+    git clone https://github.com/Flexshare2025/Flexshare (change to your github acc firstly)
+    cd Flex Share Server
     ```
 
 2.  **Database Setup:**
@@ -192,7 +192,7 @@ A workflow is configured to run automatically on every push to the repository. T
 
 ---
 
-# Flex Share (Ride-sharing platform) - Front-end
+# Flex Share - Front-end
 
 ## 1、Environmental requirements
 
