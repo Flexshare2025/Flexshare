@@ -18,23 +18,11 @@ You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazon
 
 ## Driver End Demo Video(Youtube)
 
-<iframe width="398" height="864"
-        src="https://www.youtube.com/embed/QHrtSEZEEe8"
-        title="flexshare driver"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-</iframe>
+[![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/0.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
 
 ## Passenger End Demo Video(Youtube)
 
-<iframe width="398" height="864"
-        src="https://www.youtube.com/embed/aGSRnuGI79M"
-        title="flexshare passenger"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+[![Passenger App Demo](https://img.youtube.com/vi/aGSRnuGI79M/0.jpg)](https://www.youtube.com/shorts/aGSRnuGI79M)
 
 # FlexShare Backend
 
