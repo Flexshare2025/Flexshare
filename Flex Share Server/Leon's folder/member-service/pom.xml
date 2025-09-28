@@ -98,6 +98,14 @@
             <version>3.0.2</version>
         </dependency>
 
+        <!--XSS washing-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
