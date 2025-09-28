@@ -94,6 +94,7 @@ To improve **concurrency** and **reliability**:
 -   **Health Check:** Integrated API endpoint for **AWS Load Balancer** health checks.
 -   **CORS Filter:** Implemented a Cross-Origin Resource Sharing filter to protect APIs.
 -   **Authentication:** Email login with verification ensures safe access.
+-   **XSS Washing:** Washing every data upload by front end. Detect and prevent any potentional XSS attack.
 
 ---
 
