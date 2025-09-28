@@ -1,5 +1,5 @@
 
-# FlexShare Backend
+# Flexshare Backend
 ## Framework Diagram
 <img width="1503" height="1005" alt="Flexshare Architecture" src="https://github.com/user-attachments/assets/06eff430-6751-4a56-ba56-53db7d01db8b" />
 
