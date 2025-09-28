@@ -29,7 +29,6 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
 
       autocompleteInstance?.addListener('place_changed', () => {
         const place = autocompleteInstance.getPlace();
-        console.log('[AddressSearch] Place selected:', place);
 
         if (place.geometry && place.geometry.location) {
           // Transform the data to match the expected format
@@ -43,7 +42,6 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
             }
           };
 
-          console.log('[AddressSearch] Transformed place data:', placeData);
           onPlaceSelect(placeData);
 
           // Set the input value to keep the selected address visible
@@ -51,7 +49,6 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
             searchInputRef.current.value = placeData.formatted_address;
           }
         } else {
-          console.log("[AddressSearch] This location was not found or has no geometry");
         }
       });
 

@@ -1,11 +1,10 @@
-import { getLocalData, setLocalData } from '@/utils/storage'
+import { getCookie, setCookie } from '@/utils/storage'
 import { FLEXSHARE_ACCESS_TOKEN } from '@/constant'
 
 export const API_FAILED = 'Error'
 
 // todo
-export const API_DOMAIN =
-	'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/api/'
+export const API_DOMAIN = 'https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/api/'
 
 let token = ''
 
@@ -16,7 +15,7 @@ export function goLogin() {
 
 async function addHeader(h) {
 	if (!h['authorization']) {
-		token = getLocalData(FLEXSHARE_ACCESS_TOKEN) || ''
+		token = getCookie(FLEXSHARE_ACCESS_TOKEN) || ''
 
 		if (token) {
 			h['authorization'] = `${token}`
@@ -91,8 +90,7 @@ export async function apiFetch(config) {
 		.then(res => {
 			// status: 401
 			if (res.status === 401 || res.status === 403) {
-				setLocalData({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
-				console.log('trigger-login-401')
+				setCookie({ key: FLEXSHARE_ACCESS_TOKEN, value: '' })
 				// goLogin()
 				return res.json()
 			}
@@ -108,7 +106,6 @@ export async function apiFetch(config) {
 			}
 		})
 		.catch(err => {
-			console.log('fetch-err', err)
 			config.done && config.done()
 			config.fail && config.fail(API_FAILED)
 		})

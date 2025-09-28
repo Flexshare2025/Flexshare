@@ -21,9 +21,7 @@ export default function App({ onClose, setOrder, setVisible2 }) {
       },
       success: res => {
         setLoading(false)
-        console.log('viewPublishRoutes-res', res)
         const data = res.data;
-        console.log('viewPublishRoutes-data', data)
         setList(data);
       },
       fail: () => {
@@ -48,7 +46,6 @@ export default function App({ onClose, setOrder, setVisible2 }) {
         cancelPublishRoutes({
           data: { schedule_id: order.schedule_id },
           success: res => {
-            console.log('cancelOrder--res', res)
             if (res.code == '200') {
               getPublishRoutes();
               Toast.show({
@@ -63,7 +60,6 @@ export default function App({ onClose, setOrder, setVisible2 }) {
             }
           },
           fail: err => {
-            console.log('cancelOrder--err', err)
             Toast.show({
               content: err.msg,
               duration: 500,
@@ -75,6 +71,7 @@ export default function App({ onClose, setOrder, setVisible2 }) {
   }
 
   const isPending = i => i === 'pending';
+  const isStarted = i => i === 'started';
 
   const goDetail = (currentOrder) => {
     if (currentOrder) {
@@ -109,6 +106,13 @@ export default function App({ onClose, setOrder, setVisible2 }) {
                     color: 'primary',
                     onClick: () => goDetail(order),
                   },
+                ] : isStarted(order.status) ? [
+                  {
+                    key: 'detail',
+                    text: 'Detail',
+                    color: 'primary',
+                    onClick: () => goDetail(order),
+                  },
                 ] : []}
               >
                 <List.Item key={order.schedule_id} className={`${isPending(order.status) ? '' : 'disabled'}`}>
@@ -121,6 +125,9 @@ export default function App({ onClose, setOrder, setVisible2 }) {
                       <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>
                       <img className='rode-icon' src={RightArrow} alt="" />
                       <span className='address'>{removeCountryInAddress(order.end_point.address)}</span>
+                    </p>
+                    <p className='route-order-status'>
+                      Status: {order.status === 'pending' ? 'Pending' : order.status === 'cancel' ? 'Cancelled' : order.status === 'started' ? 'Started' : order.status === 'timeout' ? 'Timeout' : order.status}
                     </p>
                   </div>
                   <UserOrderList data={Object.values(order.passengerSchedules || {})} />

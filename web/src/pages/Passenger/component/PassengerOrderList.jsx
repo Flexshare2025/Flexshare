@@ -87,7 +87,6 @@ export default function PassengerOrderList({ onClose, setOrder, setVisible2 }) {
   return (
     <div className='passenger-order-list-container'>
       <Header title="My Orders" onBack={onClose} />
-
       <List >
         {list.map(order => order && (
           <SwipeAction
@@ -111,7 +110,7 @@ export default function PassengerOrderList({ onClose, setOrder, setVisible2 }) {
               <div>
                 <p className="route-item">
                   <span>{order.departure_time}</span>
-                  <span className='seat-item'>({order.seat_count || 1} people)</span>
+                  <span className='seat-item'>({order.num_passenger || 1} people)</span>
                 </p>
                 <p className='route-item-detail'>
                   <span className='address'> {removeCountryInAddress(order.start_point.address)}</span>

@@ -5,19 +5,25 @@ const UserLocationTracker = ({
   map,
   zIndex = 1000,
   markerSize = { width: 36, height: 36 },
-  followUser = false
+  followUser = false,
+  useSharedLocation = false,
+  sharedLocation = null
 }) => {
   const [userMarker, setUserMarker] = useState(null);
-  const [watchId, setWatchId] = useState(null);
-  const [error, setError] = useState(null);
+  const [_watchId, setWatchId] = useState(null);
+  const [_error, setError] = useState(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState(0);
 
   const updateUserMarker = useCallback((position) => {
-    if (!map || !window.google) return;
+    if (!map || !window.google) {
+      return;
+    }
 
     const newPosition = {
       lat: position.lat,
       lng: position.lng
     };
+
 
     if (userMarker) {
       userMarker.setPosition(newPosition);
@@ -41,7 +47,18 @@ const UserLocationTracker = ({
   }, [map, userMarker, markerSize.width, markerSize.height, zIndex, followUser]);
 
   useEffect(() => {
-    if (!map || !window.google) return;
+    if (useSharedLocation && sharedLocation && map) {
+      const now = Date.now();
+      if (now - lastUpdateTime > 2000) {
+        updateUserMarker(sharedLocation);
+        setLastUpdateTime(now);
+      } else {
+      }
+    }
+  }, [useSharedLocation, sharedLocation, map, updateUserMarker, lastUpdateTime]);
+
+  useEffect(() => {
+    if (useSharedLocation || !map || !window.google) return;
 
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
@@ -60,7 +77,6 @@ const UserLocationTracker = ({
         updateUserMarker(initialLocation);
       } catch (err) {
         setError(`Error getting initial position: ${err.message}`);
-        console.error("Initial position error:", err);
       }
     };
 
@@ -75,12 +91,11 @@ const UserLocationTracker = ({
       },
       (err) => {
         setError(`Error tracking position: ${err.message}`);
-        console.error("Position tracking error:", err);
       },
       {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000
+        enableHighAccuracy: false,
+        maximumAge: 10000,
+        timeout: 10000
       }
     );
 
@@ -95,7 +110,7 @@ const UserLocationTracker = ({
         setUserMarker(null);
       }
     };
-  }, [map, updateUserMarker]);
+  }, [map, updateUserMarker, useSharedLocation, userMarker]);
 
   return null;
 };

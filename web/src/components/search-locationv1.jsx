@@ -18,16 +18,13 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
   useEffect(() => {
     // initialize if not already done
     if (initializedRef.current) {
-      console.log('[AddressSearch] Already initialized, skipping...');
       return;
     }
-    console.log('[AddressSearch] Starting initialization...');
     const initMap = async () => {
       try {
         // request needed libraries
         await window.google.maps.importLibrary("places");
         if (!containerRef.current) {
-          console.log('[AddressSearch] Container ref not available, aborting');
           return;
         }
         // create the input HTML element
@@ -57,14 +54,12 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
             const place = placePrediction.toPlace();
             await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
             const json = place.toJSON();
-            console.log('[AddressSearch] place JSON:', json);
             const formatted_address = json.formattedAddress || json.displayName || '';
             const location = json.location;
             // handle the actual data format: location.lat and location.lng are direct values
             if (location && typeof location.lat === 'number' && typeof location.lng === 'number') {
               const lat = location.lat;
               const lng = location.lng;
-              console.log('[AddressSearch] coordinates:', { lat, lng });
               const placeData = {
                 formatted_address,
                 geometry: {
@@ -81,7 +76,6 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
                 const internalInput = placeAutocomplete.querySelector('input[aria-autocomplete="list"]');
                 if (internalInput) {
                   internalInput.value = formatted_address;
-                  console.log('[AddressSearch] Set internal input value:', formatted_address);
                   // Also set our slotted input
                   inputEl.value = formatted_address;
                   // Trigger events to ensure the value is recognized
@@ -89,13 +83,10 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
                   inputEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
               } catch (err) {
-                console.warn('Could not set internal input value:', err);
               }
             } else {
-              console.log('[AddressSearch] No valid location found, location:', location);
             }
           } catch (err) {
-            console.error('Error processing place:', err);
           }
         });
         // Clear container and append
@@ -104,10 +95,8 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
         placeAutocomplete.appendChild(inputEl);
         // Mark as initialized
         initializedRef.current = true;
-        console.log('[AddressSearch] Successfully initialized, set initializedRef.current = true');
 
       } catch (error) {
-        console.error('Error initializing map:', error);
       }
     };
     // Load Google Maps API first, then init
@@ -117,12 +106,10 @@ const AddressSearch = ({ onPlaceSelect, placeholder = '', defaultValue = '' }) =
       libraries: ['places']
     });
     loader.load().then(() => {
-      console.log('[AddressSearch] Google Maps API loaded, calling initMap');
       initMap();
     });
     // Cleanup function
     return () => {
-      console.log('[AddressSearch] Cleanup: resetting initializedRef.current to false');
       initializedRef.current = false;
     };
   }, []); // Empty dependency array - only run once on mount
