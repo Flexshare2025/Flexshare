@@ -1,5 +1,6 @@
 package com.jl.flexshare.member.utils;
-
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 public class Utils {
 
@@ -10,4 +11,15 @@ public class Utils {
         }
         return code.toString();
     }
+
+    public static String WashXssData(String input) {
+        return Jsoup.clean(input, Safelist.basic());
+    }
+
+    public static boolean hasXssRisk(String input) {
+        if (input == null) return false;
+        String lower = input.toLowerCase();
+        return lower.contains("<script") || lower.contains("onerror") || lower.contains("javascript:");
+    }
 }
+
