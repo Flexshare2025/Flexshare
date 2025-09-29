@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::412277093287:role/Backend_Role",
+                "arn:aws:iam::412277093287:role/Security_Role",
+                "arn:aws:iam::412277093287:role/Frontend_Role"
+            ]
+        }
+    ]
+}
