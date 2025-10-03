@@ -17,7 +17,10 @@ Together, the system design and product vision position FlexShare as an efficien
 - For operations, it is architected for growth, with modular services, robust concurrency control, and a deployment pipeline fit for production.
 
 You can access it via the link: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>, or scan the QR code with your mobile phone. ![qrcode](./web/QrCode.png)
-（Due to budget stuff, the project is now offline. ）
+
+
+
+**（Due to budget stuff, the project is now offline. ）**
 
 ## Driver End Demo Video(Youtube)
 
