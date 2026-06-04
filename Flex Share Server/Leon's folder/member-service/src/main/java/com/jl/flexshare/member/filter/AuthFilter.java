@@ -5,90 +5,95 @@ import com.jl.flexshare.member.result.ErrorType;
 import com.jl.flexshare.member.result.Result;
 import com.jl.flexshare.member.result.ResultError;
 import com.jl.flexshare.member.service.RedisService;
-import com.jl.flexshare.member.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 @Order(2)
 @Component
-public class AuthFilter implements Filter{
+public class AuthFilter implements Filter {
 
-    @Autowired
-    private RedisService redisService;
+    private static final long SESSION_TTL_DAYS = 1L;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final Set<String> PUBLIC_PATHS = Set.of(
+            "/users/login",
+            "/users/register",
+            "/users/mail-verification",
+            "/users/reset-password",
+            "/health/check"
+    );
 
-    @Autowired
-    private UserService userService;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
+    public AuthFilter(RedisService redisService, ObjectMapper objectMapper) {
+        this.redisService = redisService;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletResponse resp = (HttpServletResponse) response;
-        HttpServletRequest req = (HttpServletRequest) request;
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
-            resp.setStatus(HttpServletResponse.SC_OK);
+        if (isPreflight(httpRequest) || isPublicPath(httpRequest)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        if (req.getRequestURI().equals("/users/login")
-        || req.getRequestURI().equals("/users/register")
-        || req.getRequestURI().equals("/users/mail-verification")
-        || req.getRequestURI().equals("/users/reset-password")
-        || req.getRequestURI().equals("/health/check"))
-            filterChain.doFilter(request, response);
-        else
-        {
-            String authorization = req.getHeader("Authorization");
-            Object auth=null;
-            if (null!=authorization){
-                auth = redisService.get(authorization);
-            }
-            if (null == authorization||auth==null)
-            {
-
-                Result error = Result.error(ResultError.info(ErrorType.Authentication_invalid));
-                interceptRequest(resp,error);
-            }
-            else{
-                String userValue = redisService.get(authorization).toString();
-                String[] split = userValue.split(":");
-                String userId=split[0];
-                String role=split[1];
-
-                String userLoginValue =userId+":"+role;
-                //check if auth equals current auth
-                if (redisService.get(userLoginValue).toString().equals(authorization)) {
-                    req.setAttribute("userId", userId);
-                    req.setAttribute("role", role);
-                    redisService.set_temp(authorization, userLoginValue, 1, TimeUnit.DAYS);
-                    filterChain.doFilter(request, response);
-                }
-                else{
-                    //auth is no newest, duplicated login
-                    Result error = Result.error(ResultError.info(ErrorType.Duplicate_login));
-                    interceptRequest(resp,error);
-                }
-            }
+        String sessionId = httpRequest.getHeader(AUTHORIZATION_HEADER);
+        Object loginValue = sessionId == null ? null : redisService.get(sessionId);
+        if (loginValue == null) {
+            writeError(httpResponse, ErrorType.Authentication_invalid);
+            return;
         }
 
+        String[] loginParts = loginValue.toString().split(":", 2);
+        if (loginParts.length != 2) {
+            writeError(httpResponse, ErrorType.Authentication_invalid);
+            return;
+        }
+
+        String userId = loginParts[0];
+        String role = loginParts[1];
+        String singleLoginKey = userId + ":" + role;
+        Object latestSession = redisService.get(singleLoginKey);
+
+        if (!sessionId.equals(String.valueOf(latestSession))) {
+            writeError(httpResponse, ErrorType.Duplicate_login);
+            return;
+        }
+
+        httpRequest.setAttribute("userId", userId);
+        httpRequest.setAttribute("role", role);
+        redisService.set_temp(sessionId, singleLoginKey, SESSION_TTL_DAYS, TimeUnit.DAYS);
+        filterChain.doFilter(request, response);
     }
 
-    private void interceptRequest(HttpServletResponse resp,Result error) throws IOException {
-        ResponseEntity<Result> entity = ResponseEntity.ok(error);
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setStatus(entity.getStatusCodeValue());
-        resp.getWriter().write(objectMapper.writeValueAsString(entity.getBody()));
+    private boolean isPreflight(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
+
+    private boolean isPublicPath(HttpServletRequest request) {
+        return PUBLIC_PATHS.contains(request.getRequestURI());
+    }
+
+    private void writeError(HttpServletResponse response, ErrorType errorType) throws IOException {
+        Result error = Result.error(ResultError.info(errorType));
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(error));
     }
 }

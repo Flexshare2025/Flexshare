@@ -5,57 +5,57 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jl.flexshare.member.entity.User;
 import com.jl.flexshare.member.mapper.UserMapper;
 import com.jl.flexshare.member.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public boolean registerMember(User user) {
         return save(user);
     }
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
     @Override
     public boolean loginMember(User user) {
-
-                User dbUser = getOne(new QueryWrapper<User>().eq("email", user.getEmail()));
-
-                if (dbUser == null) {
-                    return false;
-                }
-                return passwordEncoder.matches(user.getPassword(), dbUser.getPassword());
+        User savedUser = findByEmail(user.getEmail());
+        return savedUser != null && passwordEncoder.matches(user.getPassword(), savedUser.getPassword());
     }
 
     @Override
-    public Long getUserId(User user){
-        User dbUser = getOne(new QueryWrapper<User>().eq("email", user.getEmail()));
-        if (dbUser!=null)
-            return dbUser.getId();
-        else
-            return null;
+    public Long getUserId(User user) {
+        User savedUser = findByEmail(user.getEmail());
+        return savedUser == null ? null : savedUser.getId();
     }
 
     @Override
     public boolean resetPassword(User user) {
-
-        User sqlUser = getOne(new QueryWrapper<User>().eq("email", user.getEmail()));
-
-        if (sqlUser == null) {
+        User savedUser = findByEmail(user.getEmail());
+        if (savedUser == null) {
             return false;
         }
-        sqlUser.setPassword(user.getPassword());
-        int update= baseMapper.updateById(sqlUser);
-        return update>0;
+
+        savedUser.setPassword(user.getPassword());
+        return baseMapper.updateById(savedUser) > 0;
     }
 
     @Override
     public User getUserById(Long userId) {
-        User sqlUser = getOne(new QueryWrapper<User>().eq("id",userId));
-        return sqlUser;
+        return getOne(new QueryWrapper<User>().eq("id", userId));
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return findByEmail(email) != null;
+    }
+
+    private User findByEmail(String email) {
+        return getOne(new QueryWrapper<User>().eq("email", email));
     }
 }

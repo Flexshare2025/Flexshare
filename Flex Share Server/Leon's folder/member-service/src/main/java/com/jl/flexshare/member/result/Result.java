@@ -34,19 +34,19 @@ public class Result<T> {
     }
 
     public static Result error(String code, String msg) {
-        Result result = new Result<>();
+        Result<Object> result = new Result<>();
         result.setCode(code);
         result.setMsg(msg);
         return result;
     }
     public static Result error(ResultError error) {
-        Result result = new Result();
+        Result<Object> result = new Result<>();
         result.setCode(error.getErrorCode());
         result.setMsg(error.getErrorMsg());
         return result;
     }
     public static <T> Result<T> error(ResultError error,T data) {
-        Result result = new Result();
+        Result<T> result = new Result<>();
         result.setCode(error.getErrorCode());
         result.setMsg(error.getErrorMsg());
         result.setData(data);

@@ -14,7 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -22,7 +22,7 @@ public class SecurityConfig {
     private final LoginAuthenticationEntryPoint authenticationEntryPoint;
 
 
-    @Value("${cors_enable_front_end}")
+    @Value("${cors_enable_front_end:*}")
     private String frontEndUrl;
 
     public SecurityConfig(LoginAuthenticationEntryPoint authenticationEntryPoint) {
@@ -33,6 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(form -> form.disable())
@@ -40,7 +41,6 @@ public class SecurityConfig {
                 .rememberMe(rememberMe -> rememberMe.disable())
                 .requestCache(requestCache -> requestCache.disable())
                 .securityContext(securityContext -> securityContext.disable())
-                .anonymous(anonymous -> {})
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -50,9 +50,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList(frontEndUrl));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(List.of(frontEndUrl.split(",")));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

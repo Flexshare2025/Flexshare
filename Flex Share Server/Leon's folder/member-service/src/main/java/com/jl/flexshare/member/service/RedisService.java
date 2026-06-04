@@ -1,61 +1,62 @@
 package com.jl.flexshare.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jl.flexshare.member.entity.GeoPoint;
 import com.jl.flexshare.member.entity.GeoPointInfo;
 import com.jl.flexshare.member.entity.Schedule;
 import com.jl.flexshare.member.utils.Utils;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.data.geo.*;
-import org.springframework.data.redis.connection.RedisGeoCommands;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import lombok.Getter;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResult;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RedisService {
+
+    private static final String GEO_ROUTE_POINT_KEY = "GEO_ROUTE_POINT_DRIVER";
+    private static final int VERIFICATION_CODE_LENGTH = 6;
+    private static final long VERIFICATION_TTL_MINUTES = 1L;
+
     @Getter
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    public RedisService(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
-    @Autowired
-    private Environment env;
-
-
-
-    public String setEmailVerification(String email){
-        String code = Utils.generateMailVerificationCode(6);
-        set_temp(email,code,1,TimeUnit.MINUTES);
+    public String setEmailVerification(String email) {
+        String code = Utils.generateMailVerificationCode(VERIFICATION_CODE_LENGTH);
+        set_temp(email, code, VERIFICATION_TTL_MINUTES, TimeUnit.MINUTES);
         return code;
     }
-    @Async
+
     public void set(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    @Async
     public void set_temp(String key, Object value, long time, TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(key, value,time,timeUnit);
+        redisTemplate.opsForValue().set(key, value, time, timeUnit);
     }
 
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
+
     public void save(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
+
     public void remove(String key) {
         redisTemplate.delete(key);
     }
@@ -68,25 +69,24 @@ public class RedisService {
         return redisTemplate.opsForList().leftPop(key);
     }
 
-    static final String GEO_ROUTE_POINT="GEO_ROUTE_POINT_DRIVER";
     public void addRoutePoint(String pointId, double longitude, double latitude) {
-        redisTemplate.opsForGeo().add(GEO_ROUTE_POINT,new Point(longitude,latitude),pointId);
+        redisTemplate.opsForGeo().add(GEO_ROUTE_POINT_KEY, new Point(longitude, latitude), pointId);
     }
+
     public void removeRoutePoint(Schedule schedule) throws JsonProcessingException {
+        if (schedule == null || schedule.getRoute_points() == null) {
+            return;
+        }
 
         Long scheduleId = schedule.getSchedule_id();
-
-
-        if (schedule == null || schedule.getRoute_points() == null) {
-            return; 
-        }
         List<GeoPoint> routePoints = schedule.getRoute_points();
         List<Object> geoKeys = new ArrayList<>();
         for (int i = 0; i < routePoints.size(); i++) {
             geoKeys.add(scheduleId + ":" + i);
         }
-        redisTemplate.opsForGeo().remove(GEO_ROUTE_POINT, geoKeys.toArray());
+        redisTemplate.opsForGeo().remove(GEO_ROUTE_POINT_KEY, geoKeys.toArray());
     }
+
     public LinkedHashSet<String> findNearestPoints(double range, Metrics metrics, GeoPointInfo point) {
         Point center = new Point(point.getLng(), point.getLat());
         Distance radius = new Distance(range, metrics);
@@ -97,60 +97,60 @@ public class RedisService {
                 .limit(1000);
 
         GeoResults<RedisGeoCommands.GeoLocation<Object>> results =
-                redisTemplate.opsForGeo().radius("GEO_ROUTE_POINT_DRIVER", new Circle(center, radius), args);
-        ArrayList<String> schedules = new ArrayList<>();
-        if (results != null && !results.getContent().isEmpty()) {
-            List<GeoResult<RedisGeoCommands.GeoLocation<Object>>> content = results.getContent();
-            for (int i = 0; i < content.size(); i++) {
-                GeoResult<RedisGeoCommands.GeoLocation<Object>> geoLocationGeoResult = content.get(i);
-                String schedule = (String) geoLocationGeoResult.getContent().getName();
-                String[] split = schedule.split(":");
-                schedules.add(split[0]);
-            }
-            return new LinkedHashSet<>(schedules);
+                redisTemplate.opsForGeo().radius(GEO_ROUTE_POINT_KEY, new Circle(center, radius), args);
+
+        if (results == null || results.getContent().isEmpty()) {
+            return new LinkedHashSet<>();
         }
-        return null;
-    }
 
-    public void setTimeOut(String key, long time, TimeUnit unit){
-        redisTemplate.expire(key,time,unit);
-    }
-
-    public boolean checkVerification(String email,String mailVerification){
-
-        Object o = get(email);
-        if(null==o || (!String.valueOf(o).equals(mailVerification))){
-          return false;
+        List<String> scheduleIds = new ArrayList<>();
+        for (GeoResult<RedisGeoCommands.GeoLocation<Object>> result : results.getContent()) {
+            String geoMember = String.valueOf(result.getContent().getName());
+            scheduleIds.add(geoMember.split(":", 2)[0]);
         }
-        else
-            return true;
+
+        return new LinkedHashSet<>(scheduleIds);
     }
 
-    public void addList(String key, String value){
+    public void setTimeOut(String key, long time, TimeUnit unit) {
+        redisTemplate.expire(key, time, unit);
+    }
+
+    public boolean checkVerification(String email, String mailVerification) {
+        Object cachedCode = get(email);
+        return cachedCode != null && String.valueOf(cachedCode).equals(mailVerification);
+    }
+
+    public void addList(String key, String value) {
         redisTemplate.opsForList().rightPush(key, value);
     }
 
-    public Long removeList(String key, String value){
+    public Long removeList(String key, String value) {
         return redisTemplate.opsForList().remove(key, 0, value);
     }
 
-
-    private static final String LOCK_KEY = "lock:resource";
-
     public boolean tryLockWithWait(String key, String uuid, long expireSeconds, long waitMillis) {
-        long end = System.currentTimeMillis() + waitMillis;
-        while (System.currentTimeMillis() < end) {
-            Boolean success = redisTemplate.opsForValue()
-                    .setIfAbsent(key, uuid, Duration.ofSeconds(expireSeconds));
-            if (Boolean.TRUE.equals(success)) return true;
-            try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        long deadline = System.currentTimeMillis() + waitMillis;
+        while (System.currentTimeMillis() < deadline) {
+            Boolean success = redisTemplate.opsForValue().setIfAbsent(key, uuid, Duration.ofSeconds(expireSeconds));
+            if (Boolean.TRUE.equals(success)) {
+                return true;
+            }
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
         }
         return false;
     }
 
     public void unlock(String key, String uuid) {
-        String value = (String) redisTemplate.opsForValue().get(key);
-        if (uuid.equals(value)) redisTemplate.delete(key);
+        Object value = redisTemplate.opsForValue().get(key);
+        if (uuid.equals(value)) {
+            redisTemplate.delete(key);
+        }
     }
-
 }
