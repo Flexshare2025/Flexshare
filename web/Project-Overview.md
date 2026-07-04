@@ -1,223 +1,116 @@
-## Flex Share Front-end Overview & Technical Guide
+# FlexShare Web Project Overview
 
-This document consolidates the front-end project overview and technical guide. It covers:
+This document describes the front-end architecture and user flows for the FlexShare web application.
 
--   Project introduction
--   Tech stack
--   Architecture & directory structure
--   Sign-up & sign-in flow
--   Core business flows
--   Development workflow & conventions
--   APIs & data flow
--   Deployment & run
--   API conventions
+## Goals
 
-### 1. Project Goals
+- Provide a mobile-first interface for passenger and driver workflows.
+- Integrate Google Maps for location selection, route display, and directions.
+- Keep authentication and protected routing simple and predictable.
+- Centralize API access and local storage utilities.
 
--   Provide an easy ride-sharing service connecting passengers and drivers
--   Support route publishing, route matching, booking/accepting orders, seat management, order list, notifications
--   Mobile-first web experience
+## Application Areas
 
-### 2. Tech Stack
+### Passenger
 
--   Build tool: Vite
--   Framework: React 18 (function components, Hooks)
--   UI/Components: Ant Design Mobile (on demand)
--   Maps: @vis.gl/react-google-maps (Google Maps JS API wrapper)
--   Language & styles: JavaScript (ESNext) / JSX / SCSS
--   Quality: ESLint
+Passenger pages support:
 
-### 3. Front-end Architecture Overview
+- Current location detection.
+- Origin and destination selection.
+- Route matching against available driver schedules.
+- Booking a schedule.
+- Viewing existing passenger orders.
 
--   Front-end: `web/` (Vite + React)
-    -   Google Maps integrations (Maps/Places/Directions)
-    -   Passenger and Driver core flows
+Key files:
 
-See architecture sketches: `Proposal/Project_Architecture.png` and `ProjectArchitecture.drawio`
+- `src/pages/Passenger/index.jsx`
+- `src/pages/Passenger/component/ControlPanel.jsx`
+- `src/pages/Passenger/component/MapView.jsx`
+- `src/pages/Passenger/component/OrderList.jsx`
+- `src/pages/Passenger/component/PassengerOrderList.jsx`
+- `src/pages/Passenger/component/DirectionsProvider.jsx`
 
-### 4. Directory Structure (Front-end)
+### Driver
 
-```
-web/
-  src/
-    api/
-      index.js                # API wrapper
-    assets/                   # Static images
-    components/               # Shared components
-      Header/
-      Loading/
-      Nav/
-      ProtectedRoute/
-      search-location.jsx
-      search-locationv1.jsx
-    pages/                    # Pages
-      Passenger/              # Passenger
-        component/
-          ControlPanel.jsx
-          DirectionsProvider.jsx
-          MapView.jsx
-          OrderList.jsx
-          PassengerOrderList.jsx
-        index.jsx
-        index.scss
-      Driver/                 # Driver
-        PublishRoute/
-        Rode/
-        index.jsx
-        index.scss
-      Login/
-      Register/
-      ForgotPassword/
-      NotFound/
-    utils/                    # Utilities (request, storage, geolocation, etc.)
-    App.jsx                   # Root component
-    main.jsx                  # Entry
-    index.css                 # Global styles
-    constant.js               # Constants
-  public/                     # Static assets & PWA files
-    manifest.json
-  dist/                       # Production build output
-  package.json
-  vite.config.js
-  eslint.config.js
-  README.md
+Driver pages support:
 
-```
+- Route publishing.
+- Seat and price configuration.
+- Published route review.
+- Passenger order review.
+- In-trip status views.
 
-### 5. Sign-up & Sign-in Flow
+Key files:
 
--   Involved files
+- `src/pages/Driver/index.jsx`
+- `src/pages/Driver/PublishRoute/index.jsx`
+- `src/pages/Driver/PublishRoute/components/RouteList/index.jsx`
+- `src/pages/Driver/PublishRoute/components/UserOrderList/index.jsx`
+- `src/pages/Driver/Rode/index.jsx`
 
-    -   `web/src/pages/Register/index.jsx`: registration form, validation and submit
-    -   `web/src/pages/Login/index.jsx`: login form, validation and submit
-    -   `web/src/components/ProtectedRoute/index.jsx`: protected route guard & redirect
-    -   `web/src/utils/storage.js`: local storage (token, user)
-    -   `web/src/api/index.js`: API wrapper
+### Authentication
 
--   Sign-in flow
+Authentication pages support:
 
-    1. User enters account/password → validate inputs
-    2. Submit login (POST `/api/users/login` example)
-    3. On success: `cookie.setToken(token)`, `storage.setUser(user)` → redirect to protected page
-    4. On failure: show error (invalid account or password)
+- Login.
+- Registration.
+- Password recovery.
+- Protected-route checks.
 
--   Sign-up flow
+Key files:
 
-    1. User enters email/phone, password, confirm password → validate
-    2. Submit register (POST `/api/users/register` example)
-    3. On success: show success → navigate to login
-    4. On failure: show error (account exists, invalid verification, etc.)
+- `src/pages/Login/index.jsx`
+- `src/pages/Register/index.jsx`
+- `src/pages/ForgotPassword/index.jsx`
+- `src/components/ProtectedRoute/index.jsx`
+- `src/utils/storage.js`
 
--   Protected routes (auth guard)
-
-    -   Before entering restricted pages, check `cookie.getToken()`
-    -   No token → redirect to `/login`
-    -   Has token → render children
-
--   Logout & token expiration
-
-    -   Logout: clear `storage.removeToken()` and `storage.removeUser()` → redirect `/login`
-    -   Expired: on 401, prompt re-login (or refresh token if backend supports)
-
-### 6. Core Business Flows
-
--- Passenger:
-
-        1. Allow geolocation → resolve current position → select origin/destination
-        2. Call backend matching API to get driver schedules
-        3. Review available seats and place order; on success, decrease available seats in UI
-        4. View order list in a popup
-        -   Design
-        -   Component hierarchy
-            Passenger/index.jsx (controller)
-            ├── MapView.jsx (map)
-            ├── ControlPanel.jsx (inputs)
-            ├── OrderList.jsx (matched routes)
-            ├── PassengerOrderList.jsx (my orders)
-            └── DirectionsProvider.jsx (directions service)
-            └── Provides route calculation for MapView and OrderList
-        -   Data flow
+## Data Flow
 
 ```mermaid
 flowchart LR
-    A[User input] --> B[Match routes]
-    B --> C[ScheduledList]
-    C --> D[Booking confirm]
-
-    E[Geolocation] --> F[MapView]
-    F --> G[Map display]
-    G --> H[Route rendering]
-
-    I[Scheduled management] --> J[PassengerScheduledList]
-    J --> K[Status update]
-
-    D -.-> I
-    H -.-> I
+    User["User input"] --> Page["Page state"]
+    Page --> API["src/api"]
+    API --> Backend["Spring Boot API"]
+    Backend --> API
+    API --> Page
+    Page --> UI["Rendered UI"]
 ```
 
--- Driver:
-
-    1. Publish route and time, set seats
-    2. Review passenger orders, accept/decline
-    3. Update trip status during execution (settlement planned)
-        -   Design
-        -   Component hierarchy
-          Driver/index.jsx (controller)
-          ├── PublishRoute/index.jsx (publish & manage routes)
-          │ ├── components/RouteList/index.jsx (my routes)
-          │ └── components/UserOrderList/index.jsx (passenger orders)
-          └── Rode/index.jsx (in-trip page: start/end/status)
-        -   Data flow
+## Passenger Flow
 
 ```mermaid
 flowchart LR
-    A[Complete profile] --> B[Verified]
-    B --> C[Publish/Edit route]
-    C --> D[PublishRoute]
-    D --> E[RouteList refresh]
-
-    E --> F[Handle orders]
-    F --> G[UserOrderList accept/decline]
-    G --> H[Update seats/order status]
-
-    H --> I[Start/Run/End trip]
-    I --> J[Rode]
-    J --> K["Push status & final settlement - planned"]
-
-    D -.-> I
-    H -.-> I
+    Location["Select origin and destination"] --> Match["Request route matches"]
+    Match --> List["Display available schedules"]
+    List --> Book["Book schedule"]
+    Book --> Orders["Refresh passenger orders"]
 ```
 
-### 7. Development Workflow & Conventions
+## Driver Flow
 
--   Environment: Node ≥ 18; set `VITE_GOOGLE_MAPS_API_KEY` in `web/.env.local`
--   Local dev: `cd web && npm install && npm run dev`
--   Coding conventions:
-    -   Pass ESLint; Naming: PascalCase for components/dirs, camelCase for functions/vars
-    -   Structure: page and style use paired `index.jsx` / `index.scss`
-    -   API requests go through `src/api/`
+```mermaid
+flowchart LR
+    Route["Create route"] --> Publish["Publish schedule"]
+    Publish --> Manage["Review route list"]
+    Manage --> Orders["Review passenger orders"]
+    Orders --> Trip["Start or manage trip"]
+```
 
-### 8. APIs & Data Flow
+## Conventions
 
--   API wrapper: use `src/api/index.js` for base path and HTTP methods
--   Passenger flow:
-    1. `ControlPanel` collects origin/destination/passengers → call match API
-    2. Feed result list into `OrderList`
-    3. After booking success, update available seats inline via `onUpdateSchedule`
--   Driver flow:
-    1. `PublishRoute` publishes/edits routes → `RouteList` refresh
-    2. `UserOrderList` accepts/declines orders → update order status and seats
-    3. `Rode` updates trip status (start/end) and real-time location
--   State & storage: local `useState/useEffect` + props; `utils/storage.js` for token/user
--   Response shape: `{ code, message, data }`
+- Keep page-specific logic inside `src/pages/`.
+- Keep reusable UI under `src/components/`.
+- Keep storage, geolocation, and small helper logic under `src/utils/`.
+- Route API calls through `src/api/index.js`.
+- Keep secrets and API keys in `.env.local`.
 
-### 9. Deployment & Run
+## Build and Deployment
 
--   Build: `cd web && npm run build` (outputs to `web/dist`)
--   Deploy: host `dist/` on static servers, use github actions to upload dist file to AWS S3.
--   Notes: bind domain to Google Maps API Key; enable HTTPS and proper caching
+```bash
+cd web
+npm install
+npm run build
+```
 
-### 10. API Conventions
-
--   Auth: obtain token after login, persist via `web/src/utils/storage.js`
--   Errors: unified shape `{ code, message, data }`; branch by `code`
+The build output is `web/dist/`. The original deployment target was AWS S3, but workflow automation is currently disabled in this repository.

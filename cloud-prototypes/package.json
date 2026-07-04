@@ -1,4 +1,6 @@
 {
+  "name": "cloud-prototypes",
+  "private": true,
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.876.0"
   }

@@ -1,0 +1,21 @@
+FlexShare
+Copyright (c) 2025 FlexShare Contributors.
+
+This repository contains source code, documentation, coursework artifacts, and
+prototype infrastructure references for the FlexShare ride-sharing platform.
+
+Third-party dependencies are managed by the package manifests in each module,
+including but not limited to:
+
+- Front end: npm packages declared in `web/package.json`.
+- Backend: Maven dependencies declared in `backend/pom.xml`
+  and `backend/member-service/pom.xml`.
+- Cloud prototypes: npm/Python dependencies and AWS service integrations under
+  `cloud-prototypes/`.
+
+Each third-party dependency remains governed by its own license. Before using
+this project in production or redistributing a packaged build, review generated
+dependency license reports and cloud provider terms separately.
+
+The FlexShare name, project documents, diagrams, screenshots, demo videos, and
+coursework submission materials are included for project review and attribution.

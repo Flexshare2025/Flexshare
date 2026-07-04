@@ -34,12 +34,12 @@
 #
 #       - name: Build member-service JAR
 #         run: |
-#           cd "Flex Share Server/Leon's folder"
+#           cd backend
 #           mvn -pl member-service -am clean package -DskipTests
 #
 #       - name: Copy JAR to EC2
 #         run: |
-#           JAR_PATH=$(find "Flex Share Server/Leon's folder/member-service/target" -name "*.jar" ! -name "original-*.jar" | head -n 1)
+#           JAR_PATH=$(find "backend/member-service/target" -name "*.jar" ! -name "original-*.jar" | head -n 1)
 #           if [ -z "$JAR_PATH" ]; then
 #             echo "ERROR: JAR file not found!"
 #             exit 1
