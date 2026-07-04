@@ -50,6 +50,20 @@ The repository uses normalized folder names for easier review and navigation. St
 | Cloud design | AWS S3, EC2, Load Balancer, SQS, DynamoDB, Lambda, CloudWatch |
 | Security | Spring Security, BCrypt, Redis sessions, IAM role separation |
 
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    user["Passenger / Driver"] --> web["React Web App"]
+    web --> maps["Google Maps APIs"]
+    web --> api["Spring Boot API"]
+    api --> mysql["MySQL"]
+    api --> redis["Redis\nSessions / Locks / GEO"]
+    api --> aws["AWS-Oriented Services\nS3 / ALB / Secrets / Logs"]
+```
+
+See `docs/ARCHITECTURE.md` for the full architecture and request-flow diagrams.
+
 ## Quick Start
 
 ### Front End

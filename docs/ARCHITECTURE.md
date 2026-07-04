@@ -4,20 +4,95 @@ FlexShare is a route-sharing platform with a React front end, a Spring Boot back
 
 ## High-Level Components
 
-```text
-User Browser
-    |
-    v
-React / Vite Front End
-    |
-    v
-Spring Boot Member Service
-    |------------------ MySQL
-    |------------------ Redis
-    |------------------ Email Service
-    |
-    v
-AWS-oriented infrastructure
+```mermaid
+flowchart TB
+    user["Passenger / Driver Browser"]
+
+    subgraph frontend["Web Front End"]
+        web["React + Vite App"]
+        maps["Google Maps APIs\nMaps / Places / Directions"]
+        storage["Browser Storage\nSession token + user profile"]
+    end
+
+    subgraph backend["Backend Service"]
+        api["Spring Boot Member Service"]
+        auth["Auth & User Module"]
+        schedule["Schedule & Booking Module"]
+        lock["Redis Lock Aspect"]
+        result["Unified API Response\nGlobal Exception Handling"]
+    end
+
+    subgraph data["Data Layer"]
+        mysql["MySQL\nUser and relational data"]
+        redis["Redis\nSessions / verification codes /\nschedule cache / GEO indexes"]
+    end
+
+    subgraph aws["AWS-Oriented Infrastructure"]
+        s3["S3 Static Hosting"]
+        alb["Load Balancer\nHealth checks"]
+        secrets["AWS Secrets Manager"]
+        cloudwatch["CloudWatch Logs"]
+        lambda["Lambda Prototypes"]
+        sqs["SQS"]
+        dynamodb["DynamoDB"]
+    end
+
+    user --> web
+    web --> maps
+    web --> storage
+    web -->|"HTTPS / JSON API"| api
+
+    api --> auth
+    api --> schedule
+    api --> result
+    schedule --> lock
+
+    auth --> mysql
+    auth --> redis
+    schedule --> redis
+    schedule --> mysql
+
+    api --> secrets
+    api --> cloudwatch
+    alb --> api
+    s3 --> web
+
+    lambda --> sqs
+    lambda --> dynamodb
+    lambda --> redis
+```
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant W as React Web App
+    participant A as Spring Boot API
+    participant R as Redis
+    participant M as MySQL
+
+    U->>W: Login / route action
+    W->>A: API request with JSON payload
+    A->>R: Validate session or verification code
+    A->>M: Read or update persistent user data
+    A->>R: Cache schedule/session/GEO data
+    A-->>W: Standard Result response
+    W-->>U: Update page state
+```
+
+## Schedule Matching Flow
+
+```mermaid
+flowchart LR
+    driver["Driver publishes route"] --> route["Split route into points"]
+    route --> geo["Store route points in Redis GEO"]
+    passenger["Passenger selects origin"] --> search["Search nearby GEO points"]
+    geo --> search
+    search --> candidates["Return candidate schedules"]
+    candidates --> booking["Book under Redis distributed lock"]
+    booking --> update["Update seats and passenger schedule"]
+    update --> response["Return updated schedule"]
 ```
 
 ## Front End
