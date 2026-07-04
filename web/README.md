@@ -2,6 +2,10 @@
 
 The `web/` module contains the mobile-first React front end for FlexShare. It supports passenger route matching, driver route publishing, authentication views, and Google Maps based trip planning.
 
+Previous hosted demo URL: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>
+
+![FlexShare QR code](./QrCode.png)
+
 ## Tech Stack
 
 - React 18
@@ -37,6 +41,12 @@ npm run build
 ```
 
 Build output is written to `web/dist/`.
+
+## Deployment Reference
+
+The original front-end deployment target was AWS S3. The workflow is currently disabled at the repository level to prevent accidental deployments.
+
+![AWS S3 deployment screenshot](./s3.jpeg)
 
 ## Directory Structure
 

@@ -87,8 +87,22 @@ The backend expects MySQL, Redis, and application configuration to be available.
 
 ## Demo References
 
+- Hosted demo URL: <https://9whrslv2k8.execute-api.us-east-1.amazonaws.com/flexshare/app/index.html>
+
+![FlexShare QR code](./web/QrCode.png)
+
 - Driver demo: <https://www.youtube.com/shorts/QHrtSEZEEe8>
 - Passenger demo: <https://www.youtube.com/shorts/aGSRnuGI79M>
+
+[![Driver App Demo](https://img.youtube.com/vi/QHrtSEZEEe8/0.jpg)](https://www.youtube.com/shorts/QHrtSEZEEe8)
+
+[![Passenger App Demo](https://img.youtube.com/vi/aGSRnuGI79M/0.jpg)](https://www.youtube.com/shorts/aGSRnuGI79M)
+
+## Deployment Screenshot
+
+The original front-end deployment target was AWS S3.
+
+![AWS S3 deployment screenshot](./web/s3.jpeg)
 
 ## Open Source
 
